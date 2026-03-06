@@ -145,7 +145,7 @@ export class StudentFormComponent implements OnInit {
       next: (response) => {
         this.notificationService.success('Student created successfully!');
         this.submitting.set(false);
-        this.router.navigate(['/students/list']);
+        this.router.navigate(['/students']);
       },
       error: (error) => {
         this.notificationService.error('Failed to create student');
@@ -165,7 +165,7 @@ export class StudentFormComponent implements OnInit {
       next: (response) => {
         this.notificationService.success('Student updated successfully!');
         this.submitting.set(false);
-        this.router.navigate(['/students/list']);
+        this.router.navigate(['/students']);
       },
       error: (error) => {
         this.notificationService.error('Failed to update student');
@@ -178,7 +178,7 @@ export class StudentFormComponent implements OnInit {
    * Cancel and navigate back
    */
   onCancel(): void {
-    this.router.navigate(['/students/list']);
+    this.router.navigate(['/students']);
   }
 
   /**

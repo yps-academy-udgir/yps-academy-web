@@ -3,8 +3,6 @@
  * Uses theme variables for light/dark mode support
  */
 
-@use '/src/styles/variables' as vars;
-
 .dashboard-container {
   height: 100%;
   display: flex;
@@ -13,22 +11,22 @@
 
 // ==================== Header ====================
 .dashboard-header {
-  margin-bottom: vars.$spacing-lg;
+  margin-bottom: 24px;
   
   .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: vars.$spacing-md;
+    padding: 16px;
     background-color: var(--background-secondary);
-    border-radius: vars.$border-radius-md;
-    box-shadow: vars.$shadow-sm;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .header-title {
     display: flex;
     align-items: center;
-    gap: vars.$spacing-sm;
+    gap: 12px;
 
     .header-icon {
       font-size: 32px;
@@ -39,8 +37,8 @@
 
     h1 {
       margin: 0;
-      font-size: vars.$font-size-xxl;
-      font-weight: vars.$font-weight-medium;
+      font-size: 28px;
+      font-weight: 500;
       color: var(--text-primary);
     }
   }
@@ -50,7 +48,7 @@
 .dashboard-content {
   display: flex;
   flex-direction: column;
-  gap: vars.$spacing-lg;
+  gap: 24px;
 }
 
 // ==================== Loading State ====================
@@ -59,12 +57,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: vars.$spacing-xxxl;
-  gap: vars.$spacing-md;
+  padding: 48px;
+  gap: 16px;
 
   p {
     color: var(--text-secondary);
-    font-weight: vars.$font-weight-medium;
+    font-weight: 500;
   }
 }
 
@@ -72,23 +70,23 @@
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: vars.$spacing-lg;
+  gap: 24px;
 }
 
 .stat-card {
   cursor: pointer;
-  transition: transform vars.$transition-fast, box-shadow vars.$transition-fast;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: vars.$shadow-lg;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   }
 
   mat-card-content {
     display: flex;
     align-items: center;
-    gap: vars.$spacing-md;
-    padding: vars.$spacing-lg !important;
+    gap: 16px;
+    padding: 24px !important;
   }
 
   .stat-icon-wrapper {
@@ -97,7 +95,7 @@
     justify-content: center;
     width: 64px;
     height: 64px;
-    border-radius: vars.$border-radius-lg;
+    border-radius: 12px;
     flex-shrink: 0;
 
     mat-icon {
@@ -112,16 +110,16 @@
   }
 
   .stat-value {
-    font-size: vars.$font-size-xxxl;
-    font-weight: vars.$font-weight-bold;
-    line-height: vars.$line-height-tight;
-    margin-bottom: vars.$spacing-xs;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 4px;
   }
 
   .stat-title {
-    font-size: vars.$font-size-sm;
+    font-size: 14px;
     color: var(--text-secondary);
-    font-weight: vars.$font-weight-medium;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -130,14 +128,14 @@
 // ==================== Actions Card ====================
 .actions-card {
   mat-card-header {
-    margin-bottom: vars.$spacing-md;
+    margin-bottom: 16px;
 
     mat-card-title {
       display: flex;
       align-items: center;
-      gap: vars.$spacing-xs;
-      font-size: vars.$font-size-lg;
-      font-weight: vars.$font-weight-medium;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 500;
       color: var(--text-primary);
 
       mat-icon {
@@ -147,69 +145,69 @@
   }
 
   mat-card-content {
-    padding-top: vars.$spacing-md !important;
+    padding-top: 16px !important;
   }
 }
 
 .actions-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: vars.$spacing-md;
+  gap: 16px;
 }
 
 .action-button {
   height: 56px;
-  font-size: vars.$font-size-md;
-  font-weight: vars.$font-weight-medium;
+  font-size: 16px;
+  font-weight: 500;
 
   mat-icon {
-    margin-right: vars.$spacing-xs;
+    margin-right: 8px;
   }
 }
 
 // ==================== Empty State ====================
 .empty-state-card {
-  margin-top: vars.$spacing-lg;
+  margin-top: 24px;
 
   .empty-state {
     text-align: center;
-    padding: vars.$spacing-xxxl vars.$spacing-lg;
+    padding: 48px 24px;
 
     .empty-icon {
       font-size: 80px;
       width: 80px;
       height: 80px;
       color: var(--text-disabled);
-      margin: 0 auto vars.$spacing-lg;
+      margin: 0 auto 24px;
     }
 
     h2 {
-      font-size: vars.$font-size-xxl;
-      font-weight: vars.$font-weight-medium;
+      font-size: 28px;
+      font-weight: 500;
       color: var(--text-primary);
-      margin-bottom: vars.$spacing-sm;
+      margin-bottom: 12px;
     }
 
     p {
-      font-size: vars.$font-size-md;
+      font-size: 16px;
       color: var(--text-secondary);
-      margin-bottom: vars.$spacing-xl;
+      margin-bottom: 32px;
     }
 
     button {
       min-width: 200px;
       height: 48px;
-      font-size: vars.$font-size-md;
+      font-size: 16px;
     }
   }
 }
 
 // ==================== Responsive Design ====================
-@media (max-width: vars.$breakpoint-sm) {
+@media (max-width: 768px) {
   .dashboard-header {
     .header-title {
       h1 {
-        font-size: vars.$font-size-xl;
+        font-size: 24px;
       }
 
       .header-icon {
@@ -230,7 +228,7 @@
 
   .stat-card {
     mat-card-content {
-      padding: vars.$spacing-md !important;
+      padding: 16px !important;
     }
 
     .stat-icon-wrapper {
@@ -245,12 +243,12 @@
     }
 
     .stat-value {
-      font-size: vars.$font-size-xxl;
+      font-size: 28px;
     }
   }
 
   .empty-state {
-    padding: vars.$spacing-xl vars.$spacing-md !important;
+    padding: 32px 16px !important;
 
     .empty-icon {
       font-size: 64px !important;
@@ -260,7 +258,7 @@
   }
 }
 
-@media (min-width: vars.$breakpoint-md) and (max-width: vars.$breakpoint-lg) {
+@media (min-width: 768px) and (max-width: 1024px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
