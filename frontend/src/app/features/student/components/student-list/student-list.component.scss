@@ -45,13 +45,32 @@
 // ==================== Search Card ====================
 .search-card {
   margin-bottom: 8px;
+}
 
-  mat-form-field {
-    width: 100%;
+.filter-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 
-    &.full-width {
-      width: 100%;
-    }
+.search-field {
+  flex: 2 1 280px;
+  min-width: 220px;
+}
+
+.class-filter-field {
+  flex: 1 1 180px;
+  min-width: 160px;
+}
+
+.active-filter-chips {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+
+  mat-chip {
+    font-size: 13px;
   }
 }
 

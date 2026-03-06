@@ -19,7 +19,7 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { Student } from '../../../../shared/models/student.model';
+import { Student, Class } from '../../../../shared/models/student.model';
 
 @Component({
   selector: 'app-student-list',
@@ -41,8 +41,12 @@ export class StudentListComponent implements OnInit {
 
   // Signals for reactive state management
   searchText = signal<string>('');
+  selectedClass = signal<string>('');
   currentPage = signal<number>(0);
   pageSize = signal<number>(10);
+
+  // Class filter options derived from the Class enum
+  classOptions = Object.values(Class).map((value) => ({ value, label: `Class ${value}` }));
 
   // Access service signals
   students = this.studentService.students;
@@ -53,15 +57,22 @@ export class StudentListComponent implements OnInit {
   // Computed signals
   filteredStudents = computed(() => {
     const search = this.searchText().toLowerCase();
-    if (!search) return this.students();
-    
-    return this.students().filter(
-      (student) =>
+    const classFilter = this.selectedClass();
+
+    return this.students().filter((student) => {
+      const matchesSearch =
+        !search ||
         student.firstName.toLowerCase().includes(search) ||
         student.lastName.toLowerCase().includes(search) ||
         student.email.toLowerCase().includes(search) ||
-        student.contact.includes(search)
-    );
+        student.contact.includes(search);
+
+      const matchesClass =
+        !classFilter ||
+        student.academicDetails?.class === classFilter;
+
+      return matchesSearch && matchesClass;
+    });
   });
 
   hasStudents = computed(() => this.filteredStudents().length > 0);
@@ -167,6 +178,14 @@ export class StudentListComponent implements OnInit {
    */
   clearSearch(): void {
     this.searchText.set('');
+  }
+
+  /**
+   * Clear all filters (search + class)
+   */
+  clearFilters(): void {
+    this.searchText.set('');
+    this.selectedClass.set('');
   }
 
   /**
