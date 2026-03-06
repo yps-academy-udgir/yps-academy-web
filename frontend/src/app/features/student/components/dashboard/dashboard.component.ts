@@ -52,10 +52,6 @@ export class DashboardComponent implements OnInit {
   femaleStudents = computed(() => 
     this.students().filter(s => s.gender === 'female').length
   );
-  
-  otherGender = computed(() => 
-    this.students().filter(s => s.gender === 'other').length
-  );
 
   // Statistics cards
   statCards = computed<StatCard[]>(() => [
@@ -79,13 +75,6 @@ export class DashboardComponent implements OnInit {
       icon: 'woman',
       color: '#e91e63',
       bgColor: 'rgba(233, 30, 99, 0.1)',
-    },
-    {
-      title: 'Other Gender',
-      value: this.otherGender(),
-      icon: 'diversity_3',
-      color: '#9c27b0',
-      bgColor: 'rgba(156, 39, 176, 0.1)',
     },
   ]);
 

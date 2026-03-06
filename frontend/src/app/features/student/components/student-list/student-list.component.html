@@ -12,28 +12,73 @@
 
   <!-- Main Content -->
   <div class="dashboard-container">
-    <!-- Search Section -->
+    <!-- Search & Filter Section -->
     <mat-card class="search-card">
       <mat-card-content>
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Search Students</mat-label>
-          <input
-            matInput
-            [(ngModel)]="searchText"
-            placeholder="Search by name, email, or contact..."
-            (input)="searchText.set($event.target.value)"
-          />
-          @if (searchText()) {
-            <button
-              mat-icon-button
-              matSuffix
-              (click)="clearSearch()"
-              aria-label="Clear"
+        <div class="filter-row">
+          <!-- Search input -->
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search Students</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              matInput
+              [(ngModel)]="searchText"
+              placeholder="Search by name, email, or contact..."
+              (input)="searchText.set($event.target.value)"
+            />
+            @if (searchText()) {
+              <button
+                mat-icon-button
+                matSuffix
+                (click)="clearSearch()"
+                aria-label="Clear"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+
+          <!-- Class filter -->
+          <mat-form-field appearance="outline" class="class-filter-field">
+            <mat-label>Filter by Class</mat-label>
+            <mat-icon matPrefix>school</mat-icon>
+            <mat-select
+              [value]="selectedClass()"
+              (selectionChange)="selectedClass.set($event.value)"
             >
-              <mat-icon>close</mat-icon>
-            </button>
+              <mat-option value="">All Classes</mat-option>
+              @for (option of classOptions; track option.value) {
+                <mat-option [value]="option.value">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+            @if (selectedClass()) {
+              <button
+                mat-icon-button
+                matSuffix
+                (click)="selectedClass.set('')"
+                aria-label="Clear filter"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+
+          <!-- Active filter chip -->
+          @if (selectedClass()) {
+            <mat-chip-set class="active-filter-chips">
+              <mat-chip
+                (removed)="selectedClass.set('')"
+                [removable]="true"
+                color="primary"
+                highlighted
+              >
+                <mat-icon matChipAvatar>class</mat-icon>
+                Class: {{ selectedClass() }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-set>
           }
-        </mat-form-field>
+        </div>
       </mat-card-content>
     </mat-card>
 
@@ -157,20 +202,21 @@
           <mat-icon class="empty-icon">folder_open</mat-icon>
           <h3>No Students Found</h3>
           <p>
-            @if (searchText()) {
-              Try adjusting your search criteria
+            @if (searchText() || selectedClass()) {
+              Try adjusting your search or filter criteria
             } @else {
               Start by adding a new student
             }
           </p>
           <div class="empty-actions">
-            @if (searchText()) {
+            @if (searchText() || selectedClass()) {
               <button
                 mat-raised-button
                 color="primary"
-                (click)="clearSearch()"
+                (click)="clearFilters()"
               >
-                Clear Search
+                <mat-icon>filter_list_off</mat-icon>
+                Clear Filters
               </button>
             }
             <button mat-raised-button color="accent" (click)="createStudent()">

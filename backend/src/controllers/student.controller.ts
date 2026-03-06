@@ -7,6 +7,7 @@
 import { Request, Response } from 'express';
 import { Student, IStudent } from '../models/student.model';
 import { successResponse, errorResponse, paginatedResponse } from '../utils/response.util';
+import { calculateFeeDetails } from '../utils/fee-calculator.util';
 
 /**
  * Get all students with pagination and filtering
@@ -89,7 +90,7 @@ export const getStudentById = async (req: Request, res: Response): Promise<void>
  */
 export const createStudent = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { firstName, lastName, email, contact, gender } = req.body;
+    const { firstName, lastName, email, contact, gender, academicDetails, feeDetails } = req.body;
 
     // Check if email already exists
     const existingStudent = await Student.findOne({ email });
@@ -98,6 +99,9 @@ export const createStudent = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
+    // Calculate fee details based on academic details
+    const calculatedFeeDetails = calculateFeeDetails(academicDetails, feeDetails);
+
     // Create new student
     const student = await Student.create({
       firstName,
@@ -105,6 +109,8 @@ export const createStudent = async (req: Request, res: Response): Promise<void> 
       email,
       contact,
       gender,
+      ...(academicDetails && { academicDetails }),
+      feeDetails: calculatedFeeDetails,
     });
 
     successResponse(res, student, 'Student created successfully', 201);
@@ -129,7 +135,7 @@ export const createStudent = async (req: Request, res: Response): Promise<void> 
 export const updateStudent = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, contact, gender } = req.body;
+    const { firstName, lastName, email, contact, gender, academicDetails, feeDetails } = req.body;
 
     // Check if student exists
     const existingStudent = await Student.findById(id);
@@ -147,6 +153,16 @@ export const updateStudent = async (req: Request, res: Response): Promise<void> 
       }
     }
 
+    // Prepare academic details (use provided or existing)
+    const updatedAcademicDetails = academicDetails || existingStudent.academicDetails;
+
+    // Calculate fee details based on updated academic details
+    // Merge with existing fee details (to preserve payment history)
+    const calculatedFeeDetails = calculateFeeDetails(
+      updatedAcademicDetails,
+      feeDetails || existingStudent.feeDetails
+    );
+
     // Update student
     const updatedStudent = await Student.findByIdAndUpdate(
       id,
@@ -156,6 +172,8 @@ export const updateStudent = async (req: Request, res: Response): Promise<void> 
         ...(email && { email }),
         ...(contact && { contact }),
         ...(gender && { gender }),
+        ...(academicDetails && { academicDetails }),
+        feeDetails: calculatedFeeDetails,
       },
       { new: true, runValidators: true }
     ).lean();
@@ -203,11 +221,10 @@ export const deleteStudent = async (req: Request, res: Response): Promise<void> 
  */
 export const getStudentStats = async (req: Request, res: Response): Promise<void> => {
   try {
-    const [total, maleCount, femaleCount, otherCount] = await Promise.all([
+    const [total, maleCount, femaleCount] = await Promise.all([
       Student.countDocuments(),
       Student.countDocuments({ gender: 'male' }),
       Student.countDocuments({ gender: 'female' }),
-      Student.countDocuments({ gender: 'other' }),
     ]);
 
     const stats = {
@@ -215,7 +232,6 @@ export const getStudentStats = async (req: Request, res: Response): Promise<void
       byGender: {
         male: maleCount,
         female: femaleCount,
-        other: otherCount,
       },
     };
 

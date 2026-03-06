@@ -52,76 +52,233 @@
         </mat-card-header>
       </mat-card>
 
-      <div class="detail-grid">
-        <!-- Student Information -->
-        <mat-card class="info-card">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>person</mat-icon>
-              Student Information
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="info-row">
-              <span class="info-label">First Name:</span>
-              <span class="info-value">{{ student()!.firstName }}</span>
+      <!-- Collapsible Details Sections in Grid Layout -->
+      <div class="details-grid">
+        <!-- Left Column -->
+        <mat-accordion class="details-accordion" multi>
+          <!-- Student Information -->
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon>person</mat-icon>
+                Student Information
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="panel-content">
+              <div class="info-row">
+                <span class="info-label">First Name:</span>
+                <span class="info-value">{{ student()!.firstName }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Last Name:</span>
+                <span class="info-value">{{ student()!.lastName }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Email:</span>
+                <span class="info-value">
+                  <a [href]="'mailto:' + student()!.email">{{ student()!.email }}</a>
+                </span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Contact:</span>
+                <span class="info-value">{{ student()!.contact }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Gender:</span>
+                <span class="info-value">
+                  <mat-chip highlighted>
+                    {{ student()!.gender | uppercase }}
+                  </mat-chip>
+                </span>
+              </div>
             </div>
-            <div class="info-row">
-              <span class="info-label">Last Name:</span>
-              <span class="info-value">{{ student()!.lastName }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Email:</span>
-              <span class="info-value">
-                <a [href]="'mailto:' + student()!.email">{{ student()!.email }}</a>
-              </span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Contact:</span>
-              <span class="info-value">{{ student()!.contact }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Gender:</span>
-              <span class="info-value">
-                <mat-chip highlighted>
-                  {{ student()!.gender | uppercase }}
-                </mat-chip>
-              </span>
-            </div>
-          </mat-card-content>
-        </mat-card>
+          </mat-expansion-panel>
 
-        <!-- Metadata Information -->
-        <mat-card class="info-card">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>info</mat-icon>
-              Metadata
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            @if (student()!.createdAt) {
-              <div class="info-row">
-                <span class="info-label">Created:</span>
-                <span class="info-value">
-                  {{ student()!.createdAt | date: 'medium' }}
-                </span>
+          <!-- Fee Details -->
+          @if (student()!.feeDetails) {
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <mat-icon>payments</mat-icon>
+                  Fee Details
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="panel-content fee-panel-content">
+                <!-- Fee Summary -->
+                <div class="fee-summary-section">
+                  <div class="info-row total-fee-row">
+                    <span class="info-label">Total Fees:</span>
+                    <span class="info-value total-amount">₹{{ student()!.feeDetails!.totalFees | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="info-row paid-fee-row">
+                    <span class="info-label">Paid Amount:</span>
+                    <span class="info-value paid-amount">₹{{ student()!.feeDetails!.paidAmount | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="info-row pending-fee-row">
+                    <span class="info-label">Pending Fees:</span>
+                    <span class="info-value pending-amount" [class.has-pending]="student()!.feeDetails!.pendingFees > 0">
+                      ₹{{ student()!.feeDetails!.pendingFees | number:'1.2-2' }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Fee Breakdown -->
+                @if (student()!.feeDetails!.feeBreakdown) {
+                  <mat-divider class="section-divider"></mat-divider>
+                  <div class="fee-breakdown-section">
+                    <h4 class="subsection-title">Fee Breakdown</h4>
+                    <div class="breakdown-grid">
+                      <div class="breakdown-item">
+                        <span class="breakdown-label">Base Fee/Subject:</span>
+                        <span class="breakdown-value">₹{{ student()!.feeDetails!.feeBreakdown!.baseFeePerSubject | number:'1.2-2' }}</span>
+                      </div>
+                      <div class="breakdown-item">
+                        <span class="breakdown-label">Subjects Count:</span>
+                        <span class="breakdown-value">{{ student()!.feeDetails!.feeBreakdown!.numberOfSubjects }}</span>
+                      </div>
+                      <div class="breakdown-item">
+                        <span class="breakdown-label">Subjects Fee:</span>
+                        <span class="breakdown-value">₹{{ student()!.feeDetails!.feeBreakdown!.subjectsFee | number:'1.2-2' }}</span>
+                      </div>
+                      @if (student()!.feeDetails!.feeBreakdown!.selfStudyFee > 0) {
+                        <div class="breakdown-item">
+                          <span class="breakdown-label">Self-Study Fee:</span>
+                          <span class="breakdown-value">₹{{ student()!.feeDetails!.feeBreakdown!.selfStudyFee | number:'1.2-2' }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- Payment History -->
+                @if (student()!.feeDetails!.paymentHistory && student()!.feeDetails!.paymentHistory.length > 0) {
+                  <mat-divider class="section-divider"></mat-divider>
+                  <div class="payment-history-section">
+                    <h4 class="subsection-title">
+                      <mat-icon>history</mat-icon>
+                      Payment History
+                    </h4>
+                    <div class="payment-timeline">
+                      @for (payment of student()!.feeDetails!.paymentHistory; track $index) {
+                        <div class="payment-record">
+                          <div class="payment-icon">
+                            <mat-icon>check_circle</mat-icon>
+                          </div>
+                          <div class="payment-info">
+                            <div class="payment-header">
+                              <span class="payment-amount">₹{{ payment.amount | number:'1.2-2' }}</span>
+                              <span class="payment-date">{{ payment.paymentDate | date:'medium' }}</span>
+                            </div>
+                            @if (payment.paymentMethod) {
+                              <div class="payment-method">
+                                <mat-icon>credit_card</mat-icon>
+                                {{ payment.paymentMethod }}
+                              </div>
+                            }
+                            @if (payment.remarks) {
+                              <div class="payment-remarks">{{ payment.remarks }}</div>
+                            }
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
               </div>
-            }
-            @if (student()!.updatedAt) {
-              <div class="info-row">
-                <span class="info-label">Last Updated:</span>
-                <span class="info-value">
-                  {{ student()!.updatedAt | date: 'medium' }}
-                </span>
+            </mat-expansion-panel>
+          }
+        </mat-accordion>
+
+        <!-- Right Column -->
+        <mat-accordion class="details-accordion" multi>
+          <!-- Academic Details -->
+          @if (student()!.academicDetails) {
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <mat-icon>school</mat-icon>
+                  Academic Details
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="panel-content">
+                @if (student()!.academicDetails!.yearOfAdmission) {
+                  <div class="info-row">
+                    <span class="info-label">Year of Admission:</span>
+                    <span class="info-value">{{ student()!.academicDetails!.yearOfAdmission }}</span>
+                  </div>
+                }
+                @if (student()!.academicDetails!.class) {
+                  <div class="info-row">
+                    <span class="info-label">Class:</span>
+                    <span class="info-value">
+                      <mat-chip highlighted>{{ student()!.academicDetails!.class }}</mat-chip>
+                    </span>
+                  </div>
+                }
+                @if (student()!.academicDetails!.subjects && student()!.academicDetails!.subjects!.length > 0) {
+                  <div class="info-row">
+                    <span class="info-label">Subjects:</span>
+                    <span class="info-value">
+                      <div class="subjects-list">
+                        @for (subject of student()!.academicDetails!.subjects; track subject) {
+                          <mat-chip>{{ subject }}</mat-chip>
+                        }
+                      </div>
+                    </span>
+                  </div>
+                }
+                <div class="info-row">
+                  <span class="info-label">Self Study Mode:</span>
+                  <span class="info-value">
+                    @if (student()!.academicDetails!.selfStudyMode) {
+                      <mat-chip color="accent" highlighted>
+                        <mat-icon>check_circle</mat-icon>
+                        Enabled
+                      </mat-chip>
+                    } @else {
+                      <mat-chip>
+                        <mat-icon>cancel</mat-icon>
+                        Disabled
+                      </mat-chip>
+                    }
+                  </span>
+                </div>
               </div>
-            }
-            <div class="info-row">
-              <span class="info-label">Student ID:</span>
-              <span class="info-value code">{{ student()!._id }}</span>
+            </mat-expansion-panel>
+          }
+
+          <!-- Metadata Information -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <mat-icon>info</mat-icon>
+                Metadata
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="panel-content">
+              @if (student()!.createdAt) {
+                <div class="info-row">
+                  <span class="info-label">Created:</span>
+                  <span class="info-value">
+                    {{ student()!.createdAt | date: 'medium' }}
+                  </span>
+                </div>
+              }
+              @if (student()!.updatedAt) {
+                <div class="info-row">
+                  <span class="info-label">Last Updated:</span>
+                  <span class="info-value">
+                    {{ student()!.updatedAt | date: 'medium' }}
+                  </span>
+                </div>
+              }
+              <div class="info-row">
+                <span class="info-label">Student ID:</span>
+                <span class="info-value code">{{ student()!._id }}</span>
+              </div>
             </div>
-          </mat-card-content>
-        </mat-card>
+          </mat-expansion-panel>
+        </mat-accordion>
       </div>
     </div>
   }
