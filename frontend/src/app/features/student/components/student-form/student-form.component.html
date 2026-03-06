@@ -17,29 +17,12 @@
   <!-- Form -->
   @if (!loading()) {
     <form [formGroup]="studentForm" (ngSubmit)="onSubmit()" class="student-form">
-      <!-- Basic Information Card -->
+      <!-- Student Information Card -->
       <mat-card class="form-section">
         <mat-card-header>
-          <mat-card-title>Basic Information</mat-card-title>
+          <mat-card-title>Student Information</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Enrollment Number</mat-label>
-              <input
-                matInput
-                formControlName="enrollmentNumber"
-                placeholder="e.g., STU123456"
-                [readonly]="isEditMode()"
-              />
-              <mat-icon matPrefix>badge</mat-icon>
-              @if (studentForm.get('enrollmentNumber')?.invalid &&
-                    studentForm.get('enrollmentNumber')?.touched) {
-                <mat-error>{{ getErrorMessage('enrollmentNumber') }}</mat-error>
-              }
-            </mat-form-field>
-          </div>
-
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>First Name</mat-label>
@@ -54,6 +37,7 @@
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Last Name</mat-label>
               <input matInput formControlName="lastName" placeholder="Enter last name" />
+              <mat-icon matPrefix>person_outline</mat-icon>
               @if (studentForm.get('lastName')?.invalid &&
                     studentForm.get('lastName')?.touched) {
                 <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
@@ -73,169 +57,28 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Phone</mat-label>
-              <input matInput type="tel" formControlName="phone" placeholder="+1 234 567 8900" />
+              <mat-label>Contact</mat-label>
+              <input matInput type="tel" formControlName="contact" placeholder="+1 234 567 8900" />
               <mat-icon matPrefix>phone</mat-icon>
-              @if (studentForm.get('phone')?.invalid &&
-                    studentForm.get('phone')?.touched) {
-                <mat-error>{{ getErrorMessage('phone') }}</mat-error>
+              @if (studentForm.get('contact')?.invalid &&
+                    studentForm.get('contact')?.touched) {
+                <mat-error>{{ getErrorMessage('contact') }}</mat-error>
               }
             </mat-form-field>
           </div>
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Date of Birth</mat-label>
-              <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" />
-              <mat-datepicker-toggle matIconSuffix [for]="dobPicker"></mat-datepicker-toggle>
-              <mat-datepicker #dobPicker></mat-datepicker>
-              @if (studentForm.get('dateOfBirth')?.invalid &&
-                    studentForm.get('dateOfBirth')?.touched) {
-                <mat-error>{{ getErrorMessage('dateOfBirth') }}</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Status</mat-label>
-              <mat-select formControlName="status">
-                <mat-option value="active">Active</mat-option>
-                <mat-option value="inactive">Inactive</mat-option>
-                <mat-option value="graduated">Graduated</mat-option>
-              </mat-select>
-              <mat-icon matPrefix>info</mat-icon>
-            </mat-form-field>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Address Information Card -->
-      <mat-card class="form-section" formGroupName="address">
-        <mat-card-header>
-          <mat-card-title>Address Information</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field full-width">
-              <mat-label>Street Address</mat-label>
-              <input matInput formControlName="street" placeholder="Enter street address" />
-              <mat-icon matPrefix>home</mat-icon>
-              @if (studentForm.get('address.street')?.invalid &&
-                    studentForm.get('address.street')?.touched) {
-                <mat-error>{{ getErrorMessage('address.street') }}</mat-error>
-              }
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>City</mat-label>
-              <input matInput formControlName="city" placeholder="Enter city" />
-              @if (studentForm.get('address.city')?.invalid &&
-                    studentForm.get('address.city')?.touched) {
-                <mat-error>{{ getErrorMessage('address.city') }}</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>State</mat-label>
-              <input matInput formControlName="state" placeholder="Enter state" />
-              @if (studentForm.get('address.state')?.invalid &&
-                    studentForm.get('address.state')?.touched) {
-                <mat-error>{{ getErrorMessage('address.state') }}</mat-error>
-              }
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>ZIP Code</mat-label>
-              <input matInput formControlName="zipCode" placeholder="12345" />
-              @if (studentForm.get('address.zipCode')?.invalid &&
-                    studentForm.get('address.zipCode')?.touched) {
-                <mat-error>{{ getErrorMessage('address.zipCode') }}</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Country</mat-label>
-              <input matInput formControlName="country" placeholder="Enter country" />
-              @if (studentForm.get('address.country')?.invalid &&
-                    studentForm.get('address.country')?.touched) {
-                <mat-error>{{ getErrorMessage('address.country') }}</mat-error>
-              }
-            </mat-form-field>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Academic Information Card -->
-      <mat-card class="form-section" formGroupName="academicDetails">
-        <mat-card-header>
-          <mat-card-title>Academic Information</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Department</mat-label>
-              <mat-select formControlName="department">
-                @for (dept of departments; track dept) {
-                  <mat-option [value]="dept">{{ dept }}</mat-option>
+              <mat-label>Gender</mat-label>
+              <mat-select formControlName="gender">
+                @for (option of genderOptions; track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
                 }
               </mat-select>
-              <mat-icon matPrefix>school</mat-icon>
-              @if (studentForm.get('academicDetails.department')?.invalid &&
-                    studentForm.get('academicDetails.department')?.touched) {
-                <mat-error>{{ getErrorMessage('academicDetails.department') }}</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Semester</mat-label>
-              <input
-                matInput
-                type="number"
-                formControlName="semester"
-                placeholder="1-12"
-                min="1"
-                max="12"
-              />
-              @if (studentForm.get('academicDetails.semester')?.invalid &&
-                    studentForm.get('academicDetails.semester')?.touched) {
-                <mat-error>{{ getErrorMessage('academicDetails.semester') }}</mat-error>
-              }
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>GPA</mat-label>
-              <input
-                matInput
-                type="number"
-                formControlName="gpa"
-                placeholder="0.0 - 10.0"
-                min="0"
-                max="10"
-                step="0.01"
-              />
-              @if (studentForm.get('academicDetails.gpa')?.invalid &&
-                    studentForm.get('academicDetails.gpa')?.touched) {
-                <mat-error>{{ getErrorMessage('academicDetails.gpa') }}</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Enrollment Date</mat-label>
-              <input
-                matInput
-                [matDatepicker]="enrollPicker"
-                formControlName="enrollmentDate"
-              />
-              <mat-datepicker-toggle matIconSuffix [for]="enrollPicker"></mat-datepicker-toggle>
-              <mat-datepicker #enrollPicker></mat-datepicker>
-              @if (studentForm.get('academicDetails.enrollmentDate')?.invalid &&
-                    studentForm.get('academicDetails.enrollmentDate')?.touched) {
-                <mat-error>{{ getErrorMessage('academicDetails.enrollmentDate') }}</mat-error>
+              <mat-icon matPrefix>wc</mat-icon>
+              @if (studentForm.get('gender')?.invalid &&
+                    studentForm.get('gender')?.touched) {
+                <mat-error>{{ getErrorMessage('gender') }}</mat-error>
               }
             </mat-form-field>
           </div>

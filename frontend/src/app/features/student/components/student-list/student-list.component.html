@@ -1,8 +1,8 @@
-<!-- Student Dashboard - Material Design -->
-<div class="student-dashboard">
+<!-- Student List Component -->
+<div class="student-list">
   <!-- Toolbar -->
   <mat-toolbar color="primary" class="dashboard-toolbar">
-    <h1>Student Management</h1>
+    <h1>Students List</h1>
     <span class="spacer"></span>
     <button mat-raised-button color="accent" (click)="createStudent()">
       <mat-icon>add</mat-icon>
@@ -20,7 +20,7 @@
           <input
             matInput
             [(ngModel)]="searchText"
-            placeholder="Search by name, email, or phone..."
+            placeholder="Search by name, email, or contact..."
             (input)="searchText.set($event.target.value)"
           />
           @if (searchText()) {
@@ -69,24 +69,12 @@
       <mat-card-content>
         <div class="table-container">
           <table mat-table [dataSource]="filteredStudents()" class="students-table">
-            <!-- Enrollment Number Column -->
-            <ng-container matColumnDef="enrollmentNumber">
-              <th mat-header-cell *matHeaderCellDef>Enrollment #</th>
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
               <td mat-cell *matCellDef="let student">
-                <strong>{{ student.enrollmentNumber }}</strong>
+                <strong>{{ getFullName(student) }}</strong>
               </td>
-            </ng-container>
-
-            <!-- First Name Column -->
-            <ng-container matColumnDef="firstName">
-              <th mat-header-cell *matHeaderCellDef>First Name</th>
-              <td mat-cell *matCellDef="let student">{{ student.firstName }}</td>
-            </ng-container>
-
-            <!-- Last Name Column -->
-            <ng-container matColumnDef="lastName">
-              <th mat-header-cell *matHeaderCellDef>Last Name</th>
-              <td mat-cell *matCellDef="let student">{{ student.lastName }}</td>
             </ng-container>
 
             <!-- Email Column -->
@@ -97,21 +85,21 @@
               </td>
             </ng-container>
 
-            <!-- Phone Column -->
-            <ng-container matColumnDef="phone">
-              <th mat-header-cell *matHeaderCellDef>Phone</th>
-              <td mat-cell *matCellDef="let student">{{ student.phone }}</td>
+            <!-- Contact Column -->
+            <ng-container matColumnDef="contact">
+              <th mat-header-cell *matHeaderCellDef>Contact</th>
+              <td mat-cell *matCellDef="let student">{{ student.contact }}</td>
             </ng-container>
 
-            <!-- Date of Birth Column -->
-            <ng-container matColumnDef="dateOfBirth">
-              <th mat-header-cell *matHeaderCellDef>Date of Birth</th>
+            <!-- Gender Column -->
+            <ng-container matColumnDef="gender">
+              <th mat-header-cell *matHeaderCellDef>Gender</th>
               <td mat-cell *matCellDef="let student">
-                {{ student.dateOfBirth | date: 'shortDate' }}
+                <span class="gender-badge">{{ student.gender | titlecase }}</span>
               </td>
             </ng-container>
 
-            <!--Actions Column -->
+            <!-- Actions Column -->
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let student" class="actions-cell">

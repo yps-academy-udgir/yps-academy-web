@@ -1,36 +1,16 @@
 /**
  * Student Model
- * Defines the interface for student data structures
+ * Simplified student data structure
  * Matches backend Student schema
  */
 
-export interface Address {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-}
-
-export interface AcademicDetails {
-  department: string;
-  semester: number;
-  gpa: number;
-  enrollmentDate: Date;
-}
-
 export interface Student {
   _id?: string;
-  enrollmentNumber: string;
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
-  dateOfBirth: Date;
-  address: Address;
-  academicDetails: AcademicDetails;
-  status: 'active' | 'inactive' | 'graduated';
-  profilePicture?: string;
+  contact: string;
+  gender: 'male' | 'female' | 'other';
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -63,21 +43,10 @@ export interface PaginatedResponse<T> {
 }
 
 /**
- * Department enum
+ * Gender enum
  */
-export enum Department {
-  CS = 'Computer Science',
-  ELECTRONICS = 'Electronics',
-  MECHANICAL = 'Mechanical',
-  CIVIL = 'Civil',
-  ELECTRICAL = 'Electrical',
-}
-
-/**
- * Student Status enum
- */
-export enum StudentStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  GRADUATED = 'graduated',
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+  OTHER = 'other',
 }

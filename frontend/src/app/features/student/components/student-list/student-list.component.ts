@@ -1,7 +1,6 @@
 /**
- * Student Dashboard Component
- * Main dashboard view for student information using Material Design
- * Displays student list in a data table with filtering and pagination
+ * Student List Component
+ * Displays student list in a table with filtering, search, and pagination
  * Uses Angular 20 features: Signals, @if/@for syntax, inject()
  */
 
@@ -23,17 +22,17 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
 import { Student } from '../../../../shared/models/student.model';
 
 @Component({
-  selector: 'app-student-dashboard',
+  selector: 'app-student-list',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     SharedMaterialModule,
   ],
-  templateUrl: './student-dashboard.component.html',
-  styleUrls: ['./student-dashboard.component.scss'],
+  templateUrl: './student-list.component.html',
+  styleUrls: ['./student-list.component.scss'],
 })
-export class StudentDashboardComponent implements OnInit {
+export class StudentListComponent implements OnInit {
   // Inject services using Angular's inject() function
   private router = inject(Router);
   private studentService = inject(StudentService);
@@ -61,8 +60,7 @@ export class StudentDashboardComponent implements OnInit {
         student.firstName.toLowerCase().includes(search) ||
         student.lastName.toLowerCase().includes(search) ||
         student.email.toLowerCase().includes(search) ||
-        student.phone.includes(search) ||
-        student.enrollmentNumber.toLowerCase().includes(search)
+        student.contact.includes(search)
     );
   });
 
@@ -70,13 +68,10 @@ export class StudentDashboardComponent implements OnInit {
 
   // Table columns to display
   displayedColumns: string[] = [
-    'enrollmentNumber',
     'name',
     'email',
-    'phone',
-    'department',
-    'gpa',
-    'status',
+    'contact',
+    'gender',
     'actions',
   ];
 
@@ -178,23 +173,7 @@ export class StudentDashboardComponent implements OnInit {
    * Navigate to create student page
    */
   createStudent(): void {
-    this.router.navigate(['/students/create']);
-  }
-
-  /**
-   * Get status color for chip
-   */
-  getStatusColor(status: string): 'primary' | 'accent' | 'warn' {
-    switch (status) {
-      case 'active':
-        return 'primary';
-      case 'inactive':
-        return 'warn';
-      case 'graduated':
-        return 'accent';
-      default:
-        return 'primary';
-    }
+    this.router.navigate(['/students/add']);
   }
 
   /**
