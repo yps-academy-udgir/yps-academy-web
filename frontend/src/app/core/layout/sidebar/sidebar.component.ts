@@ -39,7 +39,7 @@ export class SidebarComponent {
     {
       label: 'Dashboard',
       icon: 'dashboard',
-      route: '/students',
+      route: '/dashboard',
     },
     {
       label: 'Students',
@@ -49,17 +49,7 @@ export class SidebarComponent {
     {
       label: 'Add Student',
       icon: 'person_add',
-      route: '/students/create',
-    },
-    {
-      label: 'Reports',
-      icon: 'assessment',
-      route: '/reports',
-    },
-    {
-      label: 'Calendar',
-      icon: 'calendar_today',
-      route: '/calendar',
+      route: '/students/add',
     },
   ]);
 

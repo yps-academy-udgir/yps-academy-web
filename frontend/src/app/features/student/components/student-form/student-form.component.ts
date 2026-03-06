@@ -1,6 +1,6 @@
 /**
  * Student Form Component
- * Used for both creating and editing students
+ * Simplified form for creating and editing students
  * Uses Angular Reactive Forms with Material Design
  * Follows Angular 20 patterns with signals
  */
@@ -13,7 +13,7 @@ import { SharedMaterialModule } from '../../../../shared/shared-material.module'
 import { StudentService } from '../../../../shared/services/student.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
-import { Student } from '../../../../shared/models/student.model';
+import { Student, Gender } from '../../../../shared/models/student.model';
 
 @Component({
   selector: 'app-student-form',
@@ -48,9 +48,12 @@ export class StudentFormComponent implements OnInit {
   // Form group
   studentForm!: FormGroup;
 
-  // Departments and states for dropdowns
-  departments = ['Computer Science', 'Engineering', 'Business', 'Medicine', 'Arts', 'Science'];
-  states = ['Active', 'Graduated'];
+  // Gender options
+  genderOptions = [
+    { value: Gender.MALE, label: 'Male' },
+    { value: Gender.FEMALE, label: 'Female' },
+    { value: Gender.OTHER, label: 'Other' },
+  ];
   
   ngOnInit(): void {
     this.initializeForm();
@@ -58,30 +61,15 @@ export class StudentFormComponent implements OnInit {
   }
 
   /**
-   * Initialize the reactive form
+   * Initialize the reactive form with simplified fields
    */
   private initializeForm(): void {
     this.studentForm = this.fb.group({
-      enrollmentNumber: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{6,10}$/)]],
       firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s-]{10,15}$/)]],
-      dateOfBirth: ['', Validators.required],
-      address: this.fb.group({
-        street: ['', Validators.required],
-        city: ['', Validators.required],
-        state: ['', Validators.required],
-        zipCode: ['', [Validators.required, Validators.pattern(/^\d{5,6}$/)]],
-        country: ['', Validators.required],
-      }),
-      academicDetails: this.fb.group({
-        department: ['', Validators.required],
-        semester: ['', [Validators.required, Validators.min(1), Validators.max(12)]],
-        gpa: ['', [Validators.required, Validators.min(0), Validators.max(10)]],
-        enrollmentDate: ['', Validators.required],
-      }),
-      status: ['active', Validators.required],
+      contact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s-]{10,15}$/)]],
+      gender: ['', Validators.required],
     });
   }
 
@@ -121,20 +109,11 @@ export class StudentFormComponent implements OnInit {
    */
   private patchFormValues(student: Student): void {
     this.studentForm.patchValue({
-      enrollmentNumber: student.enrollmentNumber,
       firstName: student.firstName,
       lastName: student.lastName,
       email: student.email,
-      phone: student.phone,
-      dateOfBirth: student.dateOfBirth,
-      address: student.address,
-      academicDetails: {
-        department: student.academicDetails.department,
-        semester: student.academicDetails.semester,
-        gpa: student.academicDetails.gpa,
-        enrollmentDate: student.academicDetails.enrollmentDate,
-      },
-      status: student.status,
+      contact: student.contact,
+      gender: student.gender,
     });
   }
 
@@ -166,7 +145,7 @@ export class StudentFormComponent implements OnInit {
       next: (response) => {
         this.notificationService.success('Student created successfully!');
         this.submitting.set(false);
-        this.router.navigate(['/students']);
+        this.router.navigate(['/students/list']);
       },
       error: (error) => {
         this.notificationService.error('Failed to create student');
@@ -186,7 +165,7 @@ export class StudentFormComponent implements OnInit {
       next: (response) => {
         this.notificationService.success('Student updated successfully!');
         this.submitting.set(false);
-        this.router.navigate(['/students']);
+        this.router.navigate(['/students/list']);
       },
       error: (error) => {
         this.notificationService.error('Failed to update student');
@@ -199,7 +178,7 @@ export class StudentFormComponent implements OnInit {
    * Cancel and navigate back
    */
   onCancel(): void {
-    this.router.navigate(['/students']);
+    this.router.navigate(['/students/list']);
   }
 
   /**
@@ -214,8 +193,6 @@ export class StudentFormComponent implements OnInit {
     if (control.hasError('minlength')) return `Minimum length is ${control.errors?.['minlength'].requiredLength}`;
     if (control.hasError('maxlength')) return `Maximum length is ${control.errors?.['maxlength'].requiredLength}`;
     if (control.hasError('pattern')) return 'Invalid format';
-    if (control.hasError('min')) return `Minimum value is ${control.errors?.['min'].min}`;
-    if (control.hasError('max')) return `Maximum value is ${control.errors?.['max'].max}`;
 
     return '';
   }

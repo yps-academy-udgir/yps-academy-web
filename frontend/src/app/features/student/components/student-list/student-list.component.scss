@@ -1,10 +1,10 @@
 /**
- * Student Dashboard Component Styles
+ * Student List Component Styles
  * Material Design based styling with theme support
  * Uses CSS variables for light/dark mode compatibility
  */
 
-.student-dashboard {
+.student-list {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -180,6 +180,18 @@
       line-height: 18px;
     }
   }
+}
+
+// ==================== Gender Badge ====================
+.gender-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: var(--background-tertiary);
+  color: var(--text-primary);
+  text-transform: capitalize;
 }
 
 // ==================== Empty State ====================

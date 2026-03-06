@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './core/layout/main-layout/main-layout.component';
-import { StudentDashboardComponent } from './features/student/components/student-dashboard/student-dashboard.component';
+import { DashboardComponent } from './features/student/components/dashboard/dashboard.component';
+import { StudentListComponent } from './features/student/components/student-list/student-list.component';
 
 /**
  * Application Routes
@@ -14,19 +15,24 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'students',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
+      },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        data: { title: 'Dashboard' },
       },
       {
         path: 'students',
         children: [
           {
             path: '',
-            component: StudentDashboardComponent,
-            data: { title: 'Student Management' },
+            component: StudentListComponent,
+            data: { title: 'Students List' },
           },
           {
-            path: 'create',
+            path: 'add',
             loadComponent: () =>
               import('./features/student/components/student-form/student-form.component').then(
                 (m) => m.StudentFormComponent
@@ -56,6 +62,6 @@ export const routes: Routes = [
   // Wildcard route for 404
   {
     path: '**',
-    redirectTo: 'students',
+    redirectTo: 'dashboard',
   },
 ];
