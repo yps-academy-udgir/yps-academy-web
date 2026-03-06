@@ -73,50 +73,95 @@
   }
 }
 
-// Stepper styles
-mat-stepper {
-  background: transparent;
-}
-
-.step-actions {
+// Accordion / Expansion Panel styles
+.form-accordion {
   display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-color, #e0e0e0);
+  flex-direction: column;
+  gap: 12px;
 
-  button {
-    min-width: 120px;
+  // Remove default accordion borders so panels appear separated
+  ::ng-deep .mat-expansion-panel + .mat-expansion-panel {
+    margin-top: 12px;
   }
 }
 
-::ng-deep {
-  .mat-step-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    
-    mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
+.form-panel {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px var(--shadow-color, rgba(0, 0, 0, 0.08)) !important;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+
+  &.mat-expanded {
+    box-shadow: 0 4px 16px var(--shadow-color, rgba(0, 0, 0, 0.14)) !important;
   }
 
-  .mat-step-header {
-    &.cdk-keyboard-focused,
-    &.cdk-program-focused,
-    &:hover {
-      background-color: var(--background-secondary, rgba(0, 0, 0, 0.04));
+  // Override Material's default surface background so it respects dark/light theme
+  ::ng-deep {
+    &.mat-expansion-panel {
+      background-color: var(--background-secondary) !important;
+    }
+
+    .mat-expansion-panel-body {
+      background-color: var(--background-secondary);
     }
   }
+}
+
+.panel-header {
+  height: 64px !important;
+  // Use solid CSS variables — no hardcoded colour fallbacks that break dark mode
+  background-color: var(--background-tertiary) !important;
+  border-bottom: 1px solid var(--border-color);
+
+  &:hover {
+    background-color: var(--background-hover) !important;
+  }
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.panel-icon {
+  color: var(--primary-color, #1976d2);
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.panel-description {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+
+  .complete-icon {
+    color: var(--success-color, #4caf50);
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .fee-badge {
+    font-weight: 600;
+    color: var(--primary-color, #1976d2);
+  }
+}
+
+.panel-content {
+  padding: 16px 8px 8px;
 }
 
 // Fee Details Styles
 .fee-summary,
 .payment-section,
-.payment-history {
+.payment-history-panel {
   margin-bottom: 32px;
 }
 
@@ -160,16 +205,59 @@ mat-stepper {
   }
 }
 
-.fee-breakdown-panel {
+.payment-history-panel {
   margin-bottom: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow-color, rgba(0, 0, 0, 0.1));
 
   ::ng-deep {
+    &.mat-expansion-panel {
+      background-color: var(--background-tertiary) !important;
+    }
+
+    .mat-expansion-panel-body {
+      background-color: var(--background-tertiary);
+    }
+
     .mat-expansion-panel-header {
-      background-color: var(--background-secondary, #f5f5f5);
-      
+      background-color: var(--background-tertiary) !important;
+
       &:hover {
-        background-color: var(--background-tertiary, #eeeeee) !important;
+        background-color: var(--background-hover) !important;
+      }
+    }
+
+    .mat-expansion-panel-header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-primary);
+      font-weight: 500;
+
+      mat-icon {
+        color: var(--success-color, #4caf50);
+      }
+    }
+  }
+}
+
+.fee-breakdown-panel {
+  margin-bottom: 24px;
+  box-shadow: 0 2px 4px var(--shadow-color, rgba(0, 0, 0, 0.1));
+
+  ::ng-deep {
+    &.mat-expansion-panel {
+      background-color: var(--background-tertiary) !important;
+    }
+
+    .mat-expansion-panel-body {
+      background-color: var(--background-tertiary);
+    }
+
+    .mat-expansion-panel-header {
+      background-color: var(--background-tertiary) !important;
+
+      &:hover {
+        background-color: var(--background-hover) !important;
       }
     }
 
@@ -340,6 +428,14 @@ mat-stepper {
 
   .step-actions {
     flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .form-actions {
+    flex-direction: column;
 
     button {
       width: 100%;
