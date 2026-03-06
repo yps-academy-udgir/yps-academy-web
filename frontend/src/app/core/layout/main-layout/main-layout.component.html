@@ -1,0 +1,25 @@
+<!-- Main Layout with Material Sidenav -->
+<div class="main-layout">
+  <!-- Header -->
+  <app-header (menuToggle)="toggleSidenav()"></app-header>
+
+  <!-- Sidenav Container -->
+  <mat-sidenav-container class="sidenav-container">
+    <!-- Sidebar -->
+    <mat-sidenav
+      #sidenav
+      [mode]="sidenavMode()"
+      [opened]="sidenavOpened()"
+      class="sidenav"
+    >
+      <app-sidebar (navigationClick)="closeSidenav()"></app-sidebar>
+    </mat-sidenav>
+
+    <!-- Main Content -->
+    <mat-sidenav-content class="main-content">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

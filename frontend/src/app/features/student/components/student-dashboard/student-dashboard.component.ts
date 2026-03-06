@@ -1,23 +1,26 @@
 /**
  * Student Dashboard Component
  * Main dashboard view for student information using Material Design
- * Displays student list in a data table with basic filtering
- * Uses Angular 20 features like Signals
+ * Displays student list in a data table with filtering and pagination
+ * Uses Angular 20 features: Signals, @if/@for syntax, inject()
  */
 
-import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
 
 // Shared Material Module
 import { SharedMaterialModule } from '../../../../shared/shared-material.module';
-
 import { StudentService } from '../../../../shared/services/student.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Student } from '../../../../shared/models/student.model';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-student-dashboard',
@@ -30,51 +33,64 @@ import { takeUntil } from 'rxjs/operators';
   templateUrl: './student-dashboard.component.html',
   styleUrls: ['./student-dashboard.component.scss'],
 })
-export class StudentDashboardComponent implements OnInit, OnDestroy {
-  /**
-   * Angular Signals - Modern state management
-   */
-  students = signal<Student[]>([]);
-  loading = signal<boolean>(false);
-  error = signal<string | null>(null);
+export class StudentDashboardComponent implements OnInit {
+  // Inject services using Angular's inject() function
+  private router = inject(Router);
+  private studentService = inject(StudentService);
+  private notificationService = inject(NotificationService);
+  private dialog = inject(MatDialog);
+
+  // Signals for reactive state management
+  searchText = signal<string>('');
   currentPage = signal<number>(0);
   pageSize = signal<number>(10);
-  totalRecords = signal<number>(0);
-  searchText = signal<string>('');
+
+  // Access service signals
+  students = this.studentService.students;
+  loading = this.studentService.loading;
+  error = this.studentService.error;
+  totalRecords = this.studentService.totalStudents;
 
   // Computed signals
   filteredStudents = computed(() => {
     const search = this.searchText().toLowerCase();
+    if (!search) return this.students();
+    
     return this.students().filter(
       (student) =>
         student.firstName.toLowerCase().includes(search) ||
         student.lastName.toLowerCase().includes(search) ||
         student.email.toLowerCase().includes(search) ||
-        student.phone.includes(search)
+        student.phone.includes(search) ||
+        student.enrollmentNumber.toLowerCase().includes(search)
     );
   });
 
-  // Table columns to display (First Name, Last Name, Email, Phone, DOB)
+  hasStudents = computed(() => this.filteredStudents().length > 0);
+
+  // Table columns to display
   displayedColumns: string[] = [
     'enrollmentNumber',
-    'firstName',
-    'lastName',
+    'name',
     'email',
     'phone',
-    'dateOfBirth',
+    'department',
+    'gpa',
+    'status',
     'actions',
   ];
 
-  private destroy$ = new Subject<void>();
-
-  constructor(
-    private studentService: StudentService,
-    private router: Router
-  ) {}
+  constructor() {
+    // Using effect for side effects based on signal changes
+    effect(() => {
+      if (this.error()) {
+        this.notificationService.error(this.error()!);
+      }
+    });
+  }
 
   /**
    * Component initialization
-   * Load initial student data
    */
   ngOnInit(): void {
     this.loadStudents();
@@ -82,32 +98,15 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
 
   /**
    * Load students from service
-   * Implements pagination
    */
   loadStudents(): void {
-    this.loading.set(true);
-
     this.studentService
       .getAllStudents(this.currentPage() + 1, this.pageSize())
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          this.students.set(response.data);
-          this.totalRecords.set(response.pagination.total);
-          this.loading.set(false);
-          this.error.set(null);
-        },
-        error: (err) => {
-          this.error.set('Failed to load students. Please try again.');
-          this.loading.set(false);
-          console.error('Error loading students:', err);
-        },
-      });
+      .subscribe();
   }
 
   /**
    * Handle pagination change
-   * @param event - Pagination event from MatPaginator
    */
   onPageChange(event: PageEvent): void {
     this.currentPage.set(event.pageIndex);
@@ -116,62 +115,56 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Format date for display
-   * @param date - Date object
-   * @returns Formatted date string
-   */
-  formatDate(date: any): string {
-    if (!date) return '';
-    const d = new Date(date);
-    return d.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  }
-
-  /**
    * View student details
-   * @param studentId - ID of student to view
    */
-  viewStudent(studentId: string | undefined): void {
-    if (studentId) {
-      this.router.navigate(['/students', studentId]);
+  viewStudent(student: Student): void {
+    if (student._id) {
+      this.router.navigate(['/students', student._id]);
     }
   }
 
   /**
    * Edit student
-   * @param studentId - ID of student to edit
    */
-  editStudent(studentId: string | undefined): void {
-    if (studentId) {
-      this.router.navigate(['/students', studentId, 'edit']);
+  editStudent(student: Student): void {
+    if (student._id) {
+      this.router.navigate(['/students', student._id, 'edit']);
     }
   }
 
   /**
-   * Delete student
-   * @param studentId - ID of student to delete
+   * Delete student with confirmation
    */
-  deleteStudent(studentId: string | undefined): void {
-    if (studentId && confirm('Are you sure you want to delete this student?')) {
-      this.loading.set(true);
+  deleteStudent(student: Student): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Delete Student',
+        message: `Are you sure you want to delete ${student.firstName} ${student.lastName}? This action cannot be undone.`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        confirmColor: 'warn',
+      },
+    });
 
-      this.studentService
-        .deleteStudent(studentId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: () => {
-            this.loadStudents(); // Reload list
-          },
-          error: (err) => {
-            this.error.set('Failed to delete student.');
-            this.loading.set(false);
-            console.error('Error deleting student:', err);
-          },
-        });
-    }
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed && student._id) {
+        this.performDelete(student._id);
+      }
+    });
+  }
+
+  /**
+   * Perform delete operation
+   */
+  private performDelete(id: string): void {
+    this.studentService.deleteStudent(id).subscribe({
+      next: () => {
+        this.notificationService.success('Student deleted successfully');
+      },
+      error: () => {
+        this.notificationService.error('Failed to delete student');
+      },
+    });
   }
 
   /**
@@ -189,10 +182,25 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Cleanup on component destroy
+   * Get status color for chip
    */
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  getStatusColor(status: string): 'primary' | 'accent' | 'warn' {
+    switch (status) {
+      case 'active':
+        return 'primary';
+      case 'inactive':
+        return 'warn';
+      case 'graduated':
+        return 'accent';
+      default:
+        return 'primary';
+    }
+  }
+
+  /**
+   * Get full name of student
+   */
+  getFullName(student: Student): string {
+    return `${student.firstName} ${student.lastName}`;
   }
 }

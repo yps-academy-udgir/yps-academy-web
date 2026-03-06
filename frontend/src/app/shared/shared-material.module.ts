@@ -30,6 +30,11 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
 
 /**
  * Array of all Material modules to be exported
@@ -58,9 +63,15 @@ const MATERIAL_MODULES = [
   MatCheckboxModule,
   MatRadioModule,
   MatTooltipModule,
+  MatSidenavModule,
+  MatListModule,
+  MatMenuModule,
+  MatDividerModule,
+  MatBadgeModule,
 ];
 
 @NgModule({
+  imports: MATERIAL_MODULES,
   exports: MATERIAL_MODULES,
 })
 export class SharedMaterialModule {}

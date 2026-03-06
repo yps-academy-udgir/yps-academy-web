@@ -2,35 +2,40 @@
  * Student Service
  * Handles all HTTP requests related to student operations
  * Uses Angular HttpClient for API communication
- * Implements RxJS Observable patterns
+ * Implements Angular 20 Signals for reactive state management
+ * Follows industry best practices with proper error handling
  */
 
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { tap, catchError, finalize } from 'rxjs/operators';
 import { Student, ApiResponse, PaginatedResponse } from '../models/student.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StudentService {
-  // Base API URL - can be configured in environment
-  private readonly API_URL = 'http://localhost:4000/api/students';
+  private http = inject(HttpClient);
 
-  // State management with Signals (Angular 20+ feature)
-  private students$ = new BehaviorSubject<Student[]>([]);
-  private loading$ = new BehaviorSubject<boolean>(false);
-  private error$ = new BehaviorSubject<string | null>(null);
-  private selectedStudent$ = new BehaviorSubject<Student | null>(null);
+  // Base API URL from environment
+  private readonly API_URL = `${environment.apiUrl}/students`;
 
-  // Expose observables for components
-  public studentsObservable$ = this.students$.asObservable();
-  public loadingObservable$ = this.loading$.asObservable();
-  public errorObservable$ = this.error$.asObservable();
-  public selectedStudentObservable$ = this.selectedStudent$.asObservable();
+  // Angular 20 Signals for reactive state management
+  students = signal<Student[]>([]);
+  loading = signal<boolean>(false);
+  error = signal<string | null>(null);
+  selectedStudent = signal<Student | null>(null);
+  totalStudents = signal<number>(0);
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(10);
 
-  constructor(private http: HttpClient) {}
+  // Computed signals
+  hasStudents = computed(() => this.students().length > 0);
+  isEmpty = computed(() => !this.loading() && this.students().length === 0);
+  hasError = computed(() => this.error() !== null);
+  totalPages = computed(() => Math.ceil(this.totalStudents() / this.pageSize()));
 
   /**
    * Get all students with optional filtering and pagination
@@ -46,8 +51,8 @@ export class StudentService {
     department?: string,
     status?: string
   ): Observable<PaginatedResponse<Student>> {
-    this.loading$.next(true);
-    this.error$.next(null);
+    this.loading.set(true);
+    this.error.set(null);
 
     // Build query parameters dynamically
     let params = new HttpParams()
@@ -62,17 +67,14 @@ export class StudentService {
     }
 
     return this.http.get<PaginatedResponse<Student>>(this.API_URL, { params }).pipe(
-      tap({
-        next: (response) => {
-          this.students$.next(response.data);
-          this.loading$.next(false);
-        },
-        error: (error) => {
-          const errorMessage = error?.error?.error || 'Failed to load students';
-          this.error$.next(errorMessage);
-          this.loading$.next(false);
-        },
-      })
+      tap((response) => {
+        this.students.set(response.data);
+        this.totalStudents.set(response.pagination.total);
+        this.currentPage.set(page);
+        this.pageSize.set(limit);
+      }),
+      catchError((error) => this.handleError(error)),
+      finalize(() => this.loading.set(false))
     );
   }
 
@@ -82,137 +84,87 @@ export class StudentService {
    * @returns Observable of single student
    */
   getStudentById(id: string): Observable<ApiResponse<Student>> {
-    this.loading$.next(true);
-    this.error$.next(null);
+    this.loading.set(true);
+    this.error.set(null);
 
     return this.http.get<ApiResponse<Student>>(`${this.API_URL}/${id}`).pipe(
-      tap({
-        next: (response) => {
-          if (response.data) {
-            this.selectedStudent$.next(response.data);
-          }
-          this.loading$.next(false);
-        },
-        error: (error) => {
-          const errorMessage = error?.error?.error || 'Failed to load student';
-          this.error$.next(errorMessage);
-          this.loading$.next(false);
-        },
-      })
+      tap((response) => {
+        if (response.data) {
+          this.selectedStudent.set(response.data);
+        }
+      }),
+      catchError((error) => this.handleError(error)),
+      finalize(() => this.loading.set(false))
     );
   }
 
   /**
    * Create new student
-   * @param student - Student data to create
+   * @param student - Student data
    * @returns Observable of created student
    */
-  createStudent(student: Student): Observable<ApiResponse<Student>> {
-    this.loading$.next(true);
-    this.error$.next(null);
+  createStudent(student: Partial<Student>): Observable<ApiResponse<Student>> {
+    this.loading.set(true);
+    this.error.set(null);
 
     return this.http.post<ApiResponse<Student>>(this.API_URL, student).pipe(
-      tap({
-        next: (response) => {
-          if (response.data) {
-            // Add new student to list
-            const currentStudents = this.students$.value;
-            this.students$.next([...currentStudents, response.data]);
-          }
-          this.loading$.next(false);
-        },
-        error: (error) => {
-          const errorMessage = error?.error?.error || 'Failed to create student';
-          this.error$.next(errorMessage);
-          this.loading$.next(false);
-        },
-      })
+      tap((response) => {
+        if (response.data) {
+          // Add new student to the list
+          this.students.update(students => [response.data!, ...students]);
+          this.totalStudents.update(total => total + 1);
+        }
+      }),
+      catchError((error) => this.handleError(error)),
+      finalize(() => this.loading.set(false))
     );
   }
 
   /**
    * Update existing student
    * @param id - Student document ID
-   * @param updates - Updated student data
+   * @param student - Updated student data
    * @returns Observable of updated student
    */
-  updateStudent(id: string, updates: Partial<Student>): Observable<ApiResponse<Student>> {
-    this.loading$.next(true);
-    this.error$.next(null);
+  updateStudent(id: string, student: Partial<Student>): Observable<ApiResponse<Student>> {
+    this.loading.set(true);
+    this.error.set(null);
 
-    return this.http.put<ApiResponse<Student>>(`${this.API_URL}/${id}`, updates).pipe(
-      tap({
-        next: (response) => {
-          if (response.data) {
-            // Update student in list
-            const currentStudents = this.students$.value;
-            const updatedList = currentStudents.map((s) =>
-              s._id === id ? response.data! : s
-            );
-            this.students$.next(updatedList);
-            this.selectedStudent$.next(response.data);
-          }
-          this.loading$.next(false);
-        },
-        error: (error) => {
-          const errorMessage = error?.error?.error || 'Failed to update student';
-          this.error$.next(errorMessage);
-          this.loading$.next(false);
-        },
-      })
+    return this.http.put<ApiResponse<Student>>(`${this.API_URL}/${id}`, student).pipe(
+      tap((response) => {
+        if (response.data) {
+          // Update student in the list
+          this.students.update(students =>
+            students.map(s => s._id === id ? response.data! : s)
+          );
+          this.selectedStudent.set(response.data);
+        }
+      }),
+      catchError((error) => this.handleError(error)),
+      finalize(() => this.loading.set(false))
     );
   }
 
   /**
-   * Delete student
+   * Delete student by ID
    * @param id - Student document ID
-   * @returns Observable of deletion response
+   * @returns Observable of deletion result
    */
   deleteStudent(id: string): Observable<ApiResponse<void>> {
-    this.loading$.next(true);
-    this.error$.next(null);
+    this.loading.set(true);
+    this.error.set(null);
 
     return this.http.delete<ApiResponse<void>>(`${this.API_URL}/${id}`).pipe(
-      tap({
-        next: (response) => {
-          // Remove student from list
-          const currentStudents = this.students$.value;
-          this.students$.next(currentStudents.filter((s) => s._id !== id));
-          this.loading$.next(false);
-        },
-        error: (error) => {
-          const errorMessage = error?.error?.error || 'Failed to delete student';
-          this.error$.next(errorMessage);
-          this.loading$.next(false);
-        },
-      })
-    );
-  }
-
-  /**
-   * Bulk import students
-   * @param students - Array of students to import
-   * @returns Observable of import response
-   */
-  bulkImportStudents(students: Student[]): Observable<ApiResponse<Student[]>> {
-    this.loading$.next(true);
-    this.error$.next(null);
-
-    return this.http.post<ApiResponse<Student[]>>(`${this.API_URL}/bulk/import`, students).pipe(
-      tap({
-        next: (response) => {
-          if (response.data) {
-            const currentStudents = this.students$.value;
-            this.students$.next([...currentStudents, ...response.data]);
-          }
-          this.loading$.next(false);
-        },
-        error: (error) => {
-          const errorMessage = error?.error?.error || 'Failed to import students';
-          this.error$.next(errorMessage);
-          this.loading$.next(false);
-        },
-      })
+      tap(() => {
+        // Remove student from the list
+        this.students.update(students => students.filter(s => s._id !== id));
+        this.totalStudents.update(total => total - 1);
+        if (this.selectedStudent()?._id === id) {
+          this.selectedStudent.set(null);
+        }
+      }),
+      catchError((error) => this.handleError(error)),
+      finalize(() => this.loading.set(false))
     );
   }
 
@@ -220,27 +172,30 @@ export class StudentService {
    * Clear selected student
    */
   clearSelectedStudent(): void {
-    this.selectedStudent$.next(null);
+    this.selectedStudent.set(null);
   }
 
   /**
-   * Clear error
+   * Handle HTTP errors
    */
-  clearError(): void {
-    this.error$.next(null);
-  }
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'An unexpected error occurred';
 
-  /**
-   * Get current students list
-   */
-  getCurrentStudents(): Student[] {
-    return this.students$.value;
-  }
+    if (error.error instanceof ErrorEvent) {
+      // Client-side error
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      // Server-side error
+      errorMessage = error.error?.error || error.error?.message || error.message;
+    }
 
-  /**
-   * Get current loading state
-   */
-  isLoading(): boolean {
-    return this.loading$.value;
+    this.error.set(errorMessage);
+    
+    if (environment.enableLogging) {
+      console.error('StudentService Error:', error);
+    }
+
+    return throwError(() => new Error(errorMessage));
   }
 }
+

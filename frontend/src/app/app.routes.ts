@@ -1,53 +1,61 @@
 import { Routes } from '@angular/router';
+import { MainLayoutComponent } from './core/layout/main-layout/main-layout.component';
 import { StudentDashboardComponent } from './features/student/components/student-dashboard/student-dashboard.component';
 
 /**
  * Application Routes
  * Defines routing structure for the entire application
- * 
- * Routes:
- * - / -> Student Dashboard (default)
- * - /students -> Student management module
- *   - /students (list/dashboard)
- *   - /students/create (create new student)
- *   - /students/:id (view student details)
- *   - /students/:id/edit (edit student)
+ * Uses main layout wrapper for consistent UI
  */
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/students',
-    pathMatch: 'full',
-  },
-  {
-    path: 'students',
+    component: MainLayoutComponent,
     children: [
       {
         path: '',
-        component: StudentDashboardComponent,
-        data: { title: 'Student Management Dashboard' },
+        redirectTo: 'students',
+        pathMatch: 'full',
       },
-      // TODO: Add create, edit, and detail components as they are created
-      // {
-      //   path: 'create',
-      //   component: StudentCreateComponent,
-      //   data: { title: 'Create Student' },
-      // },
-      // {
-      //   path: ':id',
-      //   component: StudentDetailComponent,
-      //   data: { title: 'Student Details' },
-      // },
-      // {
-      //   path: ':id/edit',
-      //   component: StudentEditComponent,
-      //   data: { title: 'Edit Student' },
-      // },
+      {
+        path: 'students',
+        children: [
+          {
+            path: '',
+            component: StudentDashboardComponent,
+            data: { title: 'Student Management' },
+          },
+          {
+            path: 'create',
+            loadComponent: () =>
+              import('./features/student/components/student-form/student-form.component').then(
+                (m) => m.StudentFormComponent
+              ),
+            data: { title: 'Add New Student' },
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import('./features/student/components/student-form/student-form.component').then(
+                (m) => m.StudentFormComponent
+              ),
+            data: { title: 'Edit Student' },
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/student/components/student-detail/student-detail.component').then(
+                (m) => m.StudentDetailComponent
+              ),
+            data: { title: 'Student Details' },
+          },
+        ],
+      },
     ],
   },
   // Wildcard route for 404
   {
     path: '**',
-    redirectTo: '/students',
+    redirectTo: 'students',
   },
 ];

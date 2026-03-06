@@ -1,0 +1,179 @@
+<div class="student-detail-container">
+  <!-- Loading State -->
+  @if (loading()) {
+    <app-loading [message]="'Loading student details...'"></app-loading>
+  }
+
+  <!-- Error State -->
+  @if (error() && !loading()) {
+    <app-error-message
+      [title]="'Error Loading Student'"
+      [message]="error()!"
+      (retry)="onRetry()"
+    ></app-error-message>
+  }
+
+  <!-- Student Details -->
+  @if (student() && !loading() && !error()) {
+    <div class="detail-content">
+      <!-- Header with Actions -->
+      <mat-card class="header-card">
+        <mat-card-header>
+          <div class="header-content">
+            <div class="student-header">
+              <div class="avatar">
+                <mat-icon>account_circle</mat-icon>
+              </div>
+              <div class="student-info">
+                <h1 class="student-name">
+                  {{ student()!.firstName }} {{ student()!.lastName }}
+                </h1>
+                <p class="enrollment-number">
+                  <mat-icon>badge</mat-icon>
+                  {{ student()!.enrollmentNumber }}
+                </p>
+              </div>
+            </div>
+            <div class="header-actions">
+              <button mat-button (click)="onBack()">
+                <mat-icon>arrow_back</mat-icon>
+                Back
+              </button>
+              <button mat-raised-button color="primary" (click)="onEdit()">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+              <button mat-raised-button color="warn" (click)="onDelete()">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </div>
+          </div>
+        </mat-card-header>
+      </mat-card>
+
+      <div class="detail-grid">
+        <!-- Basic Information -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>person</mat-icon>
+              Basic Information
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-row">
+              <span class="info-label">Email:</span>
+              <span class="info-value">
+                <a [href]="'mailto:' + student()!.email">{{ student()!.email }}</a>
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Phone:</span>
+              <span class="info-value">{{ student()!.phone }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Date of Birth:</span>
+              <span class="info-value">
+                {{ student()!.dateOfBirth | date: 'longDate' }}
+                ({{ calculateAge(student()!.dateOfBirth) }} years old)
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Status:</span>
+              <span class="info-value">
+                <mat-chip [color]="getStatusColor(student()!.status)" highlighted>
+                  {{ student()!.status | uppercase }}
+                </mat-chip>
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Address Information -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>home</mat-icon>
+              Address
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="address">
+              <p>{{ student()!.address.street }}</p>
+              <p>
+                {{ student()!.address.city }}, {{ student()!.address.state }}
+                {{ student()!.address.zipCode }}
+              </p>
+              <p>{{ student()!.address.country }}</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Academic Information -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>school</mat-icon>
+              Academic Details
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-row">
+              <span class="info-label">Department:</span>
+              <span class="info-value">{{ student()!.academicDetails.department }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Semester:</span>
+              <span class="info-value">{{ student()!.academicDetails.semester }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">GPA:</span>
+              <span class="info-value">
+                <strong>{{ student()!.academicDetails.gpa }}</strong> / 10.0
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Enrollment Date:</span>
+              <span class="info-value">
+                {{ student()!.academicDetails.enrollmentDate | date: 'longDate' }}
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Metadata Information -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>info</mat-icon>
+              Metadata
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (student()!.createdAt) {
+              <div class="info-row">
+                <span class="info-label">Created:</span>
+                <span class="info-value">
+                  {{ student()!.createdAt | date: 'medium' }}
+                </span>
+              </div>
+            }
+            @if (student()!.updatedAt) {
+              <div class="info-row">
+                <span class="info-label">Last Updated:</span>
+                <span class="info-value">
+                  {{ student()!.updatedAt | date: 'medium' }}
+                </span>
+              </div>
+            }
+            <div class="info-row">
+              <span class="info-label">Student ID:</span>
+              <span class="info-value code">{{ student()!._id }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>
