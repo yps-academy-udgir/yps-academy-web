@@ -91,6 +91,62 @@
           </mat-card-content>
         </mat-card>
 
+        <!-- Academic Details -->
+        @if (student()!.academicDetails) {
+          <mat-card class="info-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>school</mat-icon>
+                Academic Details
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              @if (student()!.academicDetails!.yearOfAdmission) {
+                <div class="info-row">
+                  <span class="info-label">Year of Admission:</span>
+                  <span class="info-value">{{ student()!.academicDetails!.yearOfAdmission }}</span>
+                </div>
+              }
+              @if (student()!.academicDetails!.class) {
+                <div class="info-row">
+                  <span class="info-label">Class:</span>
+                  <span class="info-value">
+                    <mat-chip highlighted>{{ student()!.academicDetails!.class }}</mat-chip>
+                  </span>
+                </div>
+              }
+              @if (student()!.academicDetails!.subjects && student()!.academicDetails!.subjects!.length > 0) {
+                <div class="info-row">
+                  <span class="info-label">Subjects:</span>
+                  <span class="info-value">
+                    <div class="subjects-list">
+                      @for (subject of student()!.academicDetails!.subjects; track subject) {
+                        <mat-chip>{{ subject }}</mat-chip>
+                      }
+                    </div>
+                  </span>
+                </div>
+              }
+              <div class="info-row">
+                <span class="info-label">Self Study Mode:</span>
+                <span class="info-value">
+                  @if (student()!.academicDetails!.selfStudyMode) {
+                    <mat-chip color="accent" highlighted>
+                      <mat-icon>check_circle</mat-icon>
+                      Enabled
+                    </mat-chip>
+                  } @else {
+                    <mat-chip>
+                      <mat-icon>cancel</mat-icon>
+                      Disabled
+                    </mat-chip>
+                  }
+                </span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+
         <!-- Metadata Information -->
         <mat-card class="info-card">
           <mat-card-header>

@@ -123,6 +123,17 @@
     }
   }
 
+  .subjects-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+
+    mat-chip {
+      margin: 0;
+    }
+  }
+
   .address {
     p {
       margin: 0 0 8px 0;

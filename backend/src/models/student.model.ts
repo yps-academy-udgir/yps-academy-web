@@ -13,6 +13,31 @@ export enum Gender {
   OTHER = 'other',
 }
 
+// Class enum
+export enum Class {
+  FIFTH = '5th',
+  SIXTH = '6th',
+  SEVENTH = '7th',
+  EIGHTH = '8th',
+  NINTH = '9th',
+  TENTH = '10th',
+}
+
+// Available subjects
+export enum Subject {
+  MATHEMATICS = 'Mathematics',
+  SCIENCE = 'Science',
+  ENGLISH = 'English',
+}
+
+// Academic Details Interface
+export interface IAcademicDetails {
+  yearOfAdmission: number;
+  class: Class;
+  subjects: string[]; // Array to allow predefined + custom subjects
+  selfStudyMode: boolean;
+}
+
 // Student Interface
 export interface IStudent extends Document {
   firstName: string;
@@ -20,9 +45,44 @@ export interface IStudent extends Document {
   email: string;
   contact: string;
   gender: Gender;
+  academicDetails?: IAcademicDetails;
   createdAt: Date;
   updatedAt: Date;
 }
+
+// Academic Details Schema
+const AcademicDetailsSchema = new Schema({
+  yearOfAdmission: {
+    type: Number,
+    required: false,
+    min: [1900, 'Year of admission must be after 1900'],
+    max: [new Date().getFullYear() + 10, 'Year of admission cannot be too far in the future'],
+  },
+  class: {
+    type: String,
+    required: false,
+    enum: {
+      values: [Class.FIFTH, Class.SIXTH, Class.SEVENTH, Class.EIGHTH, Class.NINTH, Class.TENTH],
+      message: '{VALUE} is not a valid class',
+    },
+  },
+  subjects: {
+    type: [String],
+    required: false,
+    default: [],
+    validate: {
+      validator: function(subjects: string[]) {
+        return subjects.length <= 10; // Limit to 10 subjects
+      },
+      message: 'Cannot have more than 10 subjects',
+    },
+  },
+  selfStudyMode: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+}, { _id: false }); // Don't create _id for subdocument
 
 // Student Schema
 const StudentSchema: Schema = new Schema(
@@ -69,6 +129,7 @@ const StudentSchema: Schema = new Schema(
         message: '{VALUE} is not a valid gender',
       },
     },
+    academicDetails: AcademicDetailsSchema,
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt

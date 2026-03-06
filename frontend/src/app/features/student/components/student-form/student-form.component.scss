@@ -59,6 +59,20 @@
   }
 }
 
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+  }
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

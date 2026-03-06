@@ -4,6 +4,37 @@
  * Matches backend Student schema
  */
 
+/**
+ * Class enum
+ */
+export enum Class {
+  FIFTH = '5th',
+  SIXTH = '6th',
+  SEVENTH = '7th',
+  EIGHTH = '8th',
+  NINTH = '9th',
+  TENTH = '10th',
+}
+
+/**
+ * Available subjects
+ */
+export enum Subject {
+  MATHEMATICS = 'Mathematics',
+  SCIENCE = 'Science',
+  ENGLISH = 'English',
+}
+
+/**
+ * Academic Details Interface
+ */
+export interface AcademicDetails {
+  yearOfAdmission?: number;
+  class?: Class;
+  subjects?: string[];
+  selfStudyMode?: boolean;
+}
+
 export interface Student {
   _id?: string;
   firstName: string;
@@ -11,6 +42,7 @@ export interface Student {
   email: string;
   contact: string;
   gender: 'male' | 'female' | 'other';
+  academicDetails?: AcademicDetails;
   createdAt?: Date;
   updatedAt?: Date;
 }

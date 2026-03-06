@@ -89,7 +89,7 @@ export const getStudentById = async (req: Request, res: Response): Promise<void>
  */
 export const createStudent = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { firstName, lastName, email, contact, gender } = req.body;
+    const { firstName, lastName, email, contact, gender, academicDetails } = req.body;
 
     // Check if email already exists
     const existingStudent = await Student.findOne({ email });
@@ -105,6 +105,7 @@ export const createStudent = async (req: Request, res: Response): Promise<void> 
       email,
       contact,
       gender,
+      ...(academicDetails && { academicDetails }),
     });
 
     successResponse(res, student, 'Student created successfully', 201);
@@ -129,7 +130,7 @@ export const createStudent = async (req: Request, res: Response): Promise<void> 
 export const updateStudent = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, contact, gender } = req.body;
+    const { firstName, lastName, email, contact, gender, academicDetails } = req.body;
 
     // Check if student exists
     const existingStudent = await Student.findById(id);
@@ -156,6 +157,7 @@ export const updateStudent = async (req: Request, res: Response): Promise<void> 
         ...(email && { email }),
         ...(contact && { contact }),
         ...(gender && { gender }),
+        ...(academicDetails && { academicDetails }),
       },
       { new: true, runValidators: true }
     ).lean();

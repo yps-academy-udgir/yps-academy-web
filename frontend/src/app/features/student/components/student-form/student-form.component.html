@@ -85,6 +85,58 @@
         </mat-card-content>
       </mat-card>
 
+      <!-- Academic Details Card -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>Academic Details</mat-card-title>
+        </mat-card-header>
+        <mat-card-content formGroupName="academicDetails">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Year of Admission</mat-label>
+              <mat-select formControlName="yearOfAdmission">
+                <mat-option [value]="''">Select Year</mat-option>
+                @for (year of yearRange; track year) {
+                  <mat-option [value]="year">{{ year }}</mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>calendar_today</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Class</mat-label>
+              <mat-select formControlName="class">
+                <mat-option [value]="''">Select Class</mat-option>
+                @for (option of classOptions; track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>school</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field full-width">
+              <mat-label>Subjects</mat-label>
+              <mat-select formControlName="subjects" multiple>
+                @for (subject of availableSubjects; track subject) {
+                  <mat-option [value]="subject">{{ subject }}</mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>book</mat-icon>
+              <mat-hint>Select one or more subjects (Math, Science, English)</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-checkbox formControlName="selfStudyMode" class="form-checkbox">
+              <mat-icon>self_improvement</mat-icon>
+              Self Study Mode
+            </mat-checkbox>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
       <!-- Form Actions -->
       <div class="form-actions">
         <button

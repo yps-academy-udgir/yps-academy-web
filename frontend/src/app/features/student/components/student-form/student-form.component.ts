@@ -13,7 +13,7 @@ import { SharedMaterialModule } from '../../../../shared/shared-material.module'
 import { StudentService } from '../../../../shared/services/student.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
-import { Student, Gender } from '../../../../shared/models/student.model';
+import { Student, Gender, Class, Subject } from '../../../../shared/models/student.model';
 
 @Component({
   selector: 'app-student-form',
@@ -54,6 +54,27 @@ export class StudentFormComponent implements OnInit {
     { value: Gender.FEMALE, label: 'Female' },
     { value: Gender.OTHER, label: 'Other' },
   ];
+
+  // Class options
+  classOptions = [
+    { value: Class.FIFTH, label: '5th' },
+    { value: Class.SIXTH, label: '6th' },
+    { value: Class.SEVENTH, label: '7th' },
+    { value: Class.EIGHTH, label: '8th' },
+    { value: Class.NINTH, label: '9th' },
+    { value: Class.TENTH, label: '10th' },
+  ];
+
+  // Subject options (predefined)
+  availableSubjects = [
+    Subject.MATHEMATICS,
+    Subject.SCIENCE,
+    Subject.ENGLISH,
+  ];
+
+  // Current year for year of admission
+  currentYear = new Date().getFullYear();
+  yearRange = Array.from({ length: 20 }, (_, i) => this.currentYear - i + 1);
   
   ngOnInit(): void {
     this.initializeForm();
@@ -70,6 +91,12 @@ export class StudentFormComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       contact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s-]{10,15}$/)]],
       gender: ['', Validators.required],
+      academicDetails: this.fb.group({
+        yearOfAdmission: [''],
+        class: [''],
+        subjects: [[]],
+        selfStudyMode: [false],
+      }),
     });
   }
 
@@ -114,6 +141,12 @@ export class StudentFormComponent implements OnInit {
       email: student.email,
       contact: student.contact,
       gender: student.gender,
+      academicDetails: {
+        yearOfAdmission: student.academicDetails?.yearOfAdmission || '',
+        class: student.academicDetails?.class || '',
+        subjects: student.academicDetails?.subjects || [],
+        selfStudyMode: student.academicDetails?.selfStudyMode || false,
+      },
     });
   }
 

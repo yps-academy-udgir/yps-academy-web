@@ -30,13 +30,28 @@ const isValidGender = (gender: string): boolean => {
 };
 
 /**
+ * Validate class
+ */
+const isValidClass = (classValue: string): boolean => {
+  return ['5th', '6th', '7th', '8th', '9th', '10th'].includes(classValue);
+};
+
+/**
+ * Validate year of admission
+ */
+const isValidYear = (year: number): boolean => {
+  const currentYear = new Date().getFullYear();
+  return year >= 1900 && year <= currentYear + 10;
+};
+
+/**
  * Validate student creation/update data
  */
 export const validateStudent = (req: Request, res: Response, next: NextFunction): void => {
-  const { firstName, lastName, email, contact, gender } = req.body;
+  const { firstName, lastName, email, contact, gender, academicDetails } = req.body;
   const errors: string[] = [];
 
-  // For POST requests, all fields are required
+  // For POST requests, all basic fields are required
   if (req.method === 'POST') {
     if (!firstName || firstName.trim().length < 2) {
       errors.push('First name must be at least 2 characters');
@@ -71,6 +86,32 @@ export const validateStudent = (req: Request, res: Response, next: NextFunction)
     }
     if (gender !== undefined && !isValidGender(gender)) {
       errors.push('Gender must be male, female, or other');
+    }
+  }
+
+  // Validate academic details if provided
+  if (academicDetails) {
+    if (academicDetails.yearOfAdmission !== undefined) {
+      if (!Number.isInteger(academicDetails.yearOfAdmission) || !isValidYear(academicDetails.yearOfAdmission)) {
+        errors.push('Year of admission must be a valid year between 1900 and ' + (new Date().getFullYear() + 10));
+      }
+    }
+    if (academicDetails.class !== undefined) {
+      if (!isValidClass(academicDetails.class)) {
+        errors.push('Class must be one of: 5th, 6th, 7th, 8th, 9th, 10th');
+      }
+    }
+    if (academicDetails.subjects !== undefined) {
+      if (!Array.isArray(academicDetails.subjects)) {
+        errors.push('Subjects must be an array');
+      } else if (academicDetails.subjects.length > 10) {
+        errors.push('Cannot have more than 10 subjects');
+      }
+    }
+    if (academicDetails.selfStudyMode !== undefined) {
+      if (typeof academicDetails.selfStudyMode !== 'boolean') {
+        errors.push('Self study mode must be a boolean value');
+      }
     }
   }
 
