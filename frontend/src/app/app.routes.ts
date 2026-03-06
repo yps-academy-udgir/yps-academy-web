@@ -32,6 +32,11 @@ export const routes: Routes = [
             data: { title: 'Students List' },
           },
           {
+            path: 'list',
+            component: StudentListComponent,
+            data: { title: 'Students List' },
+          },
+          {
             path: 'add',
             loadComponent: () =>
               import('./features/student/components/student-form/student-form.component').then(

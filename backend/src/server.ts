@@ -1,87 +1,44 @@
-import express, { Express, Request, Response } from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import dotenv from 'dotenv';
+/**
+ * Server Entry Point
+ * Initializes database connection and starts the Express server
+ * Follows industry-standard separation of concerns
+ */
 
+import dotenv from 'dotenv';
+import { createApp } from './app';
+import { connectDatabase } from './config/database.config';
+
+// Load environment variables
 dotenv.config();
 
-const app: Express = express();
 const PORT = process.env.PORT || 4000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/yps-academy';
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// MongoDB Connection
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('✓ MongoDB connected'))
-  .catch((err) => console.error('✗ MongoDB connection error:', err));
-
-// Health Check Route
-app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', timestamp: new Date() });
-});
-
-// Example Schema and Model
-const itemSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    description: String,
-  },
-  { timestamps: true }
-);
-
-const Item = mongoose.model('Item', itemSchema);
-
-// CRUD Routes
-app.get('/api/items', async (req: Request, res: Response) => {
+/**
+ * Start the server
+ */
+const startServer = async (): Promise<void> => {
   try {
-    const items = await Item.find();
-    res.json(items);
-  } catch (err) {
-    res.status(500).json({ error: err });
-  }
-});
+    // Connect to database
+    await connectDatabase();
 
-app.post('/api/items', async (req: Request, res: Response) => {
-  try {
-    const newItem = await Item.create(req.body);
-    res.status(201).json(newItem);
-  } catch (err) {
-    res.status(400).json({ error: err });
-  }
-});
+    // Create Express app
+    const app = createApp();
 
-app.get('/api/items/:id', async (req: Request, res: Response) => {
-  try {
-    const item = await Item.findById(req.params.id);
-    if (!item) return res.status(404).json({ error: 'Item not found' });
-    res.json(item);
-  } catch (err) {
-    res.status(500).json({ error: err });
+    // Start listening
+    app.listen(PORT, () => {
+      console.log('=================================');
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`📝 Environment: ${NODE_ENV}`);
+      console.log(`📚 API Documentation: http://localhost:${PORT}/api`);
+      console.log('=================================');
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
   }
-});
+};
 
-app.put('/api/items/:id', async (req: Request, res: Response) => {
-  try {
-    const item = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(item);
-  } catch (err) {
-    res.status(400).json({ error: err });
-  }
-});
+// Start the server
+startServer();
 
-app.delete('/api/items/:id', async (req: Request, res: Response) => {
-  try {
-    await Item.findByIdAndDelete(req.params.id);
-    res.sendStatus(204);
-  } catch (err) {
-    res.status(500).json({ error: err });
-  }
-});
-
-// Start Server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});

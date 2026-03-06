@@ -111,7 +111,7 @@ export class DashboardComponent implements OnInit {
    * Navigate to student list
    */
   navigateToStudentList(): void {
-    this.router.navigate(['/students/list']);
+    this.router.navigate(['/students']);
   }
 
   /**
