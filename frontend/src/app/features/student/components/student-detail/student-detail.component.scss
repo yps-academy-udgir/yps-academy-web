@@ -24,7 +24,7 @@
         font-size: 64px;
         width: 64px;
         height: 64px;
-        color: #3f51b5;
+        color: var(--primary-color);
       }
     }
 
@@ -33,7 +33,7 @@
         margin: 0 0 8px 0;
         font-size: 28px;
         font-weight: 500;
-        color: rgba(0, 0, 0, 0.87);
+        color: var(--text-primary);
       }
 
       .enrollment-number {
@@ -42,7 +42,7 @@
         align-items: center;
         gap: 4px;
         font-size: 14px;
-        color: rgba(0, 0, 0, 0.54);
+        color: var(--text-secondary);
 
         mat-icon {
           font-size: 18px;
@@ -73,10 +73,10 @@
     gap: 8px;
     font-size: 18px;
     font-weight: 500;
-    color: rgba(0, 0, 0, 0.87);
+    color: var(--text-primary);
 
     mat-icon {
-      color: #3f51b5;
+      color: var(--primary-color);
     }
   }
 
@@ -89,7 +89,7 @@
     justify-content: space-between;
     align-items: flex-start;
     padding: 12px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid var(--divider-color);
 
     &:last-child {
       border-bottom: none;
@@ -97,17 +97,17 @@
 
     .info-label {
       font-weight: 500;
-      color: rgba(0, 0, 0, 0.54);
+      color: var(--text-secondary);
       min-width: 140px;
     }
 
     .info-value {
       flex: 1;
       text-align: right;
-      color: rgba(0, 0, 0, 0.87);
+      color: var(--text-primary);
 
       a {
-        color: #3f51b5;
+        color: var(--primary-color);
         text-decoration: none;
 
         &:hover {
@@ -127,7 +127,7 @@
     p {
       margin: 0 0 8px 0;
       line-height: 1.6;
-      color: rgba(0, 0, 0, 0.87);
+      color: var(--text-primary);
 
       &:last-child {
         margin-bottom: 0;

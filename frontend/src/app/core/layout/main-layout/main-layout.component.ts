@@ -4,12 +4,13 @@
  * Uses Angular Material sidenav for responsive layout
  * Follows Angular 20 standalone component pattern
  */
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BreakpointObserver, Breakpoints, LayoutModule } from '@angular/cdk/layout';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { HeaderComponent } from '../header/header.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -32,7 +33,11 @@ export class MainLayoutComponent {
   // Computed signal for sidenav mode
   sidenavMode = computed(() => this.isMobile() ? 'over' : 'side');
 
-  constructor(private breakpointObserver: BreakpointObserver) {
+  // Inject services
+  private breakpointObserver = inject(BreakpointObserver);
+  private themeService = inject(ThemeService); // Initialize theme service
+
+  constructor() {
     // Observe screen size changes
     this.breakpointObserver
       .observe([Breakpoints.XSmall, Breakpoints.Small])

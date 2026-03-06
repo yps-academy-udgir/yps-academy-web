@@ -27,6 +27,16 @@
       <mat-icon>search</mat-icon>
     </button>
 
+    <!-- Theme Toggle -->
+    <button
+      mat-icon-button
+      (click)="toggleTheme()"
+      [attr.aria-label]="themeTooltip()"
+      [matTooltip]="themeTooltip()"
+    >
+      <mat-icon>{{ themeIcon() }}</mat-icon>
+    </button>
+
     <!-- Notifications -->
     <button
       mat-icon-button

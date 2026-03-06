@@ -1,10 +1,10 @@
 /**
  * Header Component
- * Application header with menu toggle, branding, and user actions
+ * Application header with menu toggle, branding, theme toggle, and user actions
  * Uses Angular Material toolbar
  * Follows Angular 20 patterns with signals
  */
-import { Component, output } from '@angular/core';
+import { Component, output, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -33,7 +34,19 @@ export class HeaderComponent {
   // Angular 20 output() function for event emission
   menuToggle = output<void>();
 
-  constructor(private router: Router) {}
+  // Inject services
+  private router = inject(Router);
+  private themeService = inject(ThemeService);
+
+  // Computed signal for theme icon
+  protected themeIcon = computed(() => 
+    this.themeService.isDarkMode() ? 'light_mode' : 'dark_mode'
+  );
+
+  // Computed signal for theme tooltip
+  protected themeTooltip = computed(() => 
+    this.themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'
+  );
 
   /**
    * Emit menu toggle event
@@ -47,6 +60,13 @@ export class HeaderComponent {
    */
   goToDashboard(): void {
     this.router.navigate(['/students']);
+  }
+
+  /**
+   * Toggle between light and dark theme
+   */
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   /**

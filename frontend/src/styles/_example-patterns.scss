@@ -1,0 +1,456 @@
+/**
+ * Example Component Styling
+ * This file demonstrates best practices for using the theme system
+ * Copy and adapt these patterns for your own components
+ */
+
+@use '/src/styles/variables' as vars;
+
+// =====================================
+// Component Container
+// =====================================
+.example-component {
+  // Use theme-aware background and text colors
+  background-color: var(--background-secondary);
+  color: var(--text-primary);
+  
+  // Use spacing variables for consistency
+  padding: vars.$spacing-lg;
+  margin-bottom: vars.$spacing-md;
+  
+  // Use border radius variables
+  border-radius: vars.$border-radius-lg;
+  
+  // Use shadow variables
+  box-shadow: vars.$shadow-md;
+  
+  // Use transition variables for animations
+  transition: box-shadow vars.$transition-normal;
+  
+  &:hover {
+    box-shadow: vars.$shadow-lg;
+  }
+  
+  // Responsive design with breakpoint variables
+  @media (max-width: vars.$breakpoint-sm) {
+    padding: vars.$spacing-md;
+  }
+}
+
+// =====================================
+// Typography Examples
+// =====================================
+.example-title {
+  font-size: vars.$font-size-xxl;
+  font-weight: vars.$font-weight-bold;
+  color: var(--text-primary);
+  margin-bottom: vars.$spacing-md;
+  line-height: vars.$line-height-tight;
+}
+
+.example-subtitle {
+  font-size: vars.$font-size-lg;
+  font-weight: vars.$font-weight-medium;
+  color: var(--text-secondary);
+  margin-bottom: vars.$spacing-sm;
+}
+
+.example-body-text {
+  font-size: vars.$font-size-md;
+  font-weight: vars.$font-weight-normal;
+  color: var(--text-primary);
+  line-height: vars.$line-height-normal;
+}
+
+.example-caption {
+  font-size: vars.$font-size-sm;
+  color: var(--text-tertiary);
+  line-height: vars.$line-height-normal;
+}
+
+// =====================================
+// Card Component Example
+// =====================================
+.example-card {
+  background-color: var(--background-secondary);
+  border-radius: vars.$border-radius-md;
+  box-shadow: vars.$shadow-sm;
+  padding: vars.$spacing-lg;
+  margin-bottom: vars.$spacing-md;
+  transition: all vars.$transition-normal;
+  
+  &:hover {
+    box-shadow: vars.$shadow-md;
+    transform: translateY(-2px);
+  }
+  
+  .card-header {
+    padding-bottom: vars.$spacing-md;
+    border-bottom: 1px solid var(--divider-color);
+    margin-bottom: vars.$spacing-md;
+  }
+  
+  .card-content {
+    padding: vars.$spacing-md 0;
+  }
+  
+  .card-footer {
+    padding-top: vars.$spacing-md;
+    border-top: 1px solid var(--divider-color);
+    margin-top: vars.$spacing-md;
+  }
+}
+
+// =====================================
+// Button Variants Example
+// =====================================
+.example-button {
+  padding: vars.$spacing-sm vars.$spacing-md;
+  border-radius: vars.$border-radius-sm;
+  font-weight: vars.$font-weight-medium;
+  transition: all vars.$transition-fast;
+  border: none;
+  cursor: pointer;
+  
+  &.primary {
+    background-color: var(--primary-color);
+    color: white;
+    
+    &:hover {
+      background-color: vars.$primary-600;
+    }
+  }
+  
+  &.accent {
+    background-color: var(--accent-color);
+    color: white;
+    
+    &:hover {
+      background-color: vars.$accent-600;
+    }
+  }
+  
+  &.success {
+    background-color: var(--success-color);
+    color: white;
+    
+    &:hover {
+      background-color: vars.$success-600;
+    }
+  }
+  
+  &.outline {
+    background-color: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+    
+    &:hover {
+      background-color: var(--background-hover);
+    }
+  }
+}
+
+// =====================================
+// Form Elements Example
+// =====================================
+.example-form {
+  .form-group {
+    margin-bottom: vars.$spacing-lg;
+  }
+  
+  .form-label {
+    display: block;
+    font-size: vars.$font-size-sm;
+    font-weight: vars.$font-weight-medium;
+    color: var(--text-secondary);
+    margin-bottom: vars.$spacing-xs;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: vars.$spacing-sm vars.$spacing-md;
+    border: 1px solid var(--border-color);
+    border-radius: vars.$border-radius-sm;
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+    font-size: vars.$font-size-md;
+    transition: border-color vars.$transition-fast;
+    
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
+    
+    &:disabled {
+      background-color: var(--background-tertiary);
+      color: var(--text-disabled);
+      cursor: not-allowed;
+    }
+  }
+  
+  .form-error {
+    color: var(--warn-color);
+    font-size: vars.$font-size-xs;
+    margin-top: vars.$spacing-xs;
+  }
+  
+  .form-hint {
+    color: var(--text-tertiary);
+    font-size: vars.$font-size-xs;
+    margin-top: vars.$spacing-xs;
+  }
+}
+
+// =====================================
+// List Component Example
+// =====================================
+.example-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  
+  .list-item {
+    padding: vars.$spacing-md;
+    border-bottom: 1px solid var(--divider-color);
+    transition: background-color vars.$transition-fast;
+    
+    &:hover {
+      background-color: var(--background-hover);
+    }
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &.active {
+      background-color: var(--background-tertiary);
+      border-left: 3px solid var(--primary-color);
+    }
+  }
+}
+
+// =====================================
+// Badge/Chip Example
+// =====================================
+.example-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: vars.$spacing-xxs vars.$spacing-sm;
+  border-radius: vars.$border-radius-xl;
+  font-size: vars.$font-size-xs;
+  font-weight: vars.$font-weight-medium;
+  
+  &.primary {
+    background-color: vars.$primary-100;
+    color: vars.$primary-900;
+  }
+  
+  &.success {
+    background-color: vars.$success-100;
+    color: vars.$success-900;
+  }
+  
+  &.warning {
+    background-color: #fff3e0;
+    color: #e65100;
+  }
+  
+  &.error {
+    background-color: vars.$warn-100;
+    color: vars.$warn-900;
+  }
+  
+  &.info {
+    background-color: #e3f2fd;
+    color: #01579b;
+  }
+}
+
+// =====================================
+// Alert Component Example
+// =====================================
+.example-alert {
+  padding: vars.$spacing-md;
+  border-radius: vars.$border-radius-md;
+  border-left: 4px solid;
+  margin-bottom: vars.$spacing-md;
+  
+  &.success {
+    background-color: vars.$success-50;
+    border-color: vars.$success-500;
+    color: vars.$success-900;
+  }
+  
+  &.warning {
+    background-color: #fff3e0;
+    border-color: #ff9800;
+    color: #e65100;
+  }
+  
+  &.error {
+    background-color: vars.$warn-50;
+    border-color: vars.$warn-500;
+    color: vars.$warn-900;
+  }
+  
+  &.info {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+    color: #01579b;
+  }
+  
+  .alert-title {
+    font-weight: vars.$font-weight-medium;
+    margin-bottom: vars.$spacing-xs;
+  }
+  
+  .alert-message {
+    font-size: vars.$font-size-sm;
+  }
+}
+
+// =====================================
+// Table Example
+// =====================================
+.example-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--background-secondary);
+  border-radius: vars.$border-radius-md;
+  overflow: hidden;
+  box-shadow: vars.$shadow-sm;
+  
+  thead {
+    background-color: var(--background-tertiary);
+    
+    th {
+      padding: vars.$spacing-md;
+      text-align: left;
+      font-weight: vars.$font-weight-medium;
+      font-size: vars.$font-size-sm;
+      color: var(--text-secondary);
+      border-bottom: 2px solid var(--divider-color);
+    }
+  }
+  
+  tbody {
+    tr {
+      transition: background-color vars.$transition-fast;
+      
+      &:hover {
+        background-color: var(--background-hover);
+      }
+      
+      &:not(:last-child) {
+        border-bottom: 1px solid var(--divider-color);
+      }
+      
+      td {
+        padding: vars.$spacing-md;
+        color: var(--text-primary);
+      }
+    }
+  }
+}
+
+// =====================================
+// Modal / Dialog Example
+// =====================================
+.example-modal {
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: vars.$z-modal-backdrop;
+  }
+  
+  .modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--background-secondary);
+    border-radius: vars.$border-radius-lg;
+    box-shadow: vars.$shadow-xl;
+    max-width: 90vw;
+    max-height: 90vh;
+    z-index: vars.$z-modal;
+    
+    .modal-header {
+      padding: vars.$spacing-lg;
+      border-bottom: 1px solid var(--divider-color);
+      
+      h2 {
+        margin: 0;
+        font-size: vars.$font-size-xl;
+        font-weight: vars.$font-weight-medium;
+        color: var(--text-primary);
+      }
+    }
+    
+    .modal-body {
+      padding: vars.$spacing-lg;
+      color: var(--text-primary);
+    }
+    
+    .modal-footer {
+      padding: vars.$spacing-lg;
+      border-top: 1px solid var(--divider-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: vars.$spacing-sm;
+    }
+  }
+}
+
+// =====================================
+// Loading Spinner Example
+// =====================================
+.example-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--background-tertiary);
+  border-top-color: var(--primary-color);
+  border-radius: vars.$border-radius-round;
+  animation: spin vars.$transition-slow linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// =====================================
+// Responsive Grid Example
+// =====================================
+.example-grid {
+  display: grid;
+  gap: vars.$spacing-lg;
+  
+  // Mobile first
+  grid-template-columns: 1fr;
+  
+  // Tablet
+  @media (min-width: vars.$breakpoint-sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  // Desktop
+  @media (min-width: vars.$breakpoint-md) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  // Large desktop
+  @media (min-width: vars.$breakpoint-lg) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
