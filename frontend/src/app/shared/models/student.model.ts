@@ -35,6 +35,37 @@ export interface AcademicDetails {
   selfStudyMode?: boolean;
 }
 
+/**
+ * Payment History Interface
+ */
+export interface Payment {
+  amount: number;
+  paymentDate: Date;
+  paymentMethod?: string;
+  remarks?: string;
+}
+
+/**
+ * Fee Breakdown Interface
+ */
+export interface FeeBreakdown {
+  baseFeePerSubject: number;
+  numberOfSubjects: number;
+  subjectsFee: number;
+  selfStudyFee: number;
+}
+
+/**
+ * Fee Details Interface
+ */
+export interface FeeDetails {
+  totalFees: number;
+  paidAmount: number;
+  pendingFees: number;
+  feeBreakdown?: FeeBreakdown;
+  paymentHistory: Payment[];
+}
+
 export interface Student {
   _id?: string;
   firstName: string;
@@ -43,6 +74,7 @@ export interface Student {
   contact: string;
   gender: 'male' | 'female' | 'other';
   academicDetails?: AcademicDetails;
+  feeDetails?: FeeDetails;
   createdAt?: Date;
   updatedAt?: Date;
 }

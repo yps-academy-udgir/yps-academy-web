@@ -38,6 +38,31 @@ export interface IAcademicDetails {
   selfStudyMode: boolean;
 }
 
+// Payment History Interface
+export interface IPayment {
+  amount: number;
+  paymentDate: Date;
+  paymentMethod?: string;
+  remarks?: string;
+}
+
+// Fee Breakdown Interface
+export interface IFeeBreakdown {
+  baseFeePerSubject: number;
+  numberOfSubjects: number;
+  subjectsFee: number;
+  selfStudyFee: number;
+}
+
+// Fee Details Interface
+export interface IFeeDetails {
+  totalFees: number;
+  paidAmount: number;
+  pendingFees: number;
+  feeBreakdown?: IFeeBreakdown;
+  paymentHistory: IPayment[];
+}
+
 // Student Interface
 export interface IStudent extends Document {
   firstName: string;
@@ -46,6 +71,7 @@ export interface IStudent extends Document {
   contact: string;
   gender: Gender;
   academicDetails?: IAcademicDetails;
+  feeDetails?: IFeeDetails;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -83,6 +109,81 @@ const AcademicDetailsSchema = new Schema({
     default: false,
   },
 }, { _id: false }); // Don't create _id for subdocument
+
+// Payment History Schema
+const PaymentSchema = new Schema({
+  amount: {
+    type: Number,
+    required: [true, 'Payment amount is required'],
+    min: [0, 'Payment amount cannot be negative'],
+  },
+  paymentDate: {
+    type: Date,
+    required: [true, 'Payment date is required'],
+    default: Date.now,
+  },
+  paymentMethod: {
+    type: String,
+    required: false,
+    trim: true,
+  },
+  remarks: {
+    type: String,
+    required: false,
+    trim: true,
+    maxlength: [200, 'Remarks cannot exceed 200 characters'],
+  },
+}, { _id: false, timestamps: true });
+
+// Fee Breakdown Schema
+const FeeBreakdownSchema = new Schema({
+  baseFeePerSubject: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
+  numberOfSubjects: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
+  subjectsFee: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
+  selfStudyFee: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
+}, { _id: false });
+
+// Fee Details Schema
+const FeeDetailsSchema = new Schema({
+  totalFees: {
+    type: Number,
+    required: false,
+    default: 0,
+    min: [0, 'Total fees cannot be negative'],
+  },
+  paidAmount: {
+    type: Number,
+    required: false,
+    default: 0,
+    min: [0, 'Paid amount cannot be negative'],
+  },
+  pendingFees: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
+  feeBreakdown: FeeBreakdownSchema,
+  paymentHistory: {
+    type: [PaymentSchema],
+    default: [],
+  },
+}, { _id: false });
 
 // Student Schema
 const StudentSchema: Schema = new Schema(
@@ -130,6 +231,7 @@ const StudentSchema: Schema = new Schema(
       },
     },
     academicDetails: AcademicDetailsSchema,
+    feeDetails: FeeDetailsSchema,
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt

@@ -4,7 +4,7 @@
  * Uses Angular Reactive Forms with Material Design
  * Follows Angular 20 patterns with signals
  */
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -13,7 +13,8 @@ import { SharedMaterialModule } from '../../../../shared/shared-material.module'
 import { StudentService } from '../../../../shared/services/student.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
-import { Student, Gender, Class, Subject } from '../../../../shared/models/student.model';
+import { Student, Gender, Class, Subject, Payment } from '../../../../shared/models/student.model';
+import { calculateFees, calculatePendingFees, calculateTotalPaid } from '../../../../shared/utils/fee-calculator.util';
 
 @Component({
   selector: 'app-student-form',
@@ -45,6 +46,11 @@ export class StudentFormComponent implements OnInit {
   pageTitle = computed(() => this.isEditMode() ? 'Edit Student' : 'Add New Student');
   submitButtonText = computed(() => this.isEditMode() ? 'Update Student' : 'Create Student');
 
+  // Fee-related signals
+  calculatedFees = signal<number>(0);
+  paidAmount = signal<number>(0);
+  pendingFees = computed(() => calculatePendingFees(this.calculatedFees(), this.paidAmount()));
+
   // Stepper form groups (for step control)
   get studentInfoGroup() {
     return this.fb.group({
@@ -58,6 +64,10 @@ export class StudentFormComponent implements OnInit {
 
   get academicDetailsGroup() {
     return this.studentForm?.get('academicDetails') as FormGroup;
+  }
+
+  get feeDetailsGroup() {
+    return this.studentForm?.get('feeDetails') as FormGroup;
   }
 
   // Form group
@@ -94,6 +104,7 @@ export class StudentFormComponent implements OnInit {
   ngOnInit(): void {
     this.initializeForm();
     this.checkEditMode();
+    this.setupFeeCalculation();
   }
 
   /**
@@ -112,7 +123,61 @@ export class StudentFormComponent implements OnInit {
         subjects: [[]],
         selfStudyMode: [false],
       }),
+      feeDetails: this.fb.group({
+        totalFees: [{ value: 0, disabled: true }],
+        paidAmount: [0],
+        pendingFees: [{ value: 0, disabled: true }],
+        feeBreakdown: this.fb.group({
+          baseFeePerSubject: [0],
+          numberOfSubjects: [0],
+          subjectsFee: [0],
+          selfStudyFee: [0],
+        }),
+        paymentHistory: [[]],
+        initialPayment: [0, [Validators.min(0)]], // For adding first payment
+        paymentDate: [new Date()],
+        paymentRemarks: [''],
+      }),
     });
+  }
+
+  /**
+   * Setup fee calculation reactivity
+   */
+  private setupFeeCalculation(): void {
+    // Watch for changes in class, subjects, or selfStudyMode
+    this.studentForm.get('academicDetails')?.valueChanges.subscribe((academicDetails) => {
+      this.recalculateFees();
+    });
+  }
+
+  /**
+   * Recalculate fees based on class, subjects, and self-study mode
+   */
+  private recalculateFees(): void {
+    const academicDetails = this.studentForm.get('academicDetails')?.value;
+    const studentClass = academicDetails?.class;
+    const subjects = academicDetails?.subjects || [];
+    const selfStudyMode = academicDetails?.selfStudyMode || false;
+
+    const feeCalculation = calculateFees(studentClass, subjects, selfStudyMode);
+
+    // Update fee breakdown
+    this.studentForm.get('feeDetails.feeBreakdown')?.patchValue({
+      baseFeePerSubject: feeCalculation.baseFeePerSubject,
+      numberOfSubjects: feeCalculation.numberOfSubjects,
+      subjectsFee: feeCalculation.subjectsFee,
+      selfStudyFee: feeCalculation.selfStudyFee,
+    });
+
+    // Update total fees
+    this.studentForm.get('feeDetails.totalFees')?.setValue(feeCalculation.totalFees);
+    this.calculatedFees.set(feeCalculation.totalFees);
+
+    // Calculate pending fees
+    const paid = this.paidAmount();
+    const pending = calculatePendingFees(feeCalculation.totalFees, paid);
+    this.studentForm.get('feeDetails.pendingFees')?.setValue(pending);
   }
 
   /**
@@ -163,6 +228,71 @@ export class StudentFormComponent implements OnInit {
         selfStudyMode: student.academicDetails?.selfStudyMode || false,
       },
     });
+
+    // Patch fee details if they exist
+    if (student.feeDetails) {
+      const totalPaid = calculateTotalPaid(student.feeDetails.paymentHistory || []);
+      this.paidAmount.set(totalPaid);
+
+      this.studentForm.patchValue({
+        feeDetails: {
+          totalFees: student.feeDetails.totalFees || 0,
+          paidAmount: totalPaid,
+          pendingFees: student.feeDetails.pendingFees || 0,
+          feeBreakdown: student.feeDetails.feeBreakdown || {},
+          paymentHistory: student.feeDetails.paymentHistory || [],
+        },
+      });
+
+      this.calculatedFees.set(student.feeDetails.totalFees || 0);
+    } else {
+      // Trigger recalculation if no fee details exist
+      this.recalculateFees();
+    }
+  }
+
+  /**
+   * Add a new payment to the payment history
+   */
+  addPayment(): void {
+    const initialPayment = this.studentForm.get('feeDetails.initialPayment')?.value;
+    const paymentDate = this.studentForm.get('feeDetails.paymentDate')?.value;
+    const paymentRemarks = this.studentForm.get('feeDetails.paymentRemarks')?.value;
+
+    if (!initialPayment || initialPayment <= 0) {
+      this.notificationService.warning('Please enter a valid payment amount');
+      return;
+    }
+
+    const paymentHistory: Payment[] = this.studentForm.get('feeDetails.paymentHistory')?.value || [];
+    const newPayment: Payment = {
+      amount: initialPayment,
+      paymentDate: paymentDate || new Date(),
+      remarks: paymentRemarks || '',
+    };
+
+    paymentHistory.push(newPayment);
+    this.studentForm.get('feeDetails.paymentHistory')?.setValue(paymentHistory);
+
+    // Update paid amount
+    const totalPaid = calculateTotalPaid(paymentHistory);
+    this.paidAmount.set(totalPaid);
+    this.studentForm.get('feeDetails.paidAmount')?.setValue(totalPaid);
+
+    // Recalculate pending fees
+    const pending = calculatePendingFees(this.calculatedFees(), totalPaid);
+    this.studentForm.get('feeDetails.pendingFees')?.setValue(pending);
+
+    // Reset payment fields
+    this.studentForm.patchValue({
+      feeDetails: {
+        initialPayment: 0,
+        paymentDate: new Date(),
+        paymentRemarks: '',
+      },
+    });
+
+    this.notificationService.success('Payment added successfully');
   }
 
   /**
@@ -176,13 +306,57 @@ export class StudentFormComponent implements OnInit {
     }
 
     this.submitting.set(true);
-    const formValue = this.studentForm.value;
+    const formValue = this.prepareFormData();
 
     if (this.isEditMode()) {
       this.updateStudent(formValue);
     } else {
       this.createStudent(formValue);
     }
+  }
+
+  /**
+   * Prepare form data before submission
+   */
+  private prepareFormData(): Partial<Student> {
+    const formValue = this.studentForm.getRawValue(); // Use getRawValue to include disabled fields
+    
+    // Add initial payment to payment history if it exists and is greater than 0
+    const initialPayment = formValue.feeDetails?.initialPayment;
+    const paymentDate = formValue.feeDetails?.paymentDate;
+    const paymentRemarks = formValue.feeDetails?.paymentRemarks;
+    
+    if (initialPayment && initialPayment > 0) {
+      const paymentHistory: Payment[] = formValue.feeDetails?.paymentHistory || [];
+      paymentHistory.push({
+        amount: initialPayment,
+        paymentDate: paymentDate || new Date(),
+        remarks: paymentRemarks || 'Initial payment',
+      });
+      
+      formValue.feeDetails.paymentHistory = paymentHistory;
+      formValue.feeDetails.paidAmount = calculateTotalPaid(paymentHistory);
+      formValue.feeDetails.pendingFees = calculatePendingFees(
+        formValue.feeDetails.totalFees,
+        formValue.feeDetails.paidAmount
+      );
+    }
+
+    // Remove temporary fields
+    if (formValue.feeDetails) {
+      delete formValue.feeDetails.initialPayment;
+      delete formValue.feeDetails.paymentDate;
+      delete formValue.feeDetails.paymentRemarks;
+    }
+
+    return formValue;
+  }
+
+  /**
+   * Get payment history for display
+   */
+  getPaymentHistory(): Payment[] {
+    return this.studentForm.get('feeDetails.paymentHistory')?.value || [];
   }
 
   /**
