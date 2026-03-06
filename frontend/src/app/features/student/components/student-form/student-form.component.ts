@@ -77,7 +77,6 @@ export class StudentFormComponent implements OnInit {
   genderOptions = [
     { value: Gender.MALE, label: 'Male' },
     { value: Gender.FEMALE, label: 'Female' },
-    { value: Gender.OTHER, label: 'Other' },
   ];
 
   // Class options

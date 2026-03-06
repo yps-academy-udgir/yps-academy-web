@@ -72,7 +72,7 @@ export interface Student {
   lastName: string;
   email: string;
   contact: string;
-  gender: 'male' | 'female' | 'other';
+  gender: 'male' | 'female';
   academicDetails?: AcademicDetails;
   feeDetails?: FeeDetails;
   createdAt?: Date;
@@ -112,5 +112,4 @@ export interface PaginatedResponse<T> {
 export enum Gender {
   MALE = 'male',
   FEMALE = 'female',
-  OTHER = 'other',
 }

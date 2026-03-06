@@ -10,7 +10,6 @@ import mongoose, { Schema, Document } from 'mongoose';
 export enum Gender {
   MALE = 'male',
   FEMALE = 'female',
-  OTHER = 'other',
 }
 
 // Class enum
@@ -226,7 +225,7 @@ const StudentSchema: Schema = new Schema(
       type: String,
       required: [true, 'Gender is required'],
       enum: {
-        values: [Gender.MALE, Gender.FEMALE, Gender.OTHER],
+        values: [Gender.MALE, Gender.FEMALE],
         message: '{VALUE} is not a valid gender',
       },
     },

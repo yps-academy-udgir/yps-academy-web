@@ -221,11 +221,10 @@ export const deleteStudent = async (req: Request, res: Response): Promise<void> 
  */
 export const getStudentStats = async (req: Request, res: Response): Promise<void> => {
   try {
-    const [total, maleCount, femaleCount, otherCount] = await Promise.all([
+    const [total, maleCount, femaleCount] = await Promise.all([
       Student.countDocuments(),
       Student.countDocuments({ gender: 'male' }),
       Student.countDocuments({ gender: 'female' }),
-      Student.countDocuments({ gender: 'other' }),
     ]);
 
     const stats = {
@@ -233,7 +232,6 @@ export const getStudentStats = async (req: Request, res: Response): Promise<void
       byGender: {
         male: maleCount,
         female: femaleCount,
-        other: otherCount,
       },
     };
 

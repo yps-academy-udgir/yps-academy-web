@@ -26,7 +26,7 @@ const isValidContact = (contact: string): boolean => {
  * Validate gender
  */
 const isValidGender = (gender: string): boolean => {
-  return ['male', 'female', 'other'].includes(gender.toLowerCase());
+  return ['male', 'female'].includes(gender.toLowerCase());
 };
 
 /**
@@ -66,7 +66,7 @@ export const validateStudent = (req: Request, res: Response, next: NextFunction)
       errors.push('Valid contact number is required (10-15 digits)');
     }
     if (!gender || !isValidGender(gender)) {
-      errors.push('Gender must be male, female, or other');
+      errors.push('Gender must be male or female');
     }
   }
 
@@ -85,7 +85,7 @@ export const validateStudent = (req: Request, res: Response, next: NextFunction)
       errors.push('Invalid contact number format');
     }
     if (gender !== undefined && !isValidGender(gender)) {
-      errors.push('Gender must be male, female, or other');
+      errors.push('Gender must be male or female');
     }
   }
 
