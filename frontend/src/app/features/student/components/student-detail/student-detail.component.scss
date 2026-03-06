@@ -1,0 +1,168 @@
+.student-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-card {
+  margin-bottom: 24px;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 24px;
+  }
+
+  .student-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .avatar {
+      mat-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        color: #3f51b5;
+      }
+    }
+
+    .student-info {
+      .student-name {
+        margin: 0 0 8px 0;
+        font-size: 28px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .enrollment-number {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.54);
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.info-card {
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+
+    mat-icon {
+      color: #3f51b5;
+    }
+  }
+
+  mat-card-content {
+    padding-top: 16px;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.54);
+      min-width: 140px;
+    }
+
+    .info-value {
+      flex: 1;
+      text-align: right;
+      color: rgba(0, 0, 0, 0.87);
+
+      a {
+        color: #3f51b5;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      &.code {
+        font-family: monospace;
+        font-size: 12px;
+        word-break: break-all;
+      }
+    }
+  }
+
+  .address {
+    p {
+      margin: 0 0 8px 0;
+      line-height: 1.6;
+      color: rgba(0, 0, 0, 0.87);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header-card {
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .header-actions {
+      width: 100%;
+      justify-content: stretch;
+
+      button {
+        flex: 1;
+      }
+    }
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-row {
+    flex-direction: column;
+    gap: 4px;
+
+    .info-value {
+      text-align: left !important;
+    }
+  }
+}
