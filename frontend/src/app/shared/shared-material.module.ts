@@ -35,6 +35,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatStepperModule } from '@angular/material/stepper';
 
 /**
  * Array of all Material modules to be exported
@@ -68,6 +69,7 @@ const MATERIAL_MODULES = [
   MatMenuModule,
   MatDividerModule,
   MatBadgeModule,
+  MatStepperModule,
 ];
 
 @NgModule({

@@ -45,6 +45,21 @@ export class StudentFormComponent implements OnInit {
   pageTitle = computed(() => this.isEditMode() ? 'Edit Student' : 'Add New Student');
   submitButtonText = computed(() => this.isEditMode() ? 'Update Student' : 'Create Student');
 
+  // Stepper form groups (for step control)
+  get studentInfoGroup() {
+    return this.fb.group({
+      firstName: this.studentForm?.get('firstName'),
+      lastName: this.studentForm?.get('lastName'),
+      email: this.studentForm?.get('email'),
+      contact: this.studentForm?.get('contact'),
+      gender: this.studentForm?.get('gender'),
+    });
+  }
+
+  get academicDetailsGroup() {
+    return this.studentForm?.get('academicDetails') as FormGroup;
+  }
+
   // Form group
   studentForm!: FormGroup;
 

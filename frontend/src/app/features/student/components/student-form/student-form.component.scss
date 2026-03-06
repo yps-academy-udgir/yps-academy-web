@@ -73,6 +73,46 @@
   }
 }
 
+// Stepper styles
+mat-stepper {
+  background: transparent;
+}
+
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+
+  button {
+    min-width: 120px;
+  }
+}
+
+::ng-deep {
+  .mat-step-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .mat-step-header {
+    &.cdk-keyboard-focused,
+    &.cdk-program-focused,
+    &:hover {
+      background-color: var(--background-secondary, rgba(0, 0, 0, 0.04));
+    }
+  }
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -102,7 +142,7 @@
     width: 100%;
   }
 
-  .form-actions {
+  .step-actions {
     flex-direction: column-reverse;
 
     button {
