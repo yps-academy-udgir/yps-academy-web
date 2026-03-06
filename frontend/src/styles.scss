@@ -1,21 +1,63 @@
-/* You can add global styles to this file, and also import other style files */
+/**
+ * Global Styles
+ * Main stylesheet with theme imports and reusable utilities
+ * All components should use CSS variables defined in themes
+ */
 
-// Import Angular Material prebuilt theme - easier for Angular 20
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+// Import custom theme variables and Material theme
+@use './styles/variables' as vars;
+@use './styles/theme';
 
-/* Global Styles */
+/* ===================================== */
+/* Base Styles */
+/* ===================================== */
+
+* {
+  box-sizing: border-box;
+}
+
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: vars.$font-family-base;
+  font-size: vars.$font-size-md;
+  line-height: vars.$line-height-normal;
 }
 
 body {
-  background-color: #f5f5f5;
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  transition: background-color vars.$transition-normal, color vars.$transition-normal;
 }
 
-/* Utility classes */
+/* ===================================== */
+/* Scrollbar Styles */
+/* ===================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-tertiary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: vars.$border-radius-md;
+
+  &:hover {
+    background: var(--text-tertiary);
+  }
+}
+
+/* ===================================== */
+/* Utility Classes */
+/* ===================================== */
+
+// Layout utilities
 .spacer {
   flex: 1 1 auto;
 }
@@ -24,9 +66,208 @@ body {
   width: 100%;
 }
 
-/* Snackbar custom styles */
+.full-height {
+  height: 100%;
+}
+
+// Display utilities
+.d-flex {
+  display: flex;
+}
+
+.d-inline-flex {
+  display: inline-flex;
+}
+
+.d-block {
+  display: block;
+}
+
+.d-inline-block {
+  display: inline-block;
+}
+
+.d-none {
+  display: none;
+}
+
+// Flex utilities
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
+.align-start {
+  align-items: flex-start;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.align-end {
+  align-items: flex-end;
+}
+
+.align-stretch {
+  align-items: stretch;
+}
+
+// Spacing utilities (margin)
+.m-0 { margin: 0 !important; }
+.mt-0 { margin-top: 0 !important; }
+.mb-0 { margin-bottom: 0 !important; }
+.ml-0 { margin-left: 0 !important; }
+.mr-0 { margin-right: 0 !important; }
+
+.m-xs { margin: vars.$spacing-xs !important; }
+.mt-xs { margin-top: vars.$spacing-xs !important; }
+.mb-xs { margin-bottom: vars.$spacing-xs !important; }
+.ml-xs { margin-left: vars.$spacing-xs !important; }
+.mr-xs { margin-right: vars.$spacing-xs !important; }
+
+.m-sm { margin: vars.$spacing-sm !important; }
+.mt-sm { margin-top: vars.$spacing-sm !important; }
+.mb-sm { margin-bottom: vars.$spacing-sm !important; }
+.ml-sm { margin-left: vars.$spacing-sm !important; }
+.mr-sm { margin-right: vars.$spacing-sm !important; }
+
+.m-md { margin: vars.$spacing-md !important; }
+.mt-md { margin-top: vars.$spacing-md !important; }
+.mb-md { margin-bottom: vars.$spacing-md !important; }
+.ml-md { margin-left: vars.$spacing-md !important; }
+.mr-md { margin-right: vars.$spacing-md !important; }
+
+.m-lg { margin: vars.$spacing-lg !important; }
+.mt-lg { margin-top: vars.$spacing-lg !important; }
+.mb-lg { margin-bottom: vars.$spacing-lg !important; }
+.ml-lg { margin-left: vars.$spacing-lg !important; }
+.mr-lg { margin-right: vars.$spacing-lg !important; }
+
+.m-xl { margin: vars.$spacing-xl !important; }
+.mt-xl { margin-top: vars.$spacing-xl !important; }
+.mb-xl { margin-bottom: vars.$spacing-xl !important; }
+.ml-xl { margin-left: vars.$spacing-xl !important; }
+.mr-xl { margin-right: vars.$spacing-xl !important; }
+
+// Spacing utilities (padding)
+.p-0 { padding: 0 !important; }
+.pt-0 { padding-top: 0 !important; }
+.pb-0 { padding-bottom: 0 !important; }
+.pl-0 { padding-left: 0 !important; }
+.pr-0 { padding-right: 0 !important; }
+
+.p-xs { padding: vars.$spacing-xs !important; }
+.pt-xs { padding-top: vars.$spacing-xs !important; }
+.pb-xs { padding-bottom: vars.$spacing-xs !important; }
+.pl-xs { padding-left: vars.$spacing-xs !important; }
+.pr-xs { padding-right: vars.$spacing-xs !important; }
+
+.p-sm { padding: vars.$spacing-sm !important; }
+.pt-sm { padding-top: vars.$spacing-sm !important; }
+.pb-sm { padding-bottom: vars.$spacing-sm !important; }
+.pl-sm { padding-left: vars.$spacing-sm !important; }
+.pr-sm { padding-right: vars.$spacing-sm !important; }
+
+.p-md { padding: vars.$spacing-md !important; }
+.pt-md { padding-top: vars.$spacing-md !important; }
+.pb-md { padding-bottom: vars.$spacing-md !important; }
+.pl-md { padding-left: vars.$spacing-md !important; }
+.pr-md { padding-right: vars.$spacing-md !important; }
+
+.p-lg { padding: vars.$spacing-lg !important; }
+.pt-lg { padding-top: vars.$spacing-lg !important; }
+.pb-lg { padding-bottom: vars.$spacing-lg !important; }
+.pl-lg { padding-left: vars.$spacing-lg !important; }
+.pr-lg { padding-right: vars.$spacing-lg !important; }
+
+.p-xl { padding: vars.$spacing-xl !important; }
+.pt-xl { padding-top: vars.$spacing-xl !important; }
+.pb-xl { padding-bottom: vars.$spacing-xl !important; }
+.pl-xl { padding-left: vars.$spacing-xl !important; }
+.pr-xl { padding-right: vars.$spacing-xl !important; }
+
+// Text utilities
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+
+.text-primary { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-tertiary { color: var(--text-tertiary) !important; }
+.text-disabled { color: var(--text-disabled) !important; }
+
+.font-light { font-weight: vars.$font-weight-light !important; }
+.font-normal { font-weight: vars.$font-weight-normal !important; }
+.font-medium { font-weight: vars.$font-weight-medium !important; }
+.font-bold { font-weight: vars.$font-weight-bold !important; }
+
+.text-xs { font-size: vars.$font-size-xs !important; }
+.text-sm { font-size: vars.$font-size-sm !important; }
+.text-md { font-size: vars.$font-size-md !important; }
+.text-lg { font-size: vars.$font-size-lg !important; }
+.text-xl { font-size: vars.$font-size-xl !important; }
+
+// Border utilities
+.border-radius-sm { border-radius: vars.$border-radius-sm !important; }
+.border-radius-md { border-radius: vars.$border-radius-md !important; }
+.border-radius-lg { border-radius: vars.$border-radius-lg !important; }
+.border-radius-round { border-radius: vars.$border-radius-round !important; }
+
+// Shadow utilities
+.shadow-sm { box-shadow: vars.$shadow-sm !important; }
+.shadow-md { box-shadow: vars.$shadow-md !important; }
+.shadow-lg { box-shadow: vars.$shadow-lg !important; }
+.shadow-xl { box-shadow: vars.$shadow-xl !important; }
+.shadow-none { box-shadow: none !important; }
+
+/* ===================================== */
+/* Custom Component Styles */
+/* ===================================== */
+
+// Card component styling
+.card {
+  background-color: var(--background-secondary);
+  border-radius: vars.$border-radius-md;
+  box-shadow: vars.$shadow-sm;
+  padding: vars.$spacing-md;
+  transition: box-shadow vars.$transition-normal;
+
+  &:hover {
+    box-shadow: vars.$shadow-md;
+  }
+}
+
+// Snackbar custom styles
 .snackbar-success {
-  background-color: #4caf50 !important;
+  background-color: vars.$success-600 !important;
   color: white !important;
 
   button {
@@ -35,7 +276,7 @@ body {
 }
 
 .snackbar-error {
-  background-color: #f44336 !important;
+  background-color: vars.$warn-600 !important;
   color: white !important;
 
   button {
@@ -58,5 +299,33 @@ body {
 
   button {
     color: white !important;
+  }
+}
+
+/* ===================================== */
+/* Responsive Utilities */
+/* ===================================== */
+
+@media (max-width: vars.$breakpoint-sm) {
+  .hide-xs {
+    display: none !important;
+  }
+}
+
+@media (min-width: vars.$breakpoint-sm) and (max-width: vars.$breakpoint-md) {
+  .hide-sm {
+    display: none !important;
+  }
+}
+
+@media (min-width: vars.$breakpoint-md) and (max-width: vars.$breakpoint-lg) {
+  .hide-md {
+    display: none !important;
+  }
+}
+
+@media (min-width: vars.$breakpoint-lg) {
+  .hide-lg {
+    display: none !important;
   }
 }

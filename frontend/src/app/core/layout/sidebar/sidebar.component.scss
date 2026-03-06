@@ -2,18 +2,18 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #ffffff;
+  background-color: var(--background-secondary);
 }
 
 .sidebar-header {
   padding: 20px 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid var(--border-color);
 
   .sidebar-title {
     margin: 0;
     font-size: 14px;
     font-weight: 500;
-    color: rgba(0, 0, 0, 0.54);
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -26,31 +26,32 @@
 
 .nav-item {
   transition: background-color 0.2s;
+  color: var(--text-primary);
 
   &.active {
     background-color: rgba(63, 81, 181, 0.08);
-    border-right: 3px solid #3f51b5;
+    border-right: 3px solid var(--primary-color);
 
     mat-icon {
-      color: #3f51b5;
+      color: var(--primary-color);
     }
 
     span {
-      color: #3f51b5;
+      color: var(--primary-color);
       font-weight: 500;
     }
   }
 
   &:hover:not(.active) {
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: var(--background-hover);
   }
 
   mat-icon {
-    color: rgba(0, 0, 0, 0.54);
+    color: var(--text-secondary);
   }
 
   .badge {
-    background-color: #f50057;
+    background-color: var(--accent-color);
     color: white;
     padding: 2px 8px;
     border-radius: 12px;
@@ -62,6 +63,6 @@
 .sidebar-footer {
   margin-top: auto;
   padding-bottom: 16px;
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-top: 1px solid var(--border-color);
   padding-top: 8px;
 }

@@ -1,0 +1,200 @@
+/**
+ * Angular Material Theme Configuration
+ * Defines light and dark themes with custom color palettes
+ * Uses Angular Material's theming API
+ */
+
+@use '@angular/material' as mat;
+@use './variables' as vars;
+
+// Include the common styles for Angular Material
+@include mat.core();
+
+// =====================================
+// Define Custom Palettes
+// =====================================
+
+// Primary Palette (Indigo)
+$custom-primary-palette: (
+  50: vars.$primary-50,
+  100: vars.$primary-100,
+  200: vars.$primary-200,
+  300: vars.$primary-300,
+  400: vars.$primary-400,
+  500: vars.$primary-500,
+  600: vars.$primary-600,
+  700: vars.$primary-700,
+  800: vars.$primary-800,
+  900: vars.$primary-900,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+// Accent Palette (Pink)
+$custom-accent-palette: (
+  50: vars.$accent-50,
+  100: vars.$accent-100,
+  200: vars.$accent-200,
+  300: vars.$accent-300,
+  400: vars.$accent-400,
+  500: vars.$accent-500,
+  600: vars.$accent-600,
+  700: vars.$accent-700,
+  800: vars.$accent-800,
+  900: vars.$accent-900,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+// Warn Palette (Red)
+$custom-warn-palette: (
+  50: vars.$warn-50,
+  100: vars.$warn-100,
+  200: vars.$warn-200,
+  300: vars.$warn-300,
+  400: vars.$warn-400,
+  500: vars.$warn-500,
+  600: vars.$warn-600,
+  700: vars.$warn-700,
+  800: vars.$warn-800,
+  900: vars.$warn-900,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+// =====================================
+// Light Theme
+// =====================================
+$light-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$violet-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  typography: (
+    brand-family: vars.$font-family-base,
+    plain-family: vars.$font-family-base,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+// =====================================
+// Dark Theme
+// =====================================
+$dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$violet-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  typography: (
+    brand-family: vars.$font-family-base,
+    plain-family: vars.$font-family-base,
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+// =====================================
+// Apply Themes with CSS Classes
+// =====================================
+
+// Base theme (light by default)
+html, body {
+  @include mat.all-component-themes($light-theme);
+}
+
+// Light theme class
+.light-theme {
+  @include mat.all-component-colors($light-theme);
+  
+  // Custom CSS variables for light theme
+  --background-primary: #{vars.$gray-50};
+  --background-secondary: #ffffff;
+  --background-tertiary: #{vars.$gray-100};
+  --background-hover: rgba(0, 0, 0, 0.04);
+  
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: rgba(0, 0, 0, 0.60);
+  --text-tertiary: rgba(0, 0, 0, 0.38);
+  --text-disabled: rgba(0, 0, 0, 0.26);
+  
+  --border-color: #{vars.$gray-300};
+  --divider-color: #{vars.$gray-200};
+  
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  
+  --primary-color: #{vars.$primary-500};
+  --accent-color: #{vars.$accent-500};
+  --warn-color: #{vars.$warn-500};
+  --success-color: #{vars.$success-500};
+  
+  // Error states
+  --error-background: #{vars.$warn-50};
+  --error-color: #{vars.$warn-700};
+  --error-text: #{vars.$warn-900};
+}
+
+// Dark theme class
+.dark-theme {
+  @include mat.all-component-colors($dark-theme);
+  
+  // Custom CSS variables for dark theme
+  --background-primary: #121212;
+  --background-secondary: #1e1e1e;
+  --background-tertiary: #2a2a2a;
+  --background-hover: rgba(255, 255, 255, 0.08);
+  
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-secondary: rgba(255, 255, 255, 0.60);
+  --text-tertiary: rgba(255, 255, 255, 0.38);
+  --text-disabled: rgba(255, 255, 255, 0.26);
+  
+  --border-color: rgba(255, 255, 255, 0.12);
+  --divider-color: rgba(255, 255, 255, 0.08);
+  
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  
+  --primary-color: #{vars.$primary-300};
+  --accent-color: #{vars.$accent-300};
+  --warn-color: #{vars.$warn-300};
+  --success-color: #{vars.$success-300};
+  
+  // Error states
+  --error-background: #5d1f1f;
+  --error-color: #{vars.$warn-400};
+  --error-text: #{vars.$warn-200};
+}
