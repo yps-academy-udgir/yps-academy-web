@@ -97,7 +97,14 @@ export class DashboardComponent implements OnInit {
    * Load students data
    */
   loadStudents(): void {
-    this.studentService.getAllStudents();
+    this.studentService.getAllStudents(1, 1000).subscribe({
+      next: (response) => {
+        // Data is automatically set in the service
+      },
+      error: (error) => {
+        console.error('Failed to load students:', error);
+      },
+    });
   }
 
   /**
