@@ -1,0 +1,48 @@
+# Development environment — hot-reload, verbose logging, local MongoDB
+name: yps-academy-dev
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: yps-mongo-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-dev-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: yps-academy-dev
+
+  backend:
+    build:
+      context: ./backend
+      target: builder
+    container_name: yps-backend-dev
+    restart: unless-stopped
+    command: npm run start:dev
+    ports:
+      - "4026:4026"
+    environment:
+      NODE_ENV: development
+      PORT: 4026
+      MONGODB_URI: mongodb://mongo:27017/yps-academy-dev
+      FRONTEND_URL: http://localhost:4025
+    volumes:
+      - ./backend/src:/app/src
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BUILD_CONFIG: dev
+    container_name: yps-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "4025:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-dev-data:

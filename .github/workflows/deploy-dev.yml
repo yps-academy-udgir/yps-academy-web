@@ -1,0 +1,54 @@
+# Deploy to Development (FREE)
+# ─ Frontend → Vercel preview deployment
+# ─ Backend  → Render (triggered via deploy hook)
+# ─ Database → MongoDB Atlas free M0 cluster (set up once manually)
+#
+# Required GitHub Secrets (Settings → Secrets → Actions):
+#   VERCEL_TOKEN          — from https://vercel.com/account/tokens
+#   VERCEL_ORG_ID         — from `vercel link` or .vercel/project.json
+#   VERCEL_PROJECT_ID     — from `vercel link` or .vercel/project.json
+#   RENDER_DEV_DEPLOY_HOOK — Render service → Settings → Deploy Hook URL
+
+name: Deploy — Development (Free)
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+jobs:
+  deploy-frontend:
+    name: Frontend → Vercel (preview)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Build with Vercel (preview)
+        run: npx vercel build --cwd frontend --token ${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy prebuilt to Vercel (preview)
+        run: npx vercel deploy --cwd frontend --prebuilt --token ${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  deploy-backend:
+    name: Backend → Render (dev service)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        run: curl -fsSL "${{ secrets.RENDER_DEV_DEPLOY_HOOK }}"

@@ -1,0 +1,15 @@
+{
+  "buildCommand": "bash -lc 'if [ \"$VERCEL_ENV\" = \"development\" ]; then npm run build:dev; elif [ \"$VERCEL_ENV\" = \"preview\" ]; then npm run build:test; else npm run build:prod; fi'",
+  "outputDirectory": "dist/frontend/browser",
+  "rewrites": [
+    { "source": "/((?!favicon).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*\\.js|.*\\.css|.*\\.woff2?|.*\\.ttf|.*\\.eot|.*\\.ico|.*\\.png|.*\\.svg)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}

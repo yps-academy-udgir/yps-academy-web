@@ -4,7 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 4025",
+    "serve:dev": "ng serve --configuration=development --port 4025",
+    "serve:test": "ng serve --configuration=test --port 4025",
+    "serve:prod": "ng serve --configuration=production --port 4025",
     "build": "ng build",
+    "build:dev": "ng build --configuration=development",
+    "build:test": "ng build --configuration=test",
+    "build:prod": "ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

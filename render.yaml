@@ -1,0 +1,64 @@
+# Render Blueprint — defines all backend services for dev / test / prod
+# Docs: https://render.com/docs/blueprint-spec
+#
+# One-time setup per environment:
+#   1. Go to https://render.com → New → Blueprint
+#   2. Connect your GitHub repo and select this file
+#   3. Render will create the three services below
+#   4. Set MONGODB_URI and FRONTEND_URL in each service's Environment tab
+#
+# After setup, get each service's Deploy Hook URL from:
+#   Service → Settings → Deploy Hook
+# Store each URL as a GitHub Secret (see DEPLOYMENT.md).
+
+services:
+  # ── Development ──────────────────────────────────────────────
+  - type: web
+    name: yps-backend-dev
+    runtime: node
+    plan: free
+    rootDir: backend
+    branch: develop
+    buildCommand: npm install && npm run build
+    startCommand: node dist/server.js
+    envVars:
+      - key: NODE_ENV
+        value: development
+      - key: MONGODB_URI
+        sync: false          # set manually in Render dashboard
+      - key: FRONTEND_URL
+        sync: false
+
+  # ── Test / Staging ────────────────────────────────────────────
+  - type: web
+    name: yps-backend-test
+    runtime: node
+    plan: free
+    rootDir: backend
+    branch: staging
+    buildCommand: npm install && npm run build
+    startCommand: node dist/server.js
+    envVars:
+      - key: NODE_ENV
+        value: test
+      - key: MONGODB_URI
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+
+  # ── Production ───────────────────────────────────────────────
+  - type: web
+    name: yps-backend-prod
+    runtime: node
+    plan: free
+    rootDir: backend
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: node dist/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
