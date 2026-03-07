@@ -1,0 +1,78 @@
+﻿<mat-card class="search-card">
+  <mat-card-content>
+    <div class="filter-row">
+
+      <!-- Search -->
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Students</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)"
+               placeholder="Search by name, email, or contact..." />
+        @if (search()) {
+          <button mat-icon-button matSuffix (click)="clearSearch()" aria-label="Clear">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <!-- Class filter -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Filter by Class</mat-label>
+        <mat-icon matPrefix>school</mat-icon>
+        <mat-select [value]="selectedClass()" (selectionChange)="selectedClass.set($event.value)">
+          <mat-option value="">All Classes</mat-option>
+          @for (opt of classOptions(); track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+        @if (selectedClass()) {
+          <button mat-icon-button matSuffix (click)="clearClass()" aria-label="Clear class filter">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      <!-- Year of Admission filter -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Year of Admission</mat-label>
+        <mat-icon matPrefix>calendar_today</mat-icon>
+        <mat-select [value]="selectedYear()" (selectionChange)="selectedYear.set($event.value)">
+          <mat-option value="">All Years</mat-option>
+          @for (opt of yearOptions(); track opt.value) {
+            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+          }
+        </mat-select>
+        @if (selectedYear()) {
+          <button mat-icon-button matSuffix (click)="clearYear()" aria-label="Clear year filter">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+    </div>
+
+    <!-- Active filter chips -->
+    @if (hasActiveFilters) {
+      <mat-chip-set class="active-filter-chips">
+        @if (selectedClass()) {
+          <mat-chip (removed)="clearClass()" [removable]="true" color="primary" highlighted>
+            <mat-icon matChipAvatar>class</mat-icon>
+            Class: {{ selectedClass() }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        }
+        @if (selectedYear()) {
+          <mat-chip (removed)="clearYear()" [removable]="true" color="primary" highlighted>
+            <mat-icon matChipAvatar>event</mat-icon>
+            Admission: {{ selectedYear() }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        }
+        <button mat-button color="warn" (click)="clear()">
+          <mat-icon>filter_list_off</mat-icon> Clear All
+        </button>
+      </mat-chip-set>
+    }
+
+  </mat-card-content>
+</mat-card>

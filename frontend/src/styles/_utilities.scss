@@ -100,6 +100,27 @@
   }
 }
 
+// ── Filter Bar Layout ─────────────────────────────────────────────────────────
+// Shared across any feature that uses <app-filter-bar>.
+.filter-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.search-field  { flex: 2 1 280px; min-width: 220px; }
+.filter-field  { flex: 1 1 180px; min-width: 160px; }
+
+.active-filter-chips {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+  gap: 8px;
+
+  mat-chip { font-size: 13px; }
+}
+
 // ── Section Divider & Subsection Title ───────────────────────────────────────
 .section-divider { margin: 20px 0; }
 
