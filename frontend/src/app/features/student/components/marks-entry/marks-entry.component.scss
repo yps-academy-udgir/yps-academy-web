@@ -1,0 +1,283 @@
+@use '../../../../../styles/variables' as vars;
+
+.marks-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ── Student header card ──────────────────────────────────────────
+.student-header-card {
+  .header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .student-identity {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .avatar-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--mat-sys-primary-container, #e6edff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: var(--mat-sys-primary, #1a73e8);
+    }
+  }
+
+  .student-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+
+  .student-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+// ── No subjects warning ──────────────────────────────────────────
+.no-subjects-card {
+  .no-subjects {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px;
+    text-align: center;
+
+    mat-icon { font-size: 48px; width: 48px; height: 48px; }
+    p { font-size: 1rem; color: #666; }
+  }
+}
+
+// ── Marks entry form card ────────────────────────────────────────
+.form-card {
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.15rem;
+  }
+
+  .form-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    .field-exam-type { flex: 2; min-width: 160px; }
+    .field-month     { flex: 1; min-width: 130px; }
+    .field-year      { flex: 1; min-width: 110px; }
+  }
+}
+
+// ── Marks table ──────────────────────────────────────────────────
+.marks-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+
+.marks-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle;
+  }
+
+  thead th {
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  .col-subject { width: 38%; }
+  .col-outof   { width: 18%; }
+  .col-marks   { width: 28%; }
+  .col-pct     { width: 16%; text-align: center; }
+
+  .subject-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+
+    .subject-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #777;
+    }
+  }
+
+  .mini-field {
+    width: 100%;
+    max-width: 110px;
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      display: none; // hide extra space under mini fields
+    }
+  }
+
+  .field-hint-error {
+    font-size: 0.75rem;
+    color: var(--mat-sys-error, #b00020);
+    margin-top: 2px;
+  }
+
+  .row-error { background: rgba(176, 0, 32, 0.03); }
+  .marks-error ::ng-deep .mat-mdc-text-field-wrapper { border-color: var(--mat-sys-error, #b00020); }
+}
+
+// ── Total footer row ─────────────────────────────────────────────
+.total-row {
+  background: #fafafa;
+  font-weight: 600;
+
+  td { border-top: 2px solid #bbb; padding: 12px; }
+
+  .total-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1rem;
+  }
+
+  .total-value { font-size: 1rem; }
+}
+
+// ── Percentage badge ─────────────────────────────────────────────
+.pct-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  min-width: 50px;
+  text-align: center;
+
+  &.pct-high   { background: #e6f4ea; color: #1e7e34; }
+  &.pct-mid    { background: #fff8e1; color: #b26a00; }
+  &.pct-low    { background: #fce8e6; color: #b00020; }
+  &.pct-total  { font-size: 0.95rem; padding: 4px 14px; }
+}
+
+.pct-dash { color: #aaa; font-size: 1.1rem; display: block; text-align: center; }
+
+// ── Form actions ─────────────────────────────────────────────────
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+
+  button[type='submit'] {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 140px;
+    justify-content: center;
+  }
+}
+
+// ── History card ─────────────────────────────────────────────────
+.history-card {
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    padding-top: 8px;
+  }
+
+  .result-card {
+    border: 1px solid #e0e0e0;
+    transition: box-shadow 0.2s;
+
+    &:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+
+    &.editing-highlight {
+      border: 2px solid var(--mat-sys-primary, #1a73e8);
+    }
+
+    mat-card-header {
+      position: relative;
+    }
+
+    .result-card-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+    }
+
+    .result-title { font-size: 0.95rem; font-weight: 600; }
+
+    .result-subjects { margin: 8px 0 12px; }
+
+    .sm-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 0.88rem;
+      border-bottom: 1px dashed #eee;
+
+      &:last-child { border-bottom: none; }
+    }
+
+    .sm-subject { color: #555; }
+    .sm-score   { font-weight: 600; }
+    .sm-outof   { font-weight: 400; color: #888; }
+
+    .result-total {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// ── Responsive ───────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .marks-container { padding: 12px 8px; }
+
+  .marks-table {
+    .col-subject { width: 35%; }
+    th, td { padding: 8px 6px; font-size: 0.88rem; }
+  }
+
+  .form-meta-row { flex-direction: column; }
+}

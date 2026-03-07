@@ -113,3 +113,32 @@ export enum Gender {
   MALE = 'male',
   FEMALE = 'female',
 }
+
+// ── Exam / Marks ──────────────────────────────────────────────────────────────
+
+export enum ExamType {
+  MONTHLY_TEST = 'Monthly Test',
+  QUARTERLY    = 'Quarterly',
+  HALF_YEARLY  = 'Half-yearly',
+  ANNUAL       = 'Annual',
+}
+
+export interface SubjectMark {
+  subject: string;
+  outOf: number;
+  marksObtained: number;
+}
+
+export interface ExamResult {
+  _id?: string;
+  studentId: string;
+  examType: ExamType;
+  month: number;   // 1–12
+  year: number;
+  subjectMarks: SubjectMark[];
+  totalMarksObtained: number;
+  totalOutOf: number;
+  percentage: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
