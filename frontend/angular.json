@@ -62,6 +62,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "port": 4025
+          },
           "configurations": {
             "production": {
               "buildTarget": "frontend:build:production"
