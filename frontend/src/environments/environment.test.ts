@@ -4,7 +4,7 @@
  */
 export const environment = {
   production: false,
-  apiUrl: 'https://api-test.yps-academy.com/api',
+  apiUrl: 'https://yps-backend-test.onrender.com/api',
   apiTimeout: 30000,
   enableLogging: true,
   features: {
