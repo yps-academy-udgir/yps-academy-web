@@ -10,6 +10,12 @@ services:
       - mongo-test-data:/data/db
     environment:
       MONGO_INITDB_DATABASE: yps-academy-test
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   backend:
     build:
@@ -25,7 +31,8 @@ services:
       MONGODB_URI: mongodb://mongo:27017/yps-academy-test
       FRONTEND_URL: https://test.yps-academy.com
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
 
   frontend:
     build:
