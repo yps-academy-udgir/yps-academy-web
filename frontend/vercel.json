@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build:prod",
+  "buildCommand": "bash -lc 'if [ \"$VERCEL_ENV\" = \"development\" ]; then npm run build:dev; elif [ \"$VERCEL_ENV\" = \"preview\" ]; then npm run build:test; else npm run build:prod; fi'",
   "outputDirectory": "dist/frontend/browser",
   "rewrites": [
     { "source": "/((?!favicon).*)", "destination": "/index.html" }
