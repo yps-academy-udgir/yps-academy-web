@@ -12,9 +12,7 @@
 name: Deploy — Test/Staging (Free)
 
 on:
-  push:
-    branches: [staging]
-  workflow_dispatch:
+  workflow_dispatch: # disabled auto-deploy; trigger manually when needed
 
 jobs:
   deploy-frontend:

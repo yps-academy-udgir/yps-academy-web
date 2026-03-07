@@ -12,9 +12,7 @@
 name: Deploy — Development (Free)
 
 on:
-  push:
-    branches: [develop]
-  workflow_dispatch:
+  workflow_dispatch: # disabled auto-deploy; trigger manually when needed
 
 jobs:
   deploy-frontend:
