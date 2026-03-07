@@ -19,7 +19,7 @@ services:
     plan: free
     rootDir: backend
     branch: develop
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
@@ -36,7 +36,7 @@ services:
     plan: free
     rootDir: backend
     branch: staging
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
@@ -53,7 +53,7 @@ services:
     plan: free
     rootDir: backend
     branch: main
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
