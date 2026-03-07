@@ -4,7 +4,7 @@
  */
 export const environment = {
   production: true,
-  apiUrl: 'https://yps-backend-prod.onrender.com/api', // TODO: replace with your actual Render URL
+  apiUrl: 'https://yps-backend-prod.onrender.com/api',
   apiTimeout: 30000,
   enableLogging: false,
   features: {
