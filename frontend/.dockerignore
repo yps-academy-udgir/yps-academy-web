@@ -1,0 +1,12 @@
+﻿node_modules
+dist
+.angular
+.env
+.env.*
+.vercel
+coverage
+.git
+.gitignore
+*.md
+.eslintrc*
+.prettierrc*

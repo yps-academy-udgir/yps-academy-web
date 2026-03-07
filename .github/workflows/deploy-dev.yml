@@ -48,6 +48,7 @@ jobs:
 
   deploy-backend:
     name: Backend → Render (dev service)
+    needs: [deploy-frontend]
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render deploy hook
