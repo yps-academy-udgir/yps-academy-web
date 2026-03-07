@@ -24,8 +24,6 @@ services:
     envVars:
       - key: NODE_ENV
         value: development
-      - key: PORT
-        value: 4026
       - key: MONGODB_URI
         sync: false          # set manually in Render dashboard
       - key: FRONTEND_URL
@@ -39,12 +37,10 @@ services:
     rootDir: backend
     branch: staging
     buildCommand: npm install && npm run build
-    startCommand: npm run start:test
+    startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
         value: test
-      - key: PORT
-        value: 4026
       - key: MONGODB_URI
         sync: false
       - key: FRONTEND_URL
@@ -58,12 +54,10 @@ services:
     rootDir: backend
     branch: main
     buildCommand: npm install && npm run build
-    startCommand: npm run start:prod
+    startCommand: node dist/server.js
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 4026
       - key: MONGODB_URI
         sync: false
       - key: FRONTEND_URL

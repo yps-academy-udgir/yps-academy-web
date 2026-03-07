@@ -1,7 +1,7 @@
 # ---- Build stage ----
 FROM node:20-alpine AS builder
 WORKDIR /app
-ARG BUILD_CONFIG=production
+ARG BUILD_CONFIG=prod
 COPY package*.json ./
 RUN npm ci
 COPY . .
