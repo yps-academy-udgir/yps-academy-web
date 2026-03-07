@@ -19,7 +19,9 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { Student, Class } from '../../../../shared/models/student.model';
+import { Student, Class, FilterState } from '../../../../shared/models/student.model';
+import { FilterBarComponent } from '../../../../shared/components/filter-bar/filter-bar.component';
+
 
 @Component({
   selector: 'app-student-list',
@@ -28,6 +30,7 @@ import { Student, Class } from '../../../../shared/models/student.model';
     CommonModule,
     FormsModule,
     SharedMaterialModule,
+    FilterBarComponent,
   ],
   templateUrl: './student-list.component.html',
   styleUrls: ['./student-list.component.scss'],
@@ -42,11 +45,23 @@ export class StudentListComponent implements OnInit {
   // Signals for reactive state management
   searchText = signal<string>('');
   selectedClass = signal<string>('');
+  selectedYear = signal<string>('');
   currentPage = signal<number>(0);
   pageSize = signal<number>(10);
 
-  // Class filter options derived from the Class enum
+  // Filter option lists
   classOptions = Object.values(Class).map((value) => ({ value, label: `Class ${value}` }));
+
+  yearOptions = computed(() => {
+    const years = new Set(
+      this.students()
+        .map((s) => s.academicDetails?.yearOfAdmission)
+        .filter((y): y is number => y !== undefined)
+    );
+    return Array.from(years)
+      .sort((a, b) => b - a)
+      .map((y) => ({ value: String(y), label: String(y) }));
+  });
 
   // Access service signals
   students = this.studentService.students;
@@ -58,6 +73,7 @@ export class StudentListComponent implements OnInit {
   filteredStudents = computed(() => {
     const search = this.searchText().toLowerCase();
     const classFilter = this.selectedClass();
+    const yearFilter = this.selectedYear();
 
     return this.students().filter((student) => {
       const matchesSearch =
@@ -71,7 +87,11 @@ export class StudentListComponent implements OnInit {
         !classFilter ||
         student.academicDetails?.class === classFilter;
 
-      return matchesSearch && matchesClass;
+      const matchesYear =
+        !yearFilter ||
+        String(student.academicDetails?.yearOfAdmission) === yearFilter;
+
+      return matchesSearch && matchesClass && matchesYear;
     });
   });
 
@@ -173,19 +193,19 @@ export class StudentListComponent implements OnInit {
     });
   }
 
-  /**
-   * Clear search text
-   */
-  clearSearch(): void {
-    this.searchText.set('');
+  onFilterChange(state: FilterState): void {
+    this.searchText.set(state.search);
+    this.selectedClass.set(state.selectedClass);
+    this.selectedYear.set(state.selectedYear);
   }
 
   /**
-   * Clear all filters (search + class)
+   * Clear all filters
    */
   clearFilters(): void {
     this.searchText.set('');
     this.selectedClass.set('');
+    this.selectedYear.set('');
   }
 
   /**

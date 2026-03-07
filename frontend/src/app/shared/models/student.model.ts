@@ -79,6 +79,12 @@ export interface Student {
   updatedAt?: Date;
 }
 
+export interface FilterState {
+  search: string;
+  selectedClass: string;
+  selectedYear: string;
+}
+
 /**
  * API Response wrapper
  * Standardized response format from backend

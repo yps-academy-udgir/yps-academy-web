@@ -47,32 +47,8 @@
   margin-bottom: 8px;
 }
 
-.filter-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.search-field {
-  flex: 2 1 280px;
-  min-width: 220px;
-}
-
-.class-filter-field {
-  flex: 1 1 180px;
-  min-width: 160px;
-}
-
-.active-filter-chips {
-  display: flex;
-  align-items: center;
-  padding-top: 4px;
-
-  mat-chip {
-    font-size: 13px;
-  }
-}
+// .filter-row, .search-field, .filter-field, .active-filter-chips
+// are global utilities — see src/styles/_utilities.scss
 
 // .loading-container is a global utility — see src/styles/_utilities.scss
 
