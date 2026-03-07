@@ -1,0 +1,15 @@
+{
+  "buildCommand": "npm run build:prod",
+  "outputDirectory": "dist/frontend/browser",
+  "rewrites": [
+    { "source": "/((?!favicon).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*\\.js|.*\\.css|.*\\.woff2?|.*\\.ttf|.*\\.eot|.*\\.ico|.*\\.png|.*\\.svg)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}

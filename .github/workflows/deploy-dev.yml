@@ -1,55 +1,52 @@
-# Deploy to Development — triggered on push to the 'develop' branch
-name: Deploy — Development
+# Deploy to Development (FREE)
+# ─ Frontend → Vercel preview deployment
+# ─ Backend  → Render (triggered via deploy hook)
+# ─ Database → MongoDB Atlas free M0 cluster (set up once manually)
+#
+# Required GitHub Secrets (Settings → Secrets → Actions):
+#   VERCEL_TOKEN          — from https://vercel.com/account/tokens
+#   VERCEL_ORG_ID         — from `vercel link` or .vercel/project.json
+#   VERCEL_PROJECT_ID     — from `vercel link` or .vercel/project.json
+#   RENDER_DEV_DEPLOY_HOOK — Render service → Settings → Deploy Hook URL
+
+name: Deploy — Development (Free)
 
 on:
   push:
     branches: [develop]
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_OWNER: ${{ github.repository_owner }}
-
 jobs:
-  build-and-deploy:
-    name: Build & Deploy (dev)
+  deploy-frontend:
+    name: Frontend → Vercel (preview)
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Build and push backend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          target: production
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/yps-backend:dev
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
 
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          push: true
-          build-args: BUILD_CONFIG=dev
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/yps-frontend:dev
+      - name: Build (development config)
+        run: npm run build:dev
+        working-directory: frontend
 
-      - name: Deploy to dev server via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEV_HOST }}
-          username: ${{ secrets.DEV_USER }}
-          key: ${{ secrets.DEV_SSH_KEY }}
-          script: |
-            cd /opt/yps-academy
-            echo "MONGODB_URI=${{ secrets.DEV_MONGODB_URI }}" > .env
-            echo "FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}" >> .env
-            docker compose -f docker-compose.dev.yml pull
-            docker compose -f docker-compose.dev.yml up -d --remove-orphans
+      - name: Deploy to Vercel (preview)
+        run: npx vercel --cwd frontend --token ${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  deploy-backend:
+    name: Backend → Render (dev service)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        run: curl -fsSL "${{ secrets.RENDER_DEV_DEPLOY_HOOK }}"
