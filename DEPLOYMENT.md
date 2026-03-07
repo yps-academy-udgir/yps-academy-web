@@ -73,7 +73,7 @@ For each service, go to **Environment** tab and add:
 2. **Add New Project** → import `yps-academy-udgir/yps-academy-web`.
 3. Set **Root Directory** to `frontend`.
 4. Vercel will auto-detect the build settings from `frontend/vercel.json`:
-   - Build Command: `npm run build:prod`
+   - Build Command: as defined in `frontend/vercel.json` (conditional on `$VERCEL_ENV`, e.g. `npm run build:prod` for production)
    - Output Directory: `dist/frontend/browser`
 5. Click **Deploy**. Your first production URL will be something like `yps-academy-web.vercel.app`.
 
@@ -92,7 +92,7 @@ For each service, go to **Environment** tab and add:
 
 | Secret | Value |
 |---|---|
-| `VERCEL_TOKEN` | Personal access token from step 1 |
+| `VERCEL_TOKEN` | Personal access token created in Step 3b above |
 | `VERCEL_ORG_ID` | `orgId` from `.vercel/project.json` |
 | `VERCEL_PROJECT_ID` | `projectId` from `.vercel/project.json` |
 
