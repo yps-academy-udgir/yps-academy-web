@@ -60,6 +60,14 @@ export const routes: Routes = [
               ),
             data: { title: 'Student Details' },
           },
+          {
+            path: ':id/marks',
+            loadComponent: () =>
+              import('./features/student/components/marks-entry/marks-entry.component').then(
+                (m) => m.MarksEntryComponent
+              ),
+            data: { title: 'Enter Marks' },
+          },
         ],
       },
     ],

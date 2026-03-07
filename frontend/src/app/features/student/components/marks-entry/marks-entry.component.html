@@ -1,0 +1,277 @@
+<div class="marks-container">
+
+  @if (loading()) {
+    <app-loading [message]="'Loading student details...'"></app-loading>
+  }
+
+  @if (error() && !loading()) {
+    <app-error-message
+      [title]="'Error Loading Student'"
+      [message]="error()!"
+      (retry)="onRetry()">
+    </app-error-message>
+  }
+
+  @if (student() && !loading() && !error()) {
+
+    <!-- ── Page Header ─────────────────────────────────────────── -->
+    <mat-card class="student-header-card">
+      <mat-card-content>
+        <div class="header-row">
+          <div class="student-identity">
+            <div class="avatar-circle">
+              <mat-icon>account_circle</mat-icon>
+            </div>
+            <div>
+              <h1 class="student-name">
+                {{ student()!.firstName }} {{ student()!.lastName }}
+              </h1>
+              <div class="student-meta">
+                @if (student()!.academicDetails?.class) {
+                  <mat-chip highlighted color="primary">
+                    Class {{ student()!.academicDetails!.class }}
+                  </mat-chip>
+                }
+                @for (sub of student()!.academicDetails?.subjects ?? []; track sub) {
+                  <mat-chip>{{ sub }}</mat-chip>
+                }
+              </div>
+            </div>
+          </div>
+          <button mat-button (click)="onBack()">
+            <mat-icon>arrow_back</mat-icon> Back to Student
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ── No Subjects Warning ─────────────────────────────────── -->
+    @if (!hasSubjects()) {
+      <mat-card class="no-subjects-card">
+        <mat-card-content>
+          <div class="no-subjects">
+            <mat-icon color="warn">warning</mat-icon>
+            <p>This student has no enrolled subjects. Please update the student profile first.</p>
+            <button mat-raised-button color="primary" (click)="onBack()">Go Back</button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- ── Marks Entry Form ────────────────────────────────────── -->
+    @if (hasSubjects()) {
+      <mat-card class="form-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>edit_note</mat-icon>
+            {{ editingId() ? 'Edit Exam Marks' : 'Enter Exam Marks' }}
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
+
+            <!-- Exam meta row -->
+            <div class="form-meta-row">
+
+              <mat-form-field appearance="outline" class="field-exam-type">
+                <mat-label>Exam Type</mat-label>
+                <mat-select formControlName="examType">
+                  @for (type of examTypes; track type) {
+                    <mat-option [value]="type">{{ type }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('examType')?.invalid && form.get('examType')?.touched) {
+                  <mat-error>Please select an exam type</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="field-month">
+                <mat-label>Month</mat-label>
+                <mat-select formControlName="month">
+                  @for (name of monthNames; track $index) {
+                    <mat-option [value]="$index + 1">{{ name }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('month')?.invalid && form.get('month')?.touched) {
+                  <mat-error>Please select a month</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="field-year">
+                <mat-label>Year</mat-label>
+                <mat-select formControlName="year">
+                  @for (yr of yearOptions; track yr) {
+                    <mat-option [value]="yr">{{ yr }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('year')?.invalid && form.get('year')?.touched) {
+                  <mat-error>Please enter a valid year</mat-error>
+                }
+              </mat-form-field>
+
+            </div><!-- /form-meta-row -->
+
+            <!-- Subject Marks Table -->
+            <div class="marks-table-wrapper" formArrayName="subjectMarks">
+              <table class="marks-table" aria-label="Subject marks entry">
+                <thead>
+                  <tr>
+                    <th class="col-subject">Subject</th>
+                    <th class="col-outof">Out of</th>
+                    <th class="col-marks">Marks Obtained</th>
+                    <th class="col-pct">%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of subjectMarksArray.controls; track $index; let i = $index) {
+                    <tr [formGroupName]="i" [class.row-error]="row.invalid && row.touched">
+                      <td class="col-subject">
+                        <span class="subject-label">
+                          <mat-icon class="subject-icon">menu_book</mat-icon>
+                          {{ row.get('subject')?.value }}
+                        </span>
+                      </td>
+
+                      <td class="col-outof">
+                        <mat-form-field appearance="outline" class="mini-field">
+                          <input matInput type="number" formControlName="outOf"
+                                 min="1" max="1000"
+                                 (input)="recalcTotals()"
+                                 placeholder="100" />
+                        </mat-form-field>
+                      </td>
+
+                      <td class="col-marks">
+                        <mat-form-field appearance="outline" class="mini-field"
+                          [class.marks-error]="row.errors?.['marksExceedOutOf']">
+                          <input matInput type="number" formControlName="marksObtained"
+                                 min="0"
+                                 [max]="row.get('outOf')?.value"
+                                 (input)="recalcTotals()"
+                                 placeholder="0" />
+                        </mat-form-field>
+                        @if (row.errors?.['marksExceedOutOf'] && row.touched) {
+                          <div class="field-hint-error">Exceeds out-of marks</div>
+                        }
+                      </td>
+
+                      <td class="col-pct">
+                        @if (row.get('outOf')?.value && row.get('marksObtained')?.value !== null) {
+                          <span class="pct-badge"
+                            [class.pct-high]="(row.get('marksObtained')?.value / row.get('outOf')?.value) >= 0.75"
+                            [class.pct-mid]="(row.get('marksObtained')?.value / row.get('outOf')?.value) >= 0.4 && (row.get('marksObtained')?.value / row.get('outOf')?.value) < 0.75"
+                            [class.pct-low]="(row.get('marksObtained')?.value / row.get('outOf')?.value) < 0.4">
+                            {{ ((row.get('marksObtained')?.value / row.get('outOf')?.value) * 100) | number:'1.0-1' }}%
+                          </span>
+                        } @else {
+                          <span class="pct-dash">–</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+                <tfoot>
+                  <tr class="total-row">
+                    <td class="col-subject total-label">
+                      <mat-icon>functions</mat-icon> Total
+                    </td>
+                    <td class="col-outof total-value">{{ totalOutOf() }}</td>
+                    <td class="col-marks total-value">{{ totalObtained() }}</td>
+                    <td class="col-pct">
+                      <span class="pct-badge pct-total"
+                        [class.pct-high]="percentage() >= 75"
+                        [class.pct-mid]="percentage() >= 40 && percentage() < 75"
+                        [class.pct-low]="percentage() < 40 && totalObtained() > 0">
+                        {{ totalOutOf() > 0 ? (percentage() | number:'1.0-1') + '%' : '–' }}
+                      </span>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div><!-- /marks-table-wrapper -->
+
+            <!-- Actions -->
+            <div class="form-actions">
+              @if (editingId()) {
+                <button type="button" mat-button (click)="cancelEdit()">
+                  <mat-icon>close</mat-icon> Cancel Edit
+                </button>
+              }
+              <button mat-raised-button color="primary" type="submit"
+                      [disabled]="saving() || form.invalid">
+                @if (saving()) {
+                  <mat-progress-spinner diameter="18" mode="indeterminate" color="accent" style="display:inline-block"></mat-progress-spinner>
+                } @else {
+                  <mat-icon>save</mat-icon>
+                }
+                {{ editingId() ? 'Update Marks' : 'Save Marks' }}
+              </button>
+            </div>
+
+          </form>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- ── Past Exam Results ───────────────────────────────────── -->
+    @if (pastResults().length > 0) {
+      <mat-card class="history-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>history_edu</mat-icon> Past Exam Results
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="results-grid">
+            @for (result of pastResults(); track result._id) {
+              <mat-card class="result-card" [class.editing-highlight]="editingId() === result._id">
+                <mat-card-header>
+                  <mat-card-title class="result-title">
+                    {{ result.examType }}
+                  </mat-card-title>
+                  <mat-card-subtitle>
+                    {{ getMonthName(result.month) }} {{ result.year }}
+                  </mat-card-subtitle>
+                  <div class="result-card-actions">
+                    <button mat-icon-button color="primary"
+                            matTooltip="Edit"
+                            (click)="onEditResult(result)">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn"
+                            matTooltip="Delete"
+                            (click)="onDeleteResult(result)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="result-subjects">
+                    @for (sm of result.subjectMarks; track sm.subject) {
+                      <div class="sm-row">
+                        <span class="sm-subject">{{ sm.subject }}</span>
+                        <span class="sm-score">{{ sm.marksObtained }}<span class="sm-outof"> / {{ sm.outOf }}</span></span>
+                      </div>
+                    }
+                  </div>
+                  <mat-divider></mat-divider>
+                  <div class="result-total">
+                    <span>Total: <strong>{{ result.totalMarksObtained }} / {{ result.totalOutOf }}</strong></span>
+                    <span class="pct-badge"
+                      [class.pct-high]="result.percentage >= 75"
+                      [class.pct-mid]="result.percentage >= 40 && result.percentage < 75"
+                      [class.pct-low]="result.percentage < 40">
+                      {{ result.percentage | number:'1.0-1' }}%
+                    </span>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+  }<!-- /if student() -->
+</div>

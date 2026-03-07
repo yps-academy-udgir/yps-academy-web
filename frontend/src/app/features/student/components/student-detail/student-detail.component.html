@@ -39,6 +39,10 @@
                 <mat-icon>arrow_back</mat-icon>
                 Back
               </button>
+              <button mat-raised-button color="accent" (click)="onEnterMarks()">
+                <mat-icon>edit_note</mat-icon>
+                Enter Marks
+              </button>
               <button mat-raised-button color="primary" (click)="onEdit()">
                 <mat-icon>edit</mat-icon>
                 Edit
@@ -243,6 +247,85 @@
                     }
                   </span>
                 </div>
+              </div>
+            </mat-expansion-panel>
+          }
+
+          <!-- Exam Results -->
+          @if (examResults().length > 0) {
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <mat-icon>grade</mat-icon>
+                  Exam Results
+                </mat-panel-title>
+                <mat-panel-description>
+                  {{ examResults().length }} record{{ examResults().length !== 1 ? 's' : '' }}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="panel-content">
+                @for (result of examResults(); track result._id; let last = $last) {
+                  <div class="exam-result-block">
+                    <div class="exam-result-header">
+                      <div class="exam-result-meta">
+                        <mat-chip highlighted color="primary">{{ result.examType }}</mat-chip>
+                        <span class="exam-period">{{ getMonthName(result.month) }} {{ result.year }}</span>
+                      </div>
+                      <span class="exam-pct-badge"
+                        [class.pct-high]="result.percentage >= 75"
+                        [class.pct-mid]="result.percentage >= 40 && result.percentage < 75"
+                        [class.pct-low]="result.percentage < 40">
+                        {{ result.percentage | number:'1.0-1' }}%
+                      </span>
+                    </div>
+
+                    <table class="marks-mini-table">
+                      <thead>
+                        <tr>
+                          <th>Subject</th>
+                          <th>Obtained</th>
+                          <th>Out of</th>
+                          <th>%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (sm of result.subjectMarks; track sm.subject) {
+                          <tr>
+                            <td>{{ sm.subject }}</td>
+                            <td class="marks-val">{{ sm.marksObtained }}</td>
+                            <td class="marks-outof">{{ sm.outOf }}</td>
+                            <td>
+                              <span class="sm-pct"
+                                [class.pct-high]="(sm.marksObtained / sm.outOf) >= 0.75"
+                                [class.pct-mid]="(sm.marksObtained / sm.outOf) >= 0.4 && (sm.marksObtained / sm.outOf) < 0.75"
+                                [class.pct-low]="(sm.marksObtained / sm.outOf) < 0.4">
+                                {{ ((sm.marksObtained / sm.outOf) * 100) | number:'1.0-1' }}%
+                              </span>
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                      <tfoot>
+                        <tr class="total-row">
+                          <td><strong>Total</strong></td>
+                          <td class="marks-val"><strong>{{ result.totalMarksObtained }}</strong></td>
+                          <td class="marks-outof"><strong>{{ result.totalOutOf }}</strong></td>
+                          <td>
+                            <span class="sm-pct"
+                              [class.pct-high]="result.percentage >= 75"
+                              [class.pct-mid]="result.percentage >= 40 && result.percentage < 75"
+                              [class.pct-low]="result.percentage < 40">
+                              <strong>{{ result.percentage | number:'1.0-1' }}%</strong>
+                            </span>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  @if (!last) {
+                    <mat-divider class="section-divider"></mat-divider>
+                  }
+                }
               </div>
             </mat-expansion-panel>
           }

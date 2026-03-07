@@ -14,7 +14,13 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { Student } from '../../../../shared/models/student.model';
+import { Student, ExamResult } from '../../../../shared/models/student.model';
+import { ExamResultService } from '../../../../shared/services/exam-result.service';
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
 @Component({
   selector: 'app-student-detail',
@@ -33,6 +39,7 @@ export class StudentDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private studentService = inject(StudentService);
+  private examResultService = inject(ExamResultService);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
 
@@ -40,6 +47,7 @@ export class StudentDetailComponent implements OnInit {
   student = signal<Student | null>(null);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
+  examResults = signal<ExamResult[]>([]);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -61,6 +69,7 @@ export class StudentDetailComponent implements OnInit {
       next: (response) => {
         if (response.data) {
           this.student.set(response.data);
+          this.loadExamResults(id);
         }
         this.loading.set(false);
       },
@@ -79,6 +88,24 @@ export class StudentDetailComponent implements OnInit {
     if (student?._id) {
       this.router.navigate(['/students', student._id, 'edit']);
     }
+  }
+
+  onEnterMarks(): void {
+    const student = this.student();
+    if (student?._id) {
+      this.router.navigate(['/students', student._id, 'marks']);
+    }
+  }
+
+  private loadExamResults(studentId: string): void {
+    this.examResultService.getByStudent(studentId).subscribe({
+      next: (res) => this.examResults.set((res.data as unknown as ExamResult[]) ?? []),
+      error: () => { /* non-critical */ },
+    });
+  }
+
+  getMonthName(month: number): string {
+    return MONTH_NAMES[month - 1] ?? '';
   }
 
   /**
