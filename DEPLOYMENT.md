@@ -20,7 +20,9 @@ This project is set up to deploy across three environments using **entirely free
 3. Pick any cloud provider / region (AWS us-east-1 is a good default).
 4. Once the cluster is created, click **Database Access** → **Add New Database User**.
    - Choose **Password** authentication. Save the username and password.
-5. Click **Network Access** → **Add IP Address** → **Allow Access from Anywhere** (`0.0.0.0/0`).
+5. Click **Network Access** → **Add IP Address** and:
+   - For deployed environments (Render/Vercel), add **only the required outbound IP ranges** for your services (see your provider’s docs for their egress IPs), or use **VPC peering / VPN** if available.
+   - For quick local development only, you may temporarily choose **Allow Access from Anywhere** (`0.0.0.0/0`), but **remove this entry and replace it with restricted IPs before using test/prod data**.
 6. Click **Connect** → **Drivers** → copy the connection string. It looks like:
    ```
    mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/<dbname>?retryWrites=true&w=majority
