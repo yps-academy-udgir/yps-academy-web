@@ -40,7 +40,8 @@ jobs:
 
       - name: Deploy to Vercel (staging)
         run: |
-          DEPLOY_URL=$(npx vercel --cwd frontend --token ${{ secrets.VERCEL_TOKEN }} --yes 2>&1 | tail -1)
+          npx vercel build --cwd frontend --token ${{ secrets.VERCEL_TOKEN }} --yes
+          DEPLOY_URL=$(npx vercel deploy --prebuilt --cwd frontend --token ${{ secrets.VERCEL_TOKEN }} --yes 2>&1 | tail -1)
           npx vercel alias --cwd frontend --token ${{ secrets.VERCEL_TOKEN }} "$DEPLOY_URL" staging-yps-academy.vercel.app
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
