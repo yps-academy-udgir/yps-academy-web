@@ -40,24 +40,7 @@
   }
 }
 
-.form-row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 8px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.form-field {
-  flex: 1;
-  min-width: 0;
-
-  &.full-width {
-    width: 100%;
-  }
-}
+// .form-row and .form-field are global utilities — see src/styles/_utilities.scss
 
 .form-checkbox {
   display: flex;
@@ -118,21 +101,7 @@
   }
 }
 
-.panel-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.panel-icon {
-  color: var(--primary-color, #1976d2);
-  font-size: 22px;
-  width: 22px;
-  height: 22px;
-}
+// .panel-title and .panel-icon are global utilities — see src/styles/_utilities.scss
 
 .panel-description {
   display: flex;

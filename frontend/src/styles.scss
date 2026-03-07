@@ -4,9 +4,10 @@
  * All components should use CSS variables defined in themes
  */
 
-// Import custom theme variables and Material theme
+// Import custom theme variables, Material theme, and cross-component utilities
 @use './styles/variables' as vars;
 @use './styles/theme';
+@use './styles/utilities';
 
 /* ===================================== */
 /* Base Styles */
