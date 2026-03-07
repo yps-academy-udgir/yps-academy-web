@@ -1,0 +1,43 @@
+# Production environment
+name: yps-academy-prod
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: yps-mongo-prod
+    restart: always
+    volumes:
+      - mongo-prod-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: yps-academy-prod
+
+  backend:
+    build:
+      context: ./backend
+      target: production
+    container_name: yps-backend-prod
+    restart: always
+    ports:
+      - "4026:4026"
+    environment:
+      NODE_ENV: production
+      PORT: 4026
+      MONGODB_URI: ${MONGODB_URI}
+      FRONTEND_URL: ${FRONTEND_URL}
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BUILD_CONFIG: prod
+    container_name: yps-frontend-prod
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-prod-data:

@@ -2,9 +2,12 @@
 node_modules/
 */node_modules/
 
-# Environment variables
+# Environment variables (keep *.example files tracked)
 .env
 .env.local
+.env.dev
+.env.test
+.env.prod
 .env.*.local
 
 # Logs

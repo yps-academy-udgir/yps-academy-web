@@ -1,0 +1,59 @@
+# Deploy to Production — triggered on push to 'main' or manual dispatch
+name: Deploy — Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_OWNER: ${{ github.repository_owner }}
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy (prod)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          target: production
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/yps-backend:prod
+            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/yps-backend:latest
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          build-args: BUILD_CONFIG=prod
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/yps-frontend:prod
+            ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/yps-frontend:latest
+
+      - name: Deploy to production server via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /opt/yps-academy
+            echo "MONGODB_URI=${{ secrets.PROD_MONGODB_URI }}" > .env
+            echo "FRONTEND_URL=${{ secrets.PROD_FRONTEND_URL }}" >> .env
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans

@@ -1,0 +1,43 @@
+# Test / Staging environment
+name: yps-academy-test
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: yps-mongo-test
+    restart: unless-stopped
+    volumes:
+      - mongo-test-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: yps-academy-test
+
+  backend:
+    build:
+      context: ./backend
+      target: production
+    container_name: yps-backend-test
+    restart: unless-stopped
+    ports:
+      - "4026:4026"
+    environment:
+      NODE_ENV: test
+      PORT: 4026
+      MONGODB_URI: mongodb://mongo:27017/yps-academy-test
+      FRONTEND_URL: https://test.yps-academy.com
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BUILD_CONFIG: test
+    container_name: yps-frontend-test
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-test-data:

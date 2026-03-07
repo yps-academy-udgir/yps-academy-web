@@ -1,0 +1,55 @@
+# Deploy to Development — triggered on push to the 'develop' branch
+name: Deploy — Development
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_OWNER: ${{ github.repository_owner }}
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy (dev)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          target: production
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/yps-backend:dev
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          build-args: BUILD_CONFIG=dev
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/yps-frontend:dev
+
+      - name: Deploy to dev server via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USER }}
+          key: ${{ secrets.DEV_SSH_KEY }}
+          script: |
+            cd /opt/yps-academy
+            echo "MONGODB_URI=${{ secrets.DEV_MONGODB_URI }}" > .env
+            echo "FRONTEND_URL=${{ secrets.DEV_FRONTEND_URL }}" >> .env
+            docker compose -f docker-compose.dev.yml pull
+            docker compose -f docker-compose.dev.yml up -d --remove-orphans

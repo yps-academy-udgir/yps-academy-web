@@ -1,0 +1,55 @@
+# Deploy to Test / Staging — triggered on push to the 'staging' branch
+name: Deploy — Test/Staging
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_OWNER: ${{ github.repository_owner }}
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy (test)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          target: production
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/yps-backend:test
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          build-args: BUILD_CONFIG=test
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/yps-frontend:test
+
+      - name: Deploy to test server via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.TEST_HOST }}
+          username: ${{ secrets.TEST_USER }}
+          key: ${{ secrets.TEST_SSH_KEY }}
+          script: |
+            cd /opt/yps-academy
+            echo "MONGODB_URI=${{ secrets.TEST_MONGODB_URI }}" > .env
+            echo "FRONTEND_URL=${{ secrets.TEST_FRONTEND_URL }}" >> .env
+            docker compose -f docker-compose.test.yml pull
+            docker compose -f docker-compose.test.yml up -d --remove-orphans
