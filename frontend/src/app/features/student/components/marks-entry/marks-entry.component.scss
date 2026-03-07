@@ -172,37 +172,19 @@
 }
 
 // ── Percentage badge ─────────────────────────────────────────────
-.pct-badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 12px;
-  font-size: 0.83rem;
-  font-weight: 600;
-  min-width: 50px;
-  text-align: center;
-
-  &.pct-high   { background: #e6f4ea; color: #1e7e34; }
-  &.pct-mid    { background: #fff8e1; color: #b26a00; }
-  &.pct-low    { background: #fce8e6; color: #b00020; }
-  &.pct-total  { font-size: 0.95rem; padding: 4px 14px; }
-}
+// .pct-badge with .pct-high/.pct-mid/.pct-low/.pct-total is a global utility
+// shared with student-detail — see src/styles/_utilities.scss
 
 .pct-dash { color: #aaa; font-size: 1.1rem; display: block; text-align: center; }
 
 // ── Form actions ─────────────────────────────────────────────────
-.form-actions {
+// Base layout (flex, justify-content, align-items, gap) is a global utility.
+.form-actions button[type='submit'] {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: 12px;
-
-  button[type='submit'] {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 140px;
-    justify-content: center;
-  }
+  gap: 6px;
+  min-width: 140px;
+  justify-content: center;
 }
 
 // ── History card ─────────────────────────────────────────────────
