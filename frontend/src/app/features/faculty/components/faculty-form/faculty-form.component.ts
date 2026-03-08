@@ -1,6 +1,6 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SharedMaterialModule } from '../../../../shared/shared-material.module';
 import { FacultyService } from '../../../../shared/services/faculty.service';
@@ -15,14 +15,19 @@ import { Department, Speciality } from '../../models/faculty.model';
   templateUrl: './faculty-form.component.html',
   styleUrls: ['./faculty-form.component.scss'],
 })
-export class FacultyFormComponent {
+export class FacultyFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private facultyService = inject(FacultyService);
   private notificationService = inject(NotificationService);
 
   departmentOptions = Object.values(Department);
   specialityOptions = Object.values(Speciality);
+
+  isEditMode = signal(false);
+  editId = signal<string | null>(null);
+  formLoading = signal(false);
 
   facultyForm = this.fb.group({
     firstName: ['', [Validators.required, Validators.minLength(2)]],
@@ -48,6 +53,65 @@ export class FacultyFormComponent {
 
   get salaryPaymentsArray(): FormArray {
     return this.facultyForm.get('salaryPayments') as FormArray;
+  }
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEditMode.set(true);
+      this.editId.set(id);
+      this.loadFacultyForEdit(id);
+    }
+  }
+
+  private loadFacultyForEdit(id: string): void {
+    this.formLoading.set(true);
+    this.facultyService.getFacultyById(id).subscribe({
+      next: (res) => {
+        const f = res.data;
+        if (!f) { this.formLoading.set(false); return; }
+
+        // Patch scalar fields
+        this.facultyForm.patchValue({
+          firstName: f.firstName,
+          lastName: f.lastName,
+          email: f.email,
+          contact: f.contact,
+          department: f.department,
+          speciality: f.speciality,
+          degree: f.degree,
+          yearsOfExperience: f.yearsOfExperience,
+          annualSalary: f.annualSalary,
+        });
+
+        // Rebuild pastExperience FormArray
+        this.pastExperienceArray.clear();
+        (f.pastExperience ?? []).forEach((exp) => {
+          this.pastExperienceArray.push(this.fb.group({
+            organization: [exp.organization, Validators.required],
+            role: [exp.role, Validators.required],
+            yearsOfExperience: [exp.yearsOfExperience, [Validators.required, Validators.min(0)]],
+          }));
+        });
+
+        // Rebuild salaryPayments FormArray
+        this.salaryPaymentsArray.clear();
+        (f.salaryPayments ?? []).forEach((p) => {
+          this.salaryPaymentsArray.push(this.fb.group({
+            date: [p.date ? new Date(p.date) : '', Validators.required],
+            amount: [p.amount, [Validators.required, Validators.min(1)]],
+            note: [p.note ?? ''],
+          }));
+        });
+
+        this.formLoading.set(false);
+      },
+      error: () => {
+        this.notificationService.error('Failed to load faculty data for editing.');
+        this.formLoading.set(false);
+        this.router.navigate(['/faculty/list']);
+      },
+    });
   }
 
   pastExperienceGroup(): FormGroup {
@@ -87,8 +151,7 @@ export class FacultyFormComponent {
   }
 
   getErrorMessage(controlName: string): string {
-    const control = this.facultyForm.get(controlName);
-    return this.resolveError(control);
+    return this.resolveError(this.facultyForm.get(controlName));
   }
 
   getNestedError(group: AbstractControl, name: string): string {
@@ -122,18 +185,33 @@ export class FacultyFormComponent {
       this.facultyForm.markAllAsTouched();
       return;
     }
-    this.facultyService.createFaculty(this.facultyForm.value as any).subscribe({
-      next: () => {
-        this.notificationService.success('Faculty member added successfully.');
-        this.router.navigate(['/faculty']);
-      },
-      error: () => {
-        this.notificationService.error('Failed to add faculty member. Please try again.');
-      },
-    });
+
+    const id = this.editId();
+    if (this.isEditMode() && id) {
+      this.facultyService.updateFaculty(id, this.facultyForm.value as any).subscribe({
+        next: () => {
+          this.notificationService.success('Faculty member updated successfully.');
+          this.router.navigate(['/faculty', id]);
+        },
+        error: () => this.notificationService.error('Failed to update faculty member. Please try again.'),
+      });
+    } else {
+      this.facultyService.createFaculty(this.facultyForm.value as any).subscribe({
+        next: () => {
+          this.notificationService.success('Faculty member added successfully.');
+          this.router.navigate(['/faculty']);
+        },
+        error: () => this.notificationService.error('Failed to add faculty member. Please try again.'),
+      });
+    }
   }
 
   onCancel(): void {
-    this.router.navigate(['/faculty']);
+    const id = this.editId();
+    if (this.isEditMode() && id) {
+      this.router.navigate(['/faculty', id]);
+    } else {
+      this.router.navigate(['/faculty']);
+    }
   }
 }

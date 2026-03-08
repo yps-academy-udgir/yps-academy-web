@@ -1,12 +1,7 @@
-/**
- * Routes Index
- * Central routing configuration
- * All route modules are registered here
- */
-
 import { Router } from 'express';
 import studentRoutes from './student.routes';
 import examResultRoutes from './exam-result.routes';
+import facultyRoutes from './faculty.routes';
 
 const router = Router();
 
@@ -23,10 +18,6 @@ router.get('/health', (req, res) => {
 // Register route modules
 router.use('/students', studentRoutes);
 router.use('/exam-results', examResultRoutes);
-
-// Future routes will be added here
-// router.use('/auth', authRoutes);
-// router.use('/courses', courseRoutes);
-// router.use('/teachers', teacherRoutes);
+router.use('/faculty', facultyRoutes);
 
 export default router;

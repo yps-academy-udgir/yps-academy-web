@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -19,7 +20,7 @@ import { Faculty } from '../../models/faculty.model';
   templateUrl: './faculty-detail.component.html',
   styleUrls: ['./faculty-detail.component.scss'],
 })
-export class FacultyDetailComponent implements OnInit {
+export class FacultyDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private facultyService = inject(FacultyService);
@@ -30,13 +31,21 @@ export class FacultyDetailComponent implements OnInit {
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
+  private paramSub!: Subscription;
+
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadFaculty(id);
-    } else {
-      this.router.navigate(['/faculty/list']);
-    }
+    this.paramSub = this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      if (id) {
+        this.loadFaculty(id);
+      } else {
+        this.router.navigate(['/faculty/list']);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.paramSub?.unsubscribe();
   }
 
   private loadFaculty(id: string): void {
@@ -97,7 +106,7 @@ export class FacultyDetailComponent implements OnInit {
   }
 
   onRetry(): void {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this.route.snapshot.paramMap.get('id') ?? this.faculty()?._id;
     if (id) this.loadFaculty(id);
   }
 }

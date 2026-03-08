@@ -131,9 +131,111 @@ export const validateObjectId = (req: Request, res: Response, next: NextFunction
   const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
   if (!objectIdRegex.test(id)) {
-    errorResponse(res, 'Invalid student ID format', 400);
+    errorResponse(res, 'Invalid ID format', 400);
     return;
   }
 
   next();
 };
+
+/**
+ * Validate faculty creation/update data
+ */
+export const validateFaculty = (req: Request, res: Response, next: NextFunction): void => {
+  const { firstName, lastName, email, contact, department, speciality, degree, yearsOfExperience, annualSalary, pastExperience, salaryPayments } = req.body;
+  const errors: string[] = [];
+
+  const validDepartments = ['Mathematics', 'Science', 'English'];
+  const validSpecialities = ['Mathematics', 'Science', 'English'];
+
+  if (req.method === 'POST') {
+    if (!firstName || firstName.trim().length < 2) errors.push('First name must be at least 2 characters');
+    if (!lastName || lastName.trim().length < 2) errors.push('Last name must be at least 2 characters');
+    if (!email || !isValidEmail(email)) errors.push('Valid email is required');
+    if (!contact || !isValidContact(contact)) errors.push('Valid contact number is required (10-15 digits)');
+    if (!department || !validDepartments.includes(department)) errors.push('Department must be one of: ' + validDepartments.join(', '));
+    if (!speciality || !validSpecialities.includes(speciality)) errors.push('Speciality must be one of: ' + validSpecialities.join(', '));
+    if (!degree || degree.trim().length < 2) errors.push('Degree / qualification is required');
+    if (yearsOfExperience === undefined || yearsOfExperience === null || isNaN(Number(yearsOfExperience)) || Number(yearsOfExperience) < 0) {
+      errors.push('Years of experience must be a non-negative number');
+    }
+    if (annualSalary === undefined || annualSalary === null || isNaN(Number(annualSalary)) || Number(annualSalary) < 1) {
+      errors.push('Annual salary must be greater than 0');
+    }
+  }
+
+  if (req.method === 'PUT') {
+    if (firstName !== undefined && firstName.trim().length < 2) errors.push('First name must be at least 2 characters');
+    if (lastName !== undefined && lastName.trim().length < 2) errors.push('Last name must be at least 2 characters');
+    if (email !== undefined && !isValidEmail(email)) errors.push('Invalid email format');
+    if (contact !== undefined && !isValidContact(contact)) errors.push('Invalid contact number format');
+    if (department !== undefined && !validDepartments.includes(department)) errors.push('Department must be one of: ' + validDepartments.join(', '));
+    if (speciality !== undefined && !validSpecialities.includes(speciality)) errors.push('Speciality must be one of: ' + validSpecialities.join(', '));
+    if (degree !== undefined && degree.trim().length < 2) errors.push('Degree / qualification is required');
+    if (yearsOfExperience !== undefined && (isNaN(Number(yearsOfExperience)) || Number(yearsOfExperience) < 0)) {
+      errors.push('Years of experience must be a non-negative number');
+    }
+    if (annualSalary !== undefined && (isNaN(Number(annualSalary)) || Number(annualSalary) < 1)) {
+      errors.push('Annual salary must be greater than 0');
+    }
+  }
+
+  // Validate pastExperience array if provided
+  if (pastExperience !== undefined) {
+    if (!Array.isArray(pastExperience)) {
+      errors.push('pastExperience must be an array');
+    } else {
+      pastExperience.forEach((exp: any, i: number) => {
+        if (!exp.organization || exp.organization.trim().length < 1) errors.push(`pastExperience[${i}]: organization is required`);
+        if (!exp.role || exp.role.trim().length < 1) errors.push(`pastExperience[${i}]: role is required`);
+        if (exp.yearsOfExperience === undefined || isNaN(Number(exp.yearsOfExperience)) || Number(exp.yearsOfExperience) < 0) {
+          errors.push(`pastExperience[${i}]: yearsOfExperience must be a non-negative number`);
+        }
+      });
+    }
+  }
+
+  // Validate salaryPayments array if provided
+  if (salaryPayments !== undefined) {
+    if (!Array.isArray(salaryPayments)) {
+      errors.push('salaryPayments must be an array');
+    } else {
+      salaryPayments.forEach((p: any, i: number) => {
+        if (!p.date) errors.push(`salaryPayments[${i}]: date is required`);
+        if (p.amount === undefined || isNaN(Number(p.amount)) || Number(p.amount) < 1) {
+          errors.push(`salaryPayments[${i}]: amount must be greater than 0`);
+        }
+      });
+    }
+  }
+
+  if (errors.length > 0) {
+    errorResponse(res, 'Validation failed', 400, errors);
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Validate adding a salary payment
+ */
+export const validateAddPayment = (req: Request, res: Response, next: NextFunction): void => {
+  const { date, amount } = req.body;
+  const errors: string[] = [];
+
+  if (!date) errors.push('Payment date is required');
+  else if (isNaN(Date.parse(date))) errors.push('Payment date must be a valid date');
+
+  if (amount === undefined || amount === null || isNaN(Number(amount)) || Number(amount) < 1) {
+    errors.push('Payment amount must be greater than 0');
+  }
+
+  if (errors.length > 0) {
+    errorResponse(res, 'Validation failed', 400, errors);
+    return;
+  }
+
+  next();
+};
+

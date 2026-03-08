@@ -68,6 +68,10 @@ export class FacultyListComponent implements OnInit {
 
   addFaculty(): void { this.router.navigate(['/faculty/add']); }
 
+  viewFaculty(faculty: Faculty): void { this.router.navigate(['/faculty', faculty._id]); }
+
+  editFaculty(faculty: Faculty): void { this.router.navigate(['/faculty', faculty._id, 'edit']); }
+
   deleteFaculty(faculty: Faculty): void {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: {

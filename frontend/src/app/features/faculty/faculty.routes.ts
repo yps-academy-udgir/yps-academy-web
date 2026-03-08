@@ -20,6 +20,12 @@ export const FACULTY_ROUTES: Routes = [
     data: { title: 'Add Faculty' },
   },
   {
+    path: ':id/edit',
+    loadComponent: () =>
+      import('./components/faculty-form/faculty-form.component').then((m) => m.FacultyFormComponent),
+    data: { title: 'Edit Faculty' },
+  },
+  {
     path: ':id',
     loadComponent: () =>
       import('./components/faculty-detail/faculty-detail.component').then((m) => m.FacultyDetailComponent),
