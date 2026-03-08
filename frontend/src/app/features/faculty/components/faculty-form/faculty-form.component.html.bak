@@ -1,0 +1,56 @@
+<div class="faculty-form-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>person_add</mat-icon>
+        Add New Faculty
+      </mat-card-title>
+    </mat-card-header>
+  </mat-card>
+
+  <form [formGroup]="facultyForm" (ngSubmit)="onSubmit()" class="faculty-form">
+    <mat-accordion class="form-accordion" multi="false">
+
+      <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title><mat-icon>person</mat-icon> Personal Information</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="panel-content">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>First Name</mat-label>
+              <input matInput formControlName="firstName" placeholder="Enter first name" />
+              <mat-icon matPrefix>person</mat-icon>
+              @if (facultyForm.get('firstName')?.invalid && facultyForm.get('firstName')?.touched) {
+                <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Last Name</mat-label>
+              <input matInput formControlName="lastName" placeholder="Enter last name" />
+              <mat-icon matPrefix>person_outline</mat-icon>
+              @if (facultyForm.get('lastName')?.invalid && facultyForm.get('lastName')?.touched) {
+                <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" placeholder="faculty@school.com" />
+              <mat-icon matPrefix>email</mat-icon>
+              @if (facultyForm.get('email')?.invalid && facultyForm.get('email')?.touched) {
+                <mat-error>{{ getErrorMessage('email') }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Contact</mat-label>
+              <input matInput type="tel" formControlName="contact" placeholder="+1 234 567 8900" />
+              <mat-icon matPrefix>phone</mat-icon>
+              @if (facultyForm.get('contact')?.invalid && facultyForm.get('contact')?.touched) {
+                <mat-error>{{ getErrorMessage('contact') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-expansion-panel>

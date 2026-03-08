@@ -1,0 +1,13 @@
+﻿.faculty-form-container { padding: var(--spacing-lg); display: flex; flex-direction: column; gap: var(--spacing-md); max-width: 960px; margin: 0 auto; }
+.header-card mat-card-title { display: flex; align-items: center; gap: var(--spacing-sm); }
+.form-accordion { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+.panel-content { padding: var(--spacing-md) 0; display: flex; flex-direction: column; gap: var(--spacing-md); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
+.form-field { width: 100%; }
+.form-field--narrow { max-width: 120px; }
+.section-label { display: flex; align-items: center; gap: var(--spacing-sm); font-weight: 500; color: var(--color-text-secondary); margin-top: var(--spacing-sm); }
+.dynamic-row { display: flex; align-items: flex-start; gap: var(--spacing-md); flex-wrap: wrap; }
+.dynamic-row .form-field { flex: 1; min-width: 160px; }
+.add-row-btn { align-self: flex-start; }
+.salary-summary { display: flex; gap: var(--spacing-lg); padding: var(--spacing-sm) 0; font-size: 0.95rem; }
+.form-actions { display: flex; justify-content: flex-end; gap: var(--spacing-md); padding-top: var(--spacing-md); }

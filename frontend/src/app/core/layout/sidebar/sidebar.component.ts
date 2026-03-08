@@ -51,6 +51,21 @@ export class SidebarComponent {
       icon: 'person_add',
       route: '/students/add',
     },
+    {
+      label: 'Faculty Dashboard',
+      icon: 'dashboard_customize',
+      route: '/faculty',
+    },
+    {
+      label: 'Faculty List',
+      icon: 'school',
+      route: '/faculty/list',
+    },
+    {
+      label: 'Add Faculty',
+      icon: 'person_add',
+      route: '/faculty/add',
+    },
   ]);
 
   constructor(private router: Router) {}
