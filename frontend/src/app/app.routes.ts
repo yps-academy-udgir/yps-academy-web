@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './core/layout/main-layout/main-layout.component';
 import { DashboardComponent } from './features/student/components/dashboard/dashboard.component';
 import { StudentListComponent } from './features/student/components/student-list/student-list.component';
+import { FACULTY_ROUTES } from './features/faculty/faculty.routes';
 
 /**
  * Application Routes
@@ -69,6 +70,10 @@ export const routes: Routes = [
             data: { title: 'Enter Marks' },
           },
         ],
+      },
+      {
+        path: 'faculty',
+        children: FACULTY_ROUTES,
       },
     ],
   },

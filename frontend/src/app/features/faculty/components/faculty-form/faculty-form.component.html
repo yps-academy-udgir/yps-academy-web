@@ -1,0 +1,238 @@
+﻿<div class="faculty-form-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>person_add</mat-icon>
+        Add New Faculty
+      </mat-card-title>
+    </mat-card-header>
+  </mat-card>
+
+  <form [formGroup]="facultyForm" (ngSubmit)="onSubmit()" class="faculty-form">
+    <mat-accordion class="form-accordion" multi="true">
+
+      <!-- Personal Information -->
+      <mat-expansion-panel expanded="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title><mat-icon>person</mat-icon> Personal Information</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="panel-content">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>First Name</mat-label>
+              <input matInput formControlName="firstName" placeholder="Enter first name" />
+              <mat-icon matPrefix>person</mat-icon>
+              @if (facultyForm.get('firstName')?.invalid && facultyForm.get('firstName')?.touched) {
+                <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Last Name</mat-label>
+              <input matInput formControlName="lastName" placeholder="Enter last name" />
+              <mat-icon matPrefix>person_outline</mat-icon>
+              @if (facultyForm.get('lastName')?.invalid && facultyForm.get('lastName')?.touched) {
+                <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" placeholder="faculty@school.com" />
+              <mat-icon matPrefix>email</mat-icon>
+              @if (facultyForm.get('email')?.invalid && facultyForm.get('email')?.touched) {
+                <mat-error>{{ getErrorMessage('email') }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Contact</mat-label>
+              <input matInput type="tel" formControlName="contact" placeholder="+1 234 567 8900" />
+              <mat-icon matPrefix>phone</mat-icon>
+              @if (facultyForm.get('contact')?.invalid && facultyForm.get('contact')?.touched) {
+                <mat-error>{{ getErrorMessage('contact') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- Academic & Department -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title><mat-icon>school</mat-icon> Academic &amp; Department</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="panel-content">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Department</mat-label>
+              <mat-select formControlName="department">
+                @for (opt of departmentOptions; track opt) {
+                  <mat-option [value]="opt">{{ opt }}</mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>business</mat-icon>
+              @if (facultyForm.get('department')?.invalid && facultyForm.get('department')?.touched) {
+                <mat-error>{{ getErrorMessage('department') }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Speciality</mat-label>
+              <mat-select formControlName="speciality">
+                @for (opt of specialityOptions; track opt) {
+                  <mat-option [value]="opt">{{ opt }}</mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>star</mat-icon>
+              @if (facultyForm.get('speciality')?.invalid && facultyForm.get('speciality')?.touched) {
+                <mat-error>{{ getErrorMessage('speciality') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- Professional Details -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title><mat-icon>work</mat-icon> Professional Details</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="panel-content">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Qualification / Degree</mat-label>
+              <input matInput formControlName="degree" placeholder="e.g. M.Sc. Mathematics" />
+              <mat-icon matPrefix>military_tech</mat-icon>
+              @if (facultyForm.get('degree')?.invalid && facultyForm.get('degree')?.touched) {
+                <mat-error>{{ getErrorMessage('degree') }}</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Total Years of Experience</mat-label>
+              <input matInput type="number" formControlName="yearsOfExperience" placeholder="0" min="0" />
+              <mat-icon matPrefix>timeline</mat-icon>
+              @if (facultyForm.get('yearsOfExperience')?.invalid && facultyForm.get('yearsOfExperience')?.touched) {
+                <mat-error>{{ getErrorMessage('yearsOfExperience') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="section-label">
+            <mat-icon>history_edu</mat-icon>
+            <span>Past Experience</span>
+          </div>
+
+          @for (exp of pastExperienceArray.controls; track $index) {
+            <div class="dynamic-row" [formGroup]="$any(exp)">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Organization</mat-label>
+                <input matInput formControlName="organization" placeholder="Previous school / institute" />
+                @if (getControl(exp, 'organization')?.invalid && getControl(exp, 'organization')?.touched) {
+                  <mat-error>{{ getNestedError(exp, 'organization') }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Role / Designation</mat-label>
+                <input matInput formControlName="role" placeholder="e.g. Senior Lecturer" />
+                @if (getControl(exp, 'role')?.invalid && getControl(exp, 'role')?.touched) {
+                  <mat-error>{{ getNestedError(exp, 'role') }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field form-field--narrow">
+                <mat-label>Years</mat-label>
+                <input matInput type="number" formControlName="yearsOfExperience" placeholder="0" min="0" />
+                @if (getControl(exp, 'yearsOfExperience')?.invalid && getControl(exp, 'yearsOfExperience')?.touched) {
+                  <mat-error>{{ getNestedError(exp, 'yearsOfExperience') }}</mat-error>
+                }
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removePastExperience($index)" matTooltip="Remove">
+                <mat-icon>remove_circle_outline</mat-icon>
+              </button>
+            </div>
+          }
+
+          <button mat-stroked-button type="button" color="primary" class="add-row-btn" (click)="addPastExperience()">
+            <mat-icon>add</mat-icon> Add Past Experience
+          </button>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- Salary Information -->
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title><mat-icon>payments</mat-icon> Salary Information</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="panel-content">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Annual Salary (Fixed for the year)</mat-label>
+              <input matInput type="number" formControlName="annualSalary" placeholder="0" min="1" />
+              <mat-icon matPrefix>account_balance_wallet</mat-icon>
+              <mat-hint>Total fixed salary for the year. Payments can be made at any time in any amount.</mat-hint>
+              @if (facultyForm.get('annualSalary')?.invalid && facultyForm.get('annualSalary')?.touched) {
+                <mat-error>{{ getErrorMessage('annualSalary') }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="section-label">
+            <mat-icon>receipt_long</mat-icon>
+            <span>Salary Payments</span>
+          </div>
+
+          @for (payment of salaryPaymentsArray.controls; track $index) {
+            <div class="dynamic-row" [formGroup]="$any(payment)">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Payment Date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="date" placeholder="DD/MM/YYYY" />
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                @if (getControl(payment, 'date')?.invalid && getControl(payment, 'date')?.touched) {
+                  <mat-error>{{ getNestedError(payment, 'date') }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field form-field--narrow">
+                <mat-label>Amount Paid</mat-label>
+                <input matInput type="number" formControlName="amount" placeholder="0" min="1" />
+                <mat-icon matPrefix>currency_rupee</mat-icon>
+                @if (getControl(payment, 'amount')?.invalid && getControl(payment, 'amount')?.touched) {
+                  <mat-error>{{ getNestedError(payment, 'amount') }}</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Note (optional)</mat-label>
+                <input matInput formControlName="note" placeholder="e.g. Advance, Bonus" />
+              </mat-form-field>
+              <button mat-icon-button color="warn" type="button" (click)="removePayment($index)" matTooltip="Remove">
+                <mat-icon>remove_circle_outline</mat-icon>
+              </button>
+            </div>
+          }
+
+          @if (salaryPaymentsArray.length > 0) {
+            <div class="salary-summary">
+              <span>Paid: <strong>{{ paidTotal() }}</strong></span>
+              <span>Remaining: <strong>{{ remainingBalance() }}</strong></span>
+            </div>
+          }
+
+          <button mat-stroked-button type="button" color="primary" class="add-row-btn" (click)="addPayment()">
+            <mat-icon>add</mat-icon> Add Payment
+          </button>
+        </div>
+      </mat-expansion-panel>
+
+    </mat-accordion>
+
+    <div class="form-actions">
+      <button mat-stroked-button type="button" (click)="onCancel()">Cancel</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
+        @if (loading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <ng-container><mat-icon>save</mat-icon> Save Faculty</ng-container>
+        }
+      </button>
+    </div>
+
+  </form>
+</div>

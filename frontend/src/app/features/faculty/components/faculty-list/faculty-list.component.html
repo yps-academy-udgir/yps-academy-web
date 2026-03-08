@@ -1,0 +1,113 @@
+﻿<div class="faculty-list">
+  <mat-toolbar color="primary" class="dashboard-toolbar">
+    <h1>Faculty List</h1>
+    <span class="spacer"></span>
+    <button mat-raised-button color="accent" (click)="addFaculty()">
+      <mat-icon>person_add</mat-icon>
+      Add New Faculty
+    </button>
+  </mat-toolbar>
+
+  <div class="dashboard-container">
+    <mat-card class="filter-card">
+      <mat-card-content>
+        <div class="filter-row">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search faculty...</mat-label>
+            <input matInput [value]="searchText()" (input)="searchText.set($any($event.target).value)" placeholder="Name, email, contact" />
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Department</mat-label>
+            <mat-select [value]="selectedDepartment()" (selectionChange)="selectedDepartment.set($event.value)">
+              <mat-option value="">All Departments</mat-option>
+              @for (opt of departmentOptions; track opt.value) {
+                <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading faculty...</p>
+      </div>
+    }
+
+    @if (error() && !loading()) {
+      <mat-card class="error-card">
+        <mat-card-content>
+          <p>{{ error() }}</p>
+          <button mat-raised-button color="primary" (click)="loadFaculty()">Try Again</button>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (!loading() && filteredFaculty().length > 0) {
+      <mat-card class="table-card">
+        <mat-card-header>
+          <mat-card-title>Faculty Members ({{ totalRecords() }} total)</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="table-container">
+            <table mat-table [dataSource]="filteredFaculty()" class="faculty-table">
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let f"><strong>{{ getFullName(f) }}</strong></td>
+              </ng-container>
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef>Email</th>
+                <td mat-cell *matCellDef="let f"><a [href]="'mailto:' + f.email">{{ f.email }}</a></td>
+              </ng-container>
+              <ng-container matColumnDef="contact">
+                <th mat-header-cell *matHeaderCellDef>Contact</th>
+                <td mat-cell *matCellDef="let f">{{ f.contact }}</td>
+              </ng-container>
+              <ng-container matColumnDef="department">
+                <th mat-header-cell *matHeaderCellDef>Department</th>
+                <td mat-cell *matCellDef="let f">{{ f.department }}</td>
+              </ng-container>
+              <ng-container matColumnDef="speciality">
+                <th mat-header-cell *matHeaderCellDef>Speciality</th>
+                <td mat-cell *matCellDef="let f">{{ f.speciality }}</td>
+              </ng-container>
+              <ng-container matColumnDef="experience">
+                <th mat-header-cell *matHeaderCellDef>Experience</th>
+                <td mat-cell *matCellDef="let f">{{ f.yearsOfExperience }} yr(s)</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let f">
+                  <button mat-icon-button color="warn" (click)="deleteFaculty(f)" matTooltip="Delete">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (!loading() && filteredFaculty().length === 0 && !error()) {
+      <mat-card class="empty-state-card">
+        <mat-card-content>
+          <div class="empty-state">
+            <mat-icon class="empty-icon">school</mat-icon>
+            <h2>No Faculty Found</h2>
+            <p>Try adjusting your search or add a new faculty member.</p>
+            <button mat-raised-button color="primary" (click)="addFaculty()">
+              <mat-icon>add</mat-icon>
+              Add Faculty
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+</div>
