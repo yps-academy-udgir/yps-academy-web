@@ -1,0 +1,31 @@
+﻿<section class="ws-section courses-section">
+  <div class="ws-container">
+    <div class="ws-section-header">
+      <span class="ws-label">What We Offer</span>
+      <h2>Our Courses</h2>
+      <p>Expertly designed programs to help every student reach their full potential</p>
+    </div>
+    <div class="courses-grid">
+      @for (course of courses; track course.id) {
+        <mat-card class="course-card">
+          <img mat-card-image [src]="course.image" [alt]="course.title" class="course-img" />
+          <mat-card-header>
+            <div mat-card-avatar class="course-avatar">{{ course.icon }}</div>
+            <mat-card-title>{{ course.title }}</mat-card-title>
+            <mat-card-subtitle>⏱ {{ course.duration }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <span class="course-badge">{{ course.badge }}</span>
+            <p>{{ course.description }}</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-raised-button color="primary">
+              <mat-icon>how_to_reg</mat-icon>
+              Enroll Now
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  </div>
+</section>

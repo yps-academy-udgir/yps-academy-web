@@ -1,0 +1,74 @@
+﻿@use '../../../../../styles/variables' as v;
+
+.ws-section {
+  border-top: 1px solid var(--border-color);
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: v.$spacing-xl;
+  margin-top: v.$spacing-xl;
+}
+
+.course-card {
+  border-radius: v.$border-radius-lg !important;
+  transition: transform v.$transition-normal, box-shadow v.$transition-normal;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: v.$shadow-xl !important;
+  }
+
+  mat-card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: v.$spacing-xs;
+  }
+
+  mat-card-actions {
+    padding: v.$spacing-xs v.$spacing-md v.$spacing-md;
+    button { width: 100%; }
+  }
+}
+
+.course-img {
+  height: 140px;
+  object-fit: cover;
+}
+
+.course-avatar {
+  font-size: 22px;
+  width: 40px !important;
+  height: 40px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-tertiary);
+  border-radius: v.$border-radius-round;
+}
+
+.course-badge {
+  display: inline-block;
+  background: var(--warn-color);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: v.$font-weight-bold;
+  padding: 2px v.$spacing-xs;
+  border-radius: v.$border-radius-sm;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: v.$spacing-xs;
+  text-align: center;
+}
+
+.course-card p {
+  font-size: v.$font-size-sm;
+  color: var(--text-secondary);
+  line-height: v.$line-height-relaxed;
+  margin: v.$spacing-xs 0 0;
+  flex: 1;
+}

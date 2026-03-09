@@ -1,0 +1,28 @@
+﻿<header class="ws-header" [class.scrolled]="scrolled()">
+  <div class="ws-nav-container">
+    <!-- Logo -->
+    <div class="ws-logo">
+      <mat-icon class="logo-icon">school</mat-icon>
+      <span class="logo-text">YPS <strong>Academy</strong></span>
+    </div>
+
+    <!-- Desktop Nav -->
+    <nav class="ws-nav" [class.open]="menuOpen()">
+      @for (link of navLinks; track link.label) {
+        <a mat-button class="ws-nav-link" [href]="link.href" (click)="scrollTo($event, link.href)">{{ link.label }}</a>
+      }
+      <button mat-raised-button class="btn-admission" (click)="scrollToSection('#contact')">Admission</button>
+      <button mat-icon-button class="btn-theme" (click)="toggleTheme()" [matTooltip]="themeTooltip()">
+        <mat-icon>{{ themeIcon() }}</mat-icon>
+      </button>
+      <button mat-stroked-button class="btn-back-admin" (click)="goToAdmin()">
+        <mat-icon>arrow_back</mat-icon> Admin
+      </button>
+    </nav>
+
+    <!-- Mobile hamburger -->
+    <button mat-icon-button class="hamburger" (click)="toggleMenu()" aria-label="Toggle menu">
+      <mat-icon>{{ menuOpen() ? 'close' : 'menu' }}</mat-icon>
+    </button>
+  </div>
+</header>

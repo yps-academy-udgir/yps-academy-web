@@ -1,0 +1,23 @@
+﻿<section class="ws-section gallery-section">
+  <div class="ws-container">
+    <div class="ws-section-header">
+      <span class="ws-label">Memories</span>
+      <h2>Our Gallery</h2>
+      <p>Glimpses of life at YPS Academy — learning, celebrations, and achievements</p>
+    </div>
+    <div class="gallery-grid">
+      @for (img of images; track img.id) {
+        <mat-card class="gallery-card">
+          <div class="gallery-item"
+               [style.background-color]="img.color"
+               [style.background-image]="'url(' + (img.image ?? '') + ')'">
+            <div class="gallery-overlay">
+              <div class="gallery-icon">{{ img.icon }}</div>
+              <span class="gallery-label">{{ img.label }}</span>
+            </div>
+          </div>
+        </mat-card>
+      }
+    </div>
+  </div>
+</section>

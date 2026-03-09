@@ -77,6 +77,12 @@ export const routes: Routes = [
       },
     ],
   },
+  // Public website (no admin layout)
+  {
+    path: 'website',
+    loadChildren: () =>
+      import('./features/website/website.routes').then((m) => m.WEBSITE_ROUTES),
+  },
   // Wildcard route for 404
   {
     path: '**',

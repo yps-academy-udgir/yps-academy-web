@@ -1,0 +1,47 @@
+﻿@use '../../../../../styles/variables' as v;
+
+.achievements-section {
+  background: var(--background-tertiary);
+  padding: v.$spacing-xxxl v.$spacing-lg;
+  border-top: 1px solid var(--border-color);
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: v.$spacing-xl;
+  margin-top: v.$spacing-xl;
+}
+
+.achievement-card {
+  text-align: center;
+  padding: v.$spacing-xl v.$spacing-md;
+  border-radius: v.$border-radius-lg;
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  transition: transform v.$transition-normal, box-shadow v.$transition-normal;
+  
+  &:hover { 
+    transform: translateY(-4px); 
+    box-shadow: v.$shadow-lg;
+  }
+}
+
+.achievement-icon { 
+  font-size: 36px; 
+  margin-bottom: v.$spacing-xs; 
+}
+
+.achievement-value { 
+  font-size: clamp(v.$font-size-xxl, 4vw, 40px); 
+  font-weight: v.$font-weight-bold; 
+  color: var(--primary-color);
+  display: block;
+  margin-bottom: v.$spacing-xxs;
+}
+
+.achievement-label { 
+  font-size: v.$font-size-sm; 
+  color: var(--text-secondary);
+  margin-top: v.$spacing-xxs; 
+}

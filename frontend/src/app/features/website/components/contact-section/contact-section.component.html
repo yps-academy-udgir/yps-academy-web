@@ -1,0 +1,103 @@
+﻿<section class="ws-section contact-section">
+  <div class="ws-container">
+    <div class="ws-section-header">
+      <span class="ws-label">Get In Touch</span>
+      <h2>Contact Us</h2>
+      <p>We'd love to hear from you. Fill in the form and we'll get back to you shortly.</p>
+    </div>
+    <div class="contact-layout">
+
+      <!-- Contact Form -->
+      <mat-card class="contact-form-card">
+        <mat-card-content>
+          @if (submitted()) {
+            <div class="success-message">
+              <mat-icon class="success-icon">check_circle</mat-icon>
+              <h3>Message Sent!</h3>
+              <p>Thank you for reaching out. Our team will contact you within 24 hours.</p>
+              <button mat-raised-button color="primary" (click)="resetForm()">Send Another</button>
+            </div>
+          } @else {
+            <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Full Name</mat-label>
+                <input matInput formControlName="name" placeholder="Rahul Sharma" />
+                <mat-icon matSuffix>person</mat-icon>
+                @if (hasError('name', 'required')) { <mat-error>Name is required</mat-error> }
+                @if (hasError('name', 'minlength')) { <mat-error>Minimum 2 characters</mat-error> }
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Phone Number</mat-label>
+                <input matInput formControlName="phone" type="tel" placeholder="9876543210" />
+                <mat-icon matSuffix>phone</mat-icon>
+                @if (hasError('phone', 'required')) { <mat-error>Phone is required</mat-error> }
+                @if (hasError('phone', 'pattern')) { <mat-error>Enter valid 10-digit mobile number</mat-error> }
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Email Address</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="rahul@email.com" />
+                <mat-icon matSuffix>email</mat-icon>
+                @if (hasError('email', 'required')) { <mat-error>Email is required</mat-error> }
+                @if (hasError('email', 'email')) { <mat-error>Enter a valid email</mat-error> }
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Message</mat-label>
+                <textarea matInput formControlName="message" rows="4"
+                  placeholder="I'd like to enquire about admission for Std 8..."></textarea>
+                @if (hasError('message', 'required')) { <mat-error>Message is required</mat-error> }
+                @if (hasError('message', 'minlength')) { <mat-error>Minimum 10 characters</mat-error> }
+              </mat-form-field>
+              <button mat-raised-button color="primary" type="submit" class="submit-btn">
+                <mat-icon>send</mat-icon>
+                Send Message
+              </button>
+            </form>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Address Info -->
+      <div class="contact-info">
+        <mat-card class="info-card">
+          <mat-card-content>
+            <div class="info-block">
+              <mat-icon color="primary">location_on</mat-icon>
+              <div>
+                <h4>Our Address</h4>
+                <p>YPS Academy, 42 Shivaji Nagar,<br />Near Central Bus Stand,<br />Pune – 411005, Maharashtra</p>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="info-block">
+              <mat-icon color="primary">phone</mat-icon>
+              <div>
+                <h4>Phone</h4>
+                <p>+91 98765 43210<br />+91 91234 56789</p>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="info-block">
+              <mat-icon color="primary">email</mat-icon>
+              <div>
+                <h4>Email</h4>
+                <p>info&#64;ypsacademy.in<br />admissions&#64;ypsacademy.in</p>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="info-block">
+              <mat-icon color="primary">schedule</mat-icon>
+              <div>
+                <h4>Timing</h4>
+                <p>Mon – Sat: 7:00 AM – 9:00 PM<br />Sunday: 9:00 AM – 1:00 PM</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <div class="map-placeholder">
+          <mat-icon class="map-icon">map</mat-icon>
+          <p>42 Shivaji Nagar, Pune</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

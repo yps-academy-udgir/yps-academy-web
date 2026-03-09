@@ -36,6 +36,16 @@
   gap: 4px;
 }
 
+.website-btn {
+  margin-right: 4px;
+  font-size: 13px;
+  gap: 4px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  @media (max-width: 599px) { display: none; }
+}
+
 @media (max-width: 599px) {
   .brand-text {
     display: none;

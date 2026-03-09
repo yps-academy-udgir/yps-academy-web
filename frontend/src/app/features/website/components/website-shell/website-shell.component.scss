@@ -1,0 +1,9 @@
+﻿@use '../../../../../styles/variables' as v;
+
+.website-root {
+  min-height: 100vh;
+  background: var(--background-primary);
+  font-family: v.$font-family-base;
+  color: var(--text-primary);
+  overflow-x: hidden;
+}

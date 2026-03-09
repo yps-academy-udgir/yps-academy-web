@@ -1,0 +1,18 @@
+﻿<section class="ws-section achievements-section">
+  <div class="ws-container">
+    <div class="ws-section-header light">
+      <span class="ws-label">Our Track Record</span>
+      <h2>Achievements &amp; Milestones</h2>
+      <p>Numbers that reflect our commitment to excellence</p>
+    </div>
+    <div class="achievements-grid">
+      @for (item of achievements; track item.label) {
+        <div class="achievement-card">
+          <div class="achievement-icon">{{ item.icon }}</div>
+          <div class="achievement-value">{{ item.value }}</div>
+          <div class="achievement-label">{{ item.label }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

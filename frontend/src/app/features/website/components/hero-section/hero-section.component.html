@@ -1,0 +1,52 @@
+﻿<section class="hero-section" (mouseenter)="pauseSlider()" (mouseleave)="resumeSlider()">
+  <!-- Background Image Slider -->
+  <div class="hero-slider">
+    @for (image of backgroundImages; track image; let i = $index) {
+      <div class="hero-slide" [class.active]="currentSlide() === i" [style.background-image]="'url(' + image + ')'">
+      </div>
+    }
+  </div>
+  
+  <div class="hero-overlay"></div>
+  
+  <div class="hero-content fade-in">
+    <span class="hero-badge">
+      <mat-icon class="badge-icon">emoji_events</mat-icon>
+      #1 Coaching Institute in the City
+    </span>
+    <h1 class="hero-title">Build Your Future<br /><span class="highlight">With YPS Academy</span></h1>
+    <p class="hero-subtitle">
+      Excellence in education for Std 5 to 10 &amp; Competitive Exam Foundations.
+      Join 5000+ students who transformed their academic journey with us.
+    </p>
+    <div class="hero-actions">
+      <button mat-flat-button class="btn-primary" (click)="scrollToCourses()">
+        <mat-icon>school</mat-icon>
+        Explore Courses
+      </button>
+      <button mat-stroked-button class="btn-outline" (click)="scrollToContact()">
+        <mat-icon>how_to_reg</mat-icon>
+        Join Now
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span>5000+</span><small>Students</small></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span>20+</span><small>Years</small></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span>98%</span><small>Results</small></div>
+    </div>
+  </div>
+
+  <!-- Slider Navigation Dots -->
+  <div class="slider-dots">
+    @for (image of backgroundImages; track image; let i = $index) {
+      <button 
+        class="dot" 
+        [class.active]="currentSlide() === i" 
+        (click)="goToSlide(i)"
+        [attr.aria-label]="'Go to slide ' + (i + 1)"
+      ></button>
+    }
+  </div>
+</section>
