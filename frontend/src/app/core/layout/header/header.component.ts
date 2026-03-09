@@ -63,6 +63,13 @@ export class HeaderComponent {
   }
 
   /**
+   * Navigate to public website
+   */
+  goToWebsite(): void {
+    this.router.navigate(['/website']);
+  }
+
+  /**
    * Toggle between light and dark theme
    */
   toggleTheme(): void {

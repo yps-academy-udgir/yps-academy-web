@@ -1,0 +1,94 @@
+﻿@use '../../../../../styles/variables' as v;
+
+.ws-section {
+  border-top: 1px solid var(--border-color);
+}
+
+.faculty-slider {
+  display: flex;
+  align-items: center;
+  gap: v.$spacing-md;
+  margin-top: v.$spacing-xl;
+}
+
+.faculty-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: v.$spacing-lg;
+  flex: 1;
+  overflow: hidden;
+
+  @media (max-width: v.$breakpoint-md) { grid-template-columns: 1fr; }
+}
+
+.faculty-card {
+  border-radius: v.$border-radius-lg !important;
+  transition: transform v.$transition-normal, box-shadow v.$transition-normal;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: v.$shadow-lg !important;
+  }
+}
+
+.faculty-avatar {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: v.$border-radius-round !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: v.$font-size-lg !important;
+  font-weight: v.$font-weight-bold;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.faculty-qual,
+.faculty-exp {
+  display: flex;
+  align-items: center;
+  gap: v.$spacing-xxs;
+  font-size: v.$font-size-sm;
+  color: var(--text-secondary);
+  margin: v.$spacing-xxs 0 0;
+}
+
+.qual-icon,
+.exp-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--primary-color);
+}
+
+.slider-btn {
+  flex-shrink: 0;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color) !important;
+  border-radius: v.$border-radius-round !important;
+  transition: all v.$transition-fast !important;
+
+  &:hover {
+    background: var(--primary-color) !important;
+    color: #fff !important;
+  }
+}
+
+.slider-dots {
+  display: flex;
+  justify-content: center;
+  gap: v.$spacing-xs;
+  margin-top: v.$spacing-lg;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: v.$border-radius-round;
+  background: var(--border-color);
+  cursor: pointer;
+  transition: background v.$transition-fast;
+  &.active { background: var(--primary-color); }
+}
+

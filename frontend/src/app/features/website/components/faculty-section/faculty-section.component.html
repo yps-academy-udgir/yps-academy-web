@@ -1,0 +1,45 @@
+﻿<section class="ws-section faculty-section">
+  <div class="ws-container">
+    <div class="ws-section-header">
+      <span class="ws-label">Meet the Team</span>
+      <h2>Our Expert Faculty</h2>
+      <p>Experienced educators dedicated to your child's success</p>
+    </div>
+    <div class="faculty-slider">
+      <button mat-icon-button class="slider-btn" (click)="prev()" aria-label="Previous faculty">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <div class="faculty-cards">
+        @for (member of visibleFaculty(); track member.id) {
+          <mat-card class="faculty-card">
+            <mat-card-header>
+              <div mat-card-avatar class="faculty-avatar" [style.background]="member.color">
+                {{ member.initials }}
+              </div>
+              <mat-card-title>{{ member.name }}</mat-card-title>
+              <mat-card-subtitle>{{ member.subject }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="faculty-qual">
+                <mat-icon class="qual-icon">school</mat-icon>
+                {{ member.qualification }}
+              </p>
+              <p class="faculty-exp">
+                <mat-icon class="exp-icon">workspace_premium</mat-icon>
+                {{ member.experience }} Experience
+              </p>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+      <button mat-icon-button class="slider-btn" (click)="next()" aria-label="Next faculty">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+    <div class="slider-dots">
+      @for (member of faculty; track member.id; let i = $index) {
+        <span class="dot" [class.active]="i === activeIndex()" (click)="activeIndex.set(i)"></span>
+      }
+    </div>
+  </div>
+</section>

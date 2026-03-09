@@ -1,0 +1,113 @@
+﻿@use '../../../../../styles/variables' as v;
+
+.website-footer {
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+.footer-main {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: v.$spacing-xxl;
+  padding: v.$spacing-xxxl v.$spacing-lg;
+
+  @media (max-width: v.$breakpoint-md) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: v.$breakpoint-sm) { grid-template-columns: 1fr; }
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: v.$spacing-xs;
+  font-size: v.$font-size-xl;
+  font-weight: v.$font-weight-bold;
+  color: var(--text-primary);
+  margin-bottom: v.$spacing-md;
+}
+
+.footer-logo-icon {
+  font-size: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  color: var(--primary-color);
+}
+
+.footer-brand p {
+  font-size: v.$font-size-sm;
+  line-height: v.$line-height-relaxed;
+  margin-bottom: v.$spacing-lg;
+}
+
+.footer-social {
+  display: flex;
+  gap: v.$spacing-xxs;
+}
+
+.social-icon {
+  color: var(--text-secondary) !important;
+  transition: color v.$transition-fast;
+  &:hover { color: var(--primary-color) !important; }
+}
+
+.footer-col h4 {
+  color: var(--text-primary);
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 v.$spacing-md;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-xs;
+
+  li a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: v.$font-size-sm;
+    transition: color v.$transition-fast;
+    &:hover { color: var(--primary-color); }
+  }
+}
+
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-sm;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: v.$spacing-xs;
+    font-size: v.$font-size-sm;
+    color: var(--text-secondary);
+    line-height: v.$line-height-relaxed;
+  }
+}
+
+.contact-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--primary-color);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border-color);
+  padding: v.$spacing-md v.$spacing-lg;
+  text-align: center;
+  font-size: v.$font-size-xs;
+  color: var(--text-tertiary);
+}
+

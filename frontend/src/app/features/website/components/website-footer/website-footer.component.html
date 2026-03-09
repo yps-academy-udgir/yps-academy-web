@@ -1,0 +1,64 @@
+﻿<footer class="website-footer">
+  <div class="footer-main ws-container">
+    <!-- Brand -->
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <mat-icon class="footer-logo-icon">school</mat-icon> YPS Academy
+      </div>
+      <p>Empowering students from Std 5 to 10 with quality education and expert guidance since 2005.</p>
+      <div class="footer-social">
+        <a href="#" mat-icon-button class="social-icon" aria-label="Facebook"><mat-icon>facebook</mat-icon></a>
+        <a href="#" mat-icon-button class="social-icon" aria-label="Instagram"><mat-icon>photo_camera</mat-icon></a>
+        <a href="#" mat-icon-button class="social-icon" aria-label="YouTube"><mat-icon>play_circle</mat-icon></a>
+        <a href="#" mat-icon-button class="social-icon" aria-label="WhatsApp"><mat-icon>chat</mat-icon></a>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        @for (link of quickLinks; track link.label) {
+          <li><a [href]="link.href" (click)="scrollTo($event, link.href)">{{ link.label }}</a></li>
+        }
+      </ul>
+    </div>
+
+    <!-- Courses -->
+    <div class="footer-col">
+      <h4>Our Courses</h4>
+      <ul>
+        @for (course of courses; track course) {
+          <li><a href="#courses" (click)="scrollTo($event, '#courses')">{{ course }}</a></li>
+        }
+      </ul>
+    </div>
+
+    <!-- Contact -->
+    <div class="footer-col">
+      <h4>Contact Info</h4>
+      <ul class="contact-list">
+        <li>
+          <mat-icon class="contact-icon">location_on</mat-icon>
+          42 Shivaji Nagar, Near Central Bus Stand, Pune – 411005
+        </li>
+        <li>
+          <mat-icon class="contact-icon">phone</mat-icon>
+          +91 98765 43210
+        </li>
+        <li>
+          <mat-icon class="contact-icon">email</mat-icon>
+          info&#64;ypsacademy.in
+        </li>
+        <li>
+          <mat-icon class="contact-icon">schedule</mat-icon>
+          Mon–Sat: 7AM – 9PM
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© {{ currentYear }} YPS Academy. All Rights Reserved. Designed with ❤️ for Students.</p>
+  </div>
+</footer>

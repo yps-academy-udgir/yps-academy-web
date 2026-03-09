@@ -1,0 +1,63 @@
+﻿@use '../../../../../styles/variables' as v;
+
+.announcement-bar {
+  background: var(--primary-color);
+  color: var(--text-on-primary, white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$spacing-xs;
+  padding: v.$spacing-xs v.$spacing-xxl;
+  margin-top: 70px;
+  font-size: v.$font-size-sm;
+  position: relative;
+  max-height: 100px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.4s ease-out, opacity 0.3s ease-out, padding 0.4s ease-out, margin 0.4s ease-out;
+
+  &.hidden {
+    max-height: 0;
+    opacity: 0;
+    padding: 0 v.$spacing-xxl;
+    margin-top: 70px;
+    pointer-events: none;
+  }
+
+  p { 
+    margin: 0;
+  }
+
+  a {
+    color: currentColor;
+    opacity: 0.85;
+    font-weight: v.$font-weight-bold;
+    text-decoration: underline;
+    margin-left: v.$spacing-xs;
+    transition: opacity v.$transition-fast;
+    &:hover { 
+      opacity: 1;
+    }
+  }
+}
+
+.announcement-icon {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  flex-shrink: 0;
+}
+
+.dismiss-btn {
+  position: absolute;
+  right: v.$spacing-xs;
+  color: currentColor !important;
+  opacity: 0.7;
+  transition: opacity v.$transition-fast, transform v.$transition-fast;
+  
+  &:hover { 
+    opacity: 1 !important;
+    transform: scale(1.1);
+  }
+}
+

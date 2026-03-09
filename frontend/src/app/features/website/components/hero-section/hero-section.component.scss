@@ -1,0 +1,183 @@
+﻿@use '../../../../../styles/variables' as v;
+
+.hero-section {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-slider {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+
+  &.active {
+    opacity: 1;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--primary-color) 0%, rgba(0,0,0,0.4) 50%, var(--accent-color) 100%);
+    opacity: 0.85;
+  }
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #fff;
+  padding: v.$spacing-xxxl v.$spacing-lg;
+  max-width: 800px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: v.$spacing-xxs;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  padding: v.$spacing-xxs v.$spacing-md;
+  border-radius: v.$border-radius-xl;
+  font-size: v.$font-size-sm;
+  font-weight: v.$font-weight-medium;
+  margin-bottom: v.$spacing-lg;
+
+  .badge-icon {
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+}
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: v.$font-weight-bold;
+  line-height: v.$line-height-tight;
+  margin: 0 0 v.$spacing-lg;
+
+  .highlight { color: rgba(255,255,255,0.95); text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+}
+
+.hero-subtitle {
+  font-size: clamp(v.$font-size-md, 2vw, v.$font-size-xl);
+  opacity: 0.9;
+  line-height: v.$line-height-relaxed;
+  margin: 0 0 v.$spacing-xl;
+}
+
+.hero-actions {
+  display: flex;
+  gap: v.$spacing-md;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: v.$spacing-xxxl;
+}
+
+.btn-primary {
+  --mdc-filled-button-container-color: white;
+  --mdc-filled-button-label-text-color: var(--primary-color);
+  border-radius: v.$border-radius-xl !important;
+  font-size: v.$font-size-md !important;
+  font-weight: v.$font-weight-bold !important;
+  padding: v.$spacing-sm v.$spacing-xl !important;
+  transition: transform v.$transition-fast, box-shadow v.$transition-fast;
+
+  &:hover { transform: translateY(-3px); box-shadow: v.$shadow-lg; }
+}
+
+.btn-outline {
+  --mdc-outlined-button-outline-color: rgba(255,255,255,0.7);
+  --mdc-outlined-button-label-text-color: #fff;
+  border-radius: v.$border-radius-xl !important;
+  font-size: v.$font-size-md !important;
+  font-weight: v.$font-weight-bold !important;
+  padding: v.$spacing-sm v.$spacing-xl !important;
+  transition: all v.$transition-fast;
+
+  &:hover {
+    background-color: rgba(255,255,255,0.15) !important;
+    --mdc-outlined-button-outline-color: #fff;
+  }
+}
+
+.hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: v.$spacing-xl;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: center;
+  span { display: block; font-size: v.$font-size-xxl; font-weight: v.$font-weight-bold; color: rgba(255,255,255,0.95); }
+  small { opacity: 0.8; font-size: v.$font-size-sm; }
+}
+
+.stat-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255,255,255,0.3);
+}
+
+.slider-dots {
+  position: absolute;
+  bottom: v.$spacing-xl;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: v.$spacing-sm;
+  z-index: 3;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: all v.$transition-fast;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.7);
+    transform: scale(1.2);
+  }
+
+  &.active {
+    background: #fff;
+    transform: scale(1.3);
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeInUp 0.8s ease-out both; }

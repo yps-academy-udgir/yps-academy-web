@@ -1,0 +1,39 @@
+﻿<section class="ws-section testimonials-section">
+  <div class="ws-container">
+    <div class="ws-section-header">
+      <span class="ws-label">Student Stories</span>
+      <h2>What Our Students Say</h2>
+      <p>Real reviews from students who achieved their dreams with us</p>
+    </div>
+    <div class="testimonial-carousel">
+      @for (t of testimonials; track t.id; let i = $index) {
+        @if (i === activeIndex()) {
+          <mat-card class="testimonial-card">
+            <mat-card-content>
+              <mat-icon class="quote-icon">format_quote</mat-icon>
+              <p class="review-text">{{ t.review }}</p>
+              <div class="rating">
+                @for (star of ratings; track star) {
+                  <mat-icon class="star">star</mat-icon>
+                }
+              </div>
+              <mat-divider></mat-divider>
+              <div class="reviewer">
+                <div class="reviewer-avatar">{{ t.initials }}</div>
+                <div>
+                  <strong>{{ t.name }}</strong>
+                  <small>{{ t.standard }}</small>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      }
+    </div>
+    <div class="testimonial-dots">
+      @for (t of testimonials; track t.id; let i = $index) {
+        <span class="dot" [class.active]="i === activeIndex()" (click)="goTo(i)"></span>
+      }
+    </div>
+  </div>
+</section>
