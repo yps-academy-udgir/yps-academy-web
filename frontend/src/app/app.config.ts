@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 
@@ -22,8 +22,8 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     // Provide animations for Material components
       provideAnimationsAsync(),
-    // Provide HTTP client for API calls
-    provideHttpClient(),
+    // Provide HTTP client for API calls with interceptor support
+    provideHttpClient(withInterceptorsFromDi()),
     // Register custom HTTP interceptor
     {
       provide: HTTP_INTERCEPTORS,

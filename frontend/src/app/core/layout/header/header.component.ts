@@ -14,6 +14,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
 import { ThemeService } from '../../services/theme.service';
+import { AuthService } from '../../../features/auth/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -37,6 +38,9 @@ export class HeaderComponent {
   // Inject services
   private router = inject(Router);
   private themeService = inject(ThemeService);
+  private authService = inject(AuthService);
+
+  protected currentUser = this.authService.currentUser;
 
   // Computed signal for theme icon
   protected themeIcon = computed(() => 
@@ -84,11 +88,8 @@ export class HeaderComponent {
     console.log('Notifications clicked');
   }
 
-  /**
-   * Open user menu (placeholder)
-   */
-  openUserMenu(): void {
-    // TODO: Implement user menu
-    console.log('User menu clicked');
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/website']);
   }
 }

@@ -14,8 +14,12 @@ import {
   getStudentStats,
 } from '../controllers/student.controller';
 import { validateStudent, validateObjectId } from '../middleware/validation.middleware';
+import { verifyToken } from '../middleware/auth.middleware';
 
 const router = Router();
+
+// All student routes require a valid JWT
+router.use(verifyToken);
 
 /**
  * @route   GET /api/students/stats/overview

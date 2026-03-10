@@ -2,6 +2,7 @@ import { Router } from 'express';
 import studentRoutes from './student.routes';
 import examResultRoutes from './exam-result.routes';
 import facultyRoutes from './faculty.routes';
+import authRoutes from './auth.routes';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.get('/health', (req, res) => {
 });
 
 // Register route modules
+router.use('/auth', authRoutes);
 router.use('/students', studentRoutes);
 router.use('/exam-results', examResultRoutes);
 router.use('/faculty', facultyRoutes);
