@@ -15,8 +15,12 @@ import {
   getFacultyStats,
 } from '../controllers/faculty.controller';
 import { validateFaculty, validateAddPayment, validateObjectId } from '../middleware/validation.middleware';
+import { verifyToken } from '../middleware/auth.middleware';
 
 const router = Router();
+
+// All faculty routes require a valid JWT
+router.use(verifyToken);
 
 /**
  * @route   GET /api/faculty/stats/overview

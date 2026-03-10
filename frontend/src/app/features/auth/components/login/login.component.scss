@@ -1,0 +1,89 @@
+﻿:host {
+  display: block;
+}
+
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-image: url('https://picsum.photos/id/1060/1600/900');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.52);
+    pointer-events: none;
+  }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+// Override Material card background for both themes — scoped to this host only
+:host-context(.light-theme) .login-card,
+:host-context(body:not(.dark-theme)) .login-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+:host-context(.dark-theme) .login-card {
+  background: rgba(30, 30, 30, 0.88) !important;
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 16px 0 8px;
+}
+
+.login-logo {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.login-btn,
+.cancel-btn {
+  flex: 1;
+  height: 48px;
+  font-size: 1rem;
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+

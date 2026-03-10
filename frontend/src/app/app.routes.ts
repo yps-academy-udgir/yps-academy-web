@@ -3,6 +3,8 @@ import { MainLayoutComponent } from './core/layout/main-layout/main-layout.compo
 import { DashboardComponent } from './features/student/components/dashboard/dashboard.component';
 import { StudentListComponent } from './features/student/components/student-list/student-list.component';
 import { FACULTY_ROUTES } from './features/faculty/faculty.routes';
+import { AUTH_ROUTES } from './features/auth/auth.routes';
+import { authGuard } from './core/guards/auth.guard';
 
 /**
  * Application Routes
@@ -11,8 +13,13 @@ import { FACULTY_ROUTES } from './features/faculty/faculty.routes';
  */
 export const routes: Routes = [
   {
+    path: 'auth',
+    children: AUTH_ROUTES,
+  },
+  {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -86,6 +93,6 @@ export const routes: Routes = [
   // Wildcard route for 404
   {
     path: '**',
-    redirectTo: 'dashboard',
+    redirectTo: 'auth/login',
   },
 ];

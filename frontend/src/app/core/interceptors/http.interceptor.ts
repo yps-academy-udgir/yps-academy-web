@@ -77,21 +77,29 @@ export class AppHttpInterceptor implements HttpInterceptor {
    * @returns Modified request with additional headers
    */
   private addHeaders(req: HttpRequest<any>): HttpRequest<any> {
-    // Skip adding headers for certain endpoints if needed
-    const headersToAdd: { [key: string]: string } = {
-      'Content-Type': 'application/json',
-      // 'Authorization': `Bearer ${this.getToken()}`, // Add bearer token if available
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-App-Version': '1.0.0',
-      'X-Timestamp': new Date().toISOString(),
-    };
+    const token = localStorage.getItem('yps_token');
 
-    let clonedReq = req;
+    // Debug: Log token status
+    if (token) {
+      console.debug('[HTTP Interceptor] Token found, attaching to request:', req.url);
+    } else {
+      console.warn('[HTTP Interceptor] No token found in localStorage for request:', req.url);
+    }
 
-    // Only add content-type for non-multipart requests
-    if (!req.headers.has('Content-Type') && !(req.body instanceof FormData)) {
+    // Always attach Authorization header when a token exists
+    let clonedReq = token
+      ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+      : req;
+
+    // Only add Content-Type and other headers for non-multipart requests
+    if (!clonedReq.headers.has('Content-Type') && !(req.body instanceof FormData)) {
       clonedReq = clonedReq.clone({
-        setHeaders: headersToAdd,
+        setHeaders: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-App-Version': '1.0.0',
+          'X-Timestamp': new Date().toISOString(),
+        },
       });
     }
 
@@ -113,9 +121,11 @@ export class AppHttpInterceptor implements HttpInterceptor {
       // Bad request
       errorMessage = error.error?.error || 'Invalid request';
     } else if (error.status === 401) {
-      // Unauthorized
+      // Unauthorized — clear session and redirect to login
       errorMessage = 'Unauthorized access. Please login again.';
-      // Trigger logout logic here if needed
+      localStorage.removeItem('yps_token');
+      localStorage.removeItem('yps_user');
+      window.location.href = '/auth/login';
     } else if (error.status === 403) {
       // Forbidden
       errorMessage = 'You do not have permission to access this resource.';

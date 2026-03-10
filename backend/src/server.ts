@@ -7,6 +7,7 @@
 import dotenv from 'dotenv';
 import { createApp } from './app';
 import { connectDatabase } from './config/database.config';
+import { seedAuthUsers } from './utils/seed-auth.util';
 
 // Load environment variables
 dotenv.config();
@@ -21,6 +22,9 @@ const startServer = async (): Promise<void> => {
   try {
     // Connect to database
     await connectDatabase();
+
+    // Seed default auth users (only inserts if not already present)
+    await seedAuthUsers();
 
     // Create Express app
     const app = createApp();

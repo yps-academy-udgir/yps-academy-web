@@ -7,8 +7,12 @@ import {
   deleteExamResult,
 } from '../controllers/exam-result.controller';
 import { validateObjectId } from '../middleware/validation.middleware';
+import { verifyToken } from '../middleware/auth.middleware';
 
 const router = Router();
+
+// All exam-result routes require a valid JWT
+router.use(verifyToken);
 
 router.get('/',     getExamResultsByStudent);               // GET  /api/exam-results?studentId=xxx
 router.get('/:id',  validateObjectId, getExamResultById);   // GET  /api/exam-results/:id
