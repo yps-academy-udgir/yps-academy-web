@@ -267,38 +267,38 @@ body {
 }
 
 // Snackbar custom styles
-.snackbar-success {
+.snackbar-success .mat-mdc-snack-bar-container {
   background-color: vars.$success-600 !important;
   color: white !important;
 
-  button {
+  .mat-mdc-button .mdc-button__label {
     color: white !important;
   }
 }
 
-.snackbar-error {
+.snackbar-error .mat-mdc-snack-bar-container {
   background-color: vars.$warn-600 !important;
   color: white !important;
 
-  button {
+  .mat-mdc-button .mdc-button__label {
     color: white !important;
   }
 }
 
-.snackbar-warning {
+.snackbar-warning .mat-mdc-snack-bar-container {
   background-color: #ff9800 !important;
   color: white !important;
 
-  button {
+  .mat-mdc-button .mdc-button__label {
     color: white !important;
   }
 }
 
-.snackbar-info {
+.snackbar-info .mat-mdc-snack-bar-container {
   background-color: #2196f3 !important;
   color: white !important;
 
-  button {
+  .mat-mdc-button .mdc-button__label {
     color: white !important;
   }
 }
