@@ -14,8 +14,8 @@ export class NotificationService {
 
   private defaultConfig: MatSnackBarConfig = {
     duration: 4000,
-    horizontalPosition: 'end',
-    verticalPosition: 'top',
+    horizontalPosition: 'right',
+    verticalPosition: 'bottom',
   };
 
   /**
