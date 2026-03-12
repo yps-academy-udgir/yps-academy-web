@@ -7,5 +7,6 @@ export const WEBSITE_ROUTES: Routes = [
       import('./components/website-shell/website-shell.component').then(
         (m) => m.WebsiteShellComponent
       ),
+    data: { title: 'Website' },
   },
 ];
