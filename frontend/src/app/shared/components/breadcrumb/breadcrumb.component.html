@@ -1,0 +1,28 @@
+﻿<nav class="breadcrumb-container" aria-label="breadcrumb">
+  <div class="breadcrumb-wrapper">
+    @for (crumb of breadcrumbs(); track crumb.url; let isLast = $last) {
+      @if (crumb.isClickable) {
+        <a
+          [routerLink]="crumb.url"
+          class="breadcrumb-link"
+          [attr.aria-current]="isLast ? 'page' : null"
+        >
+          @if (crumb.icon) {
+            <mat-icon class="breadcrumb-icon">{{ crumb.icon }}</mat-icon>
+          }
+          <span>{{ crumb.label }}</span>
+        </a>
+      } @else {
+        <span class="breadcrumb-current" aria-current="page">
+          @if (crumb.icon) {
+            <mat-icon class="breadcrumb-icon">{{ crumb.icon }}</mat-icon>
+          }
+          <span>{{ crumb.label }}</span>
+        </span>
+      }
+      @if (!isLast) {
+        <mat-icon class="breadcrumb-separator">chevron_right</mat-icon>
+      }
+    }
+  </div>
+</nav>
