@@ -6,21 +6,59 @@
 
   <!-- Navigation Menu -->
   <mat-nav-list class="nav-list">
-    @for (item of menuItems(); track item.route) {
-      <a
-        mat-list-item
-        [routerLink]="item.route"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: item.route === '/students' }"
-        (click)="onNavigate()"
-        class="nav-item"
-      >
-        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-        <span matListItemTitle>{{ item.label }}</span>
-        @if (item.badge) {
-          <span matListItemMeta class="badge">{{ item.badge }}</span>
+    @for (item of menuItems(); track item.label) {
+      <!-- Parent item with children -->
+      @if (hasChildren(item)) {
+        <a
+          mat-list-item
+          (click)="toggleExpand(item)"
+          class="nav-item parent-item"
+          [class.expanded]="item.expanded"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+          <span matListItemMeta>
+            <mat-icon class="expand-icon">expand_more</mat-icon>
+          </span>
+        </a>
+        
+        <!-- Child items -->
+        @if (item.expanded) {
+          <div class="child-items">
+            @for (child of item.children; track child.route) {
+              <a
+                mat-list-item
+                [routerLink]="child.route"
+                routerLinkActive="active"
+                (click)="onNavigate()"
+                class="nav-item child-item"
+              >
+                <mat-icon matListItemIcon>{{ child.icon }}</mat-icon>
+                <span matListItemTitle>{{ child.label }}</span>
+                @if (child.badge) {
+                  <span matListItemMeta class="badge">{{ child.badge }}</span>
+                }
+              </a>
+            }
+          </div>
         }
-      </a>
+      } @else {
+        <!-- Simple item without children -->
+        <a
+          mat-list-item
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="onNavigate()"
+          class="nav-item"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+          @if (item.badge) {
+            <span matListItemMeta class="badge">{{ item.badge }}</span>
+          }
+        </a>
+      }
     }
   </mat-nav-list>
 

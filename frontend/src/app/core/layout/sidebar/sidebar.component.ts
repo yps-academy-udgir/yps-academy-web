@@ -13,8 +13,10 @@ import { MatDividerModule } from '@angular/material/divider';
 interface MenuItem {
   label: string;
   icon: string;
-  route: string;
+  route?: string;
   badge?: number;
+  children?: MenuItem[];
+  expanded?: boolean;
 }
 
 @Component({
@@ -34,7 +36,7 @@ export class SidebarComponent {
   // Output event when navigation item is clicked
   navigationClick = output<void>();
 
-  // Menu items using signals
+  // Menu items using signals with hierarchical structure
   menuItems = signal<MenuItem[]>([
     {
       label: 'Dashboard',
@@ -44,31 +46,71 @@ export class SidebarComponent {
     {
       label: 'Students',
       icon: 'people',
-      route: '/students',
+      expanded: false,
+      children: [
+        {
+          label: 'Students Dashboard',
+          icon: 'dashboard',
+          route: '/students/dashboard',
+        },
+        {
+          label: 'Students List',
+          icon: 'list',
+          route: '/students/management/list',
+        },
+        {
+          label: 'Add Student',
+          icon: 'person_add',
+          route: '/students/management/add',
+        },
+      ],
     },
     {
-      label: 'Add Student',
-      icon: 'person_add',
-      route: '/students/add',
-    },
-    {
-      label: 'Faculty Dashboard',
-      icon: 'dashboard_customize',
-      route: '/faculty',
-    },
-    {
-      label: 'Faculty List',
+      label: 'Faculty',
       icon: 'school',
-      route: '/faculty/list',
-    },
-    {
-      label: 'Add Faculty',
-      icon: 'person_add',
-      route: '/faculty/add',
+      expanded: false,
+      children: [
+        {
+          label: 'Faculty Dashboard',
+          icon: 'dashboard',
+          route: '/faculty',
+        },
+        {
+          label: 'Faculty List',
+          icon: 'list',
+          route: '/faculty/list',
+        },
+        {
+          label: 'Add Faculty',
+          icon: 'person_add',
+          route: '/faculty/add',
+        },
+      ],
     },
   ]);
 
   constructor(private router: Router) {}
+
+  /**
+   * Toggle expansion of parent menu item
+   */
+  toggleExpand(item: MenuItem): void {
+    if (item.children) {
+      const items = this.menuItems();
+      const index = items.indexOf(item);
+      if (index !== -1) {
+        items[index].expanded = !items[index].expanded;
+        this.menuItems.set([...items]); // Trigger change detection
+      }
+    }
+  }
+
+  /**
+   * Check if a menu item has children
+   */
+  hasChildren(item: MenuItem): boolean {
+    return !!item.children && item.children.length > 0;
+  }
 
   /**
    * Handle navigation click

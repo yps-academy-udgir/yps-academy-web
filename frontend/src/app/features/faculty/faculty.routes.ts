@@ -1,12 +1,15 @@
 ﻿import { Routes } from '@angular/router';
 
 export const FACULTY_ROUTES: Routes = [
+  // Default route - redirect to dashboard
   {
     path: '',
     loadComponent: () =>
       import('./components/faculty-dashboard/faculty-dashboard.component').then((m) => m.FacultyDashboardComponent),
     data: { title: 'Faculty Dashboard' },
   },
+
+  // Management group - faculty CRUD operations
   {
     path: 'list',
     loadComponent: () =>
@@ -31,4 +34,23 @@ export const FACULTY_ROUTES: Routes = [
       import('./components/faculty-detail/faculty-detail.component').then((m) => m.FacultyDetailComponent),
     data: { title: 'Faculty Details' },
   },
+
+  // Future feature placeholders (lazy-loaded modules)
+  // Uncomment and implement when ready
+  // {
+  //   path: 'reports',
+  //   loadChildren: () => import('./modules/reports/reports.routes').then((m) => m.FACULTY_REPORTS_ROUTES),
+  // },
+  // {
+  //   path: 'attendance',
+  //   loadChildren: () => import('./modules/attendance/attendance.routes').then((m) => m.FACULTY_ATTENDANCE_ROUTES),
+  // },
+  // {
+  //   path: 'schedule',
+  //   loadChildren: () => import('./modules/schedule/schedule.routes').then((m) => m.FACULTY_SCHEDULE_ROUTES),
+  // },
+  // {
+  //   path: 'documents',
+  //   loadChildren: () => import('./modules/documents/documents.routes').then((m) => m.FACULTY_DOCUMENTS_ROUTES),
+  // },
 ];

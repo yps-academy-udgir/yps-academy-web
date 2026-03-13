@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './core/layout/main-layout/main-layout.component';
-import { DashboardComponent } from './features/student/components/dashboard/dashboard.component';
-import { StudentListComponent } from './features/student/components/student-list/student-list.component';
+import { MainDashboardComponent } from './features/dashboard/main-dashboard.component';
+import { STUDENT_ROUTES } from './features/student/student.routes';
 import { FACULTY_ROUTES } from './features/faculty/faculty.routes';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { authGuard } from './core/guards/auth.guard';
@@ -28,55 +28,12 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        component: DashboardComponent,
-        data: { title: 'Dashboard' },
+        component: MainDashboardComponent,
+        data: { title: 'Main Dashboard' },
       },
       {
         path: 'students',
-        children: [
-          {
-            path: '',
-            component: StudentListComponent,
-            data: { title: 'Students List' },
-          },
-          {
-            path: 'list',
-            component: StudentListComponent,
-            data: { title: 'Students List' },
-          },
-          {
-            path: 'add',
-            loadComponent: () =>
-              import('./features/student/components/student-form/student-form.component').then(
-                (m) => m.StudentFormComponent
-              ),
-            data: { title: 'Add New Student' },
-          },
-          {
-            path: ':id/edit',
-            loadComponent: () =>
-              import('./features/student/components/student-form/student-form.component').then(
-                (m) => m.StudentFormComponent
-              ),
-            data: { title: 'Edit Student' },
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import('./features/student/components/student-detail/student-detail.component').then(
-                (m) => m.StudentDetailComponent
-              ),
-            data: { title: 'Student Details' },
-          },
-          {
-            path: ':id/marks',
-            loadComponent: () =>
-              import('./features/student/components/marks-entry/marks-entry.component').then(
-                (m) => m.MarksEntryComponent
-              ),
-            data: { title: 'Enter Marks' },
-          },
-        ],
+        children: STUDENT_ROUTES,
       },
       {
         path: 'faculty',
