@@ -1,0 +1,82 @@
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Main Dashboard</h1>
+    <p class="dashboard-subtitle">Overview of all modules and key statistics</p>
+    <button mat-raised-button color="primary" (click)="refresh()" [disabled]="loading()">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading dashboard data...</p>
+    </div>
+  }
+
+  <!-- Module Cards Grid -->
+  @if (!loading()) {
+    <div class="modules-grid">
+      @for (module of moduleCards(); track module.title) {
+        <mat-card class="module-card" (click)="navigateToModule(module.route)">
+          <mat-card-header>
+            <div class="module-icon" [style.background-color]="module.bgColor">
+              <mat-icon [style.color]="module.color">{{ module.icon }}</mat-icon>
+            </div>
+            <mat-card-title>{{ module.title }}</mat-card-title>
+            <mat-card-subtitle>{{ module.description }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="stats-container">
+              @for (stat of module.stats; track stat.label) {
+                <div class="stat-item">
+                  @if (stat.icon) {
+                    <mat-icon class="stat-icon">{{ stat.icon }}</mat-icon>
+                  }
+                  <div class="stat-content">
+                    <span class="stat-value">{{ stat.value }}</span>
+                    <span class="stat-label">{{ stat.label }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button mat-button color="primary">
+              View Details
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+
+  <!-- Quick Actions Section -->
+  <div class="quick-actions">
+    <h2>Quick Actions</h2>
+    <div class="actions-grid">
+      <button mat-raised-button color="primary" (click)="navigateToModule('/students/management/add')">
+        <mat-icon>person_add</mat-icon>
+        Add Student
+      </button>
+      <button mat-raised-button color="primary" (click)="navigateToModule('/faculty/add')">
+        <mat-icon>person_add</mat-icon>
+        Add Faculty
+      </button>
+      <button mat-raised-button (click)="navigateToModule('/students/management/list')">
+        <mat-icon>list</mat-icon>
+        View All Students
+      </button>
+      <button mat-raised-button (click)="navigateToModule('/faculty/list')">
+        <mat-icon>list</mat-icon>
+        View All Faculty
+      </button>
+    </div>
+  </div>
+</div>
