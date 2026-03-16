@@ -66,6 +66,6 @@ export class WebsiteNavbarComponent {
   }
 
   goToAdmin(): void {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/auth/login']);
   }
 }

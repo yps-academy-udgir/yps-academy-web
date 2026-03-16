@@ -14,6 +14,11 @@ import { authGuard } from './core/guards/auth.guard';
  */
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'website',
+    pathMatch: 'full',
+  },
+  {
     path: 'auth',
     children: AUTH_ROUTES,
   },
@@ -55,6 +60,6 @@ export const routes: Routes = [
   // Wildcard route for 404
   {
     path: '**',
-    redirectTo: 'auth/login',
+    redirectTo: 'website',
   },
 ];
