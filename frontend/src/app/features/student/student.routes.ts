@@ -60,6 +60,25 @@ export const STUDENT_ROUTES: Routes = [
     ],
   },
 
+  // Fee management
+  {
+    path: 'fees',
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./components/fee-dashboard/fee-dashboard.component').then((m) => m.FeeDashboardComponent),
+        data: { title: 'Fee Dashboard' },
+      },
+      {
+        path: 'defaulters',
+        loadComponent: () =>
+          import('./components/fee-defaulters/fee-defaulters.component').then((m) => m.FeeDefaultersComponent),
+        data: { title: 'Fee Defaulters' },
+      },
+    ],
+  },
+
   // Future feature placeholders (lazy-loaded modules)
   // Uncomment and implement when ready
   // {

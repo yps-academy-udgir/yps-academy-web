@@ -239,3 +239,152 @@ export const validateAddPayment = (req: Request, res: Response, next: NextFuncti
   next();
 };
 
+/**
+ * Validate classroom creation/update data
+ */
+export const validateClassroom = (req: Request, res: Response, next: NextFunction): void => {
+  const { class: classValue, section, roomNumber, capacity, academicYear } = req.body;
+  const errors: string[] = [];
+
+  const validClasses = ['5th', '6th', '7th', '8th', '9th', '10th'];
+
+  if (req.method === 'POST') {
+    if (!classValue || !validClasses.includes(classValue)) {
+      errors.push('Class must be one of: ' + validClasses.join(', '));
+    }
+    if (!section || !/^[A-Z]$/i.test(section.trim())) {
+      errors.push('Section must be a single letter (A-Z)');
+    }
+    if (!roomNumber || roomNumber.trim().length < 1) {
+      errors.push('Room number is required');
+    }
+    if (capacity === undefined || capacity === null || isNaN(Number(capacity)) || Number(capacity) < 1) {
+      errors.push('Capacity must be at least 1');
+    }
+    if (!academicYear || !/^\d{4}-\d{4}$/.test(academicYear)) {
+      errors.push('Academic year must be in YYYY-YYYY format (e.g., 2025-2026)');
+    }
+  }
+
+  if (req.method === 'PUT') {
+    if (classValue !== undefined && !validClasses.includes(classValue)) {
+      errors.push('Class must be one of: ' + validClasses.join(', '));
+    }
+    if (section !== undefined && !/^[A-Z]$/i.test(section.trim())) {
+      errors.push('Section must be a single letter (A-Z)');
+    }
+    if (roomNumber !== undefined && roomNumber.trim().length < 1) {
+      errors.push('Room number is required');
+    }
+    if (capacity !== undefined && (isNaN(Number(capacity)) || Number(capacity) < 1)) {
+      errors.push('Capacity must be at least 1');
+    }
+    if (academicYear !== undefined && !/^\d{4}-\d{4}$/.test(academicYear)) {
+      errors.push('Academic year must be in YYYY-YYYY format (e.g., 2025-2026)');
+    }
+  }
+
+  if (errors.length > 0) {
+    errorResponse(res, 'Validation failed', 400, errors);
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Validate faculty assignment to classroom
+ */
+export const validateFacultyAssignment = (req: Request, res: Response, next: NextFunction): void => {
+  const { facultyId, subject, isPrimary } = req.body;
+  const errors: string[] = [];
+
+  const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+  const validSubjects = ['Mathematics', 'Science', 'English'];
+
+  if (!facultyId || !objectIdRegex.test(facultyId)) {
+    errors.push('Valid faculty ID is required');
+  }
+
+  if (!subject || !validSubjects.includes(subject)) {
+    errors.push('Subject must be one of: ' + validSubjects.join(', '));
+  }
+
+  if (isPrimary !== undefined && typeof isPrimary !== 'boolean') {
+    errors.push('isPrimary must be a boolean value');
+  }
+
+  if (errors.length > 0) {
+    errorResponse(res, 'Validation failed', 400, errors);
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Validate student enrollment
+ */
+export const validateStudentEnrollment = (req: Request, res: Response, next: NextFunction): void => {
+  const { studentId } = req.body;
+  const errors: string[] = [];
+
+  const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+
+  if (!studentId || !objectIdRegex.test(studentId)) {
+    errors.push('Valid student ID is required');
+  }
+
+  if (errors.length > 0) {
+    errorResponse(res, 'Validation failed', 400, errors);
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Validate schedule update
+ */
+export const validateScheduleUpdate = (req: Request, res: Response, next: NextFunction): void => {
+  const { schedule } = req.body;
+  const errors: string[] = [];
+
+  const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+  const validDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const validSubjects = ['Mathematics', 'Science', 'English'];
+  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+  if (!Array.isArray(schedule)) {
+    errors.push('Schedule must be an array');
+  } else {
+    schedule.forEach((slot: any, i: number) => {
+      if (!slot.day || !validDays.includes(slot.day)) {
+        errors.push(`schedule[${i}]: Day must be one of: ${validDays.join(', ')}`);
+      }
+      if (slot.period === undefined || !Number.isInteger(slot.period) || slot.period < 1 || slot.period > 8) {
+        errors.push(`schedule[${i}]: Period must be an integer between 1 and 8`);
+      }
+      if (!slot.subject || !validSubjects.includes(slot.subject)) {
+        errors.push(`schedule[${i}]: Subject must be one of: ${validSubjects.join(', ')}`);
+      }
+      if (!slot.facultyId || !objectIdRegex.test(slot.facultyId)) {
+        errors.push(`schedule[${i}]: Valid faculty ID is required`);
+      }
+      if (!slot.startTime || !timeRegex.test(slot.startTime)) {
+        errors.push(`schedule[${i}]: Start time must be in HH:MM format`);
+      }
+      if (!slot.endTime || !timeRegex.test(slot.endTime)) {
+        errors.push(`schedule[${i}]: End time must be in HH:MM format`);
+      }
+    });
+  }
+
+  if (errors.length > 0) {
+    errorResponse(res, 'Validation failed', 400, errors);
+    return;
+  }
+
+  next();
+};
+

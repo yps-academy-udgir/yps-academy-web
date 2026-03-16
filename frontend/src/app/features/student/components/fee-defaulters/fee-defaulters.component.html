@@ -1,0 +1,69 @@
+<div class="defaulters-container">
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="back()" matTooltip="Back to Fee Dashboard">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h2>Fee Defaulters</h2>
+    </div>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Filter by Class</mat-label>
+      <mat-select [value]="classFilter()" (valueChange)="classFilter.set($event)">
+        <mat-option value="">All Classes</mat-option>
+        @for (cls of classOptions; track cls) {
+          <mat-option [value]="cls">Class {{ cls }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <div class="spinner-center"><mat-spinner diameter="48"></mat-spinner></div>
+  } @else {
+    <mat-card>
+      <mat-card-content>
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="filtered()" class="mat-elevation-z1">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Student</th>
+              <td mat-cell *matCellDef="let row">{{ row.firstName }} {{ row.lastName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="class">
+              <th mat-header-cell *matHeaderCellDef>Class</th>
+              <td mat-cell *matCellDef="let row">{{ row.academicDetails?.class || 'N/A' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="contact">
+              <th mat-header-cell *matHeaderCellDef>Contact</th>
+              <td mat-cell *matCellDef="let row">{{ row.contact || 'N/A' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="totalFees">
+              <th mat-header-cell *matHeaderCellDef>Total Fees</th>
+              <td mat-cell *matCellDef="let row">&#8377;{{ row.feeDetails?.totalFees | number }}</td>
+            </ng-container>
+            <ng-container matColumnDef="paid">
+              <th mat-header-cell *matHeaderCellDef>Paid</th>
+              <td mat-cell *matCellDef="let row" class="green">&#8377;{{ row.feeDetails?.paidAmount | number }}</td>
+            </ng-container>
+            <ng-container matColumnDef="pending">
+              <th mat-header-cell *matHeaderCellDef>Pending</th>
+              <td mat-cell *matCellDef="let row" class="red"><strong>&#8377;{{ row.feeDetails?.pendingFees | number }}</strong></td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <button mat-icon-button (click)="viewStudent(row._id)" matTooltip="View Student">
+                  <mat-icon>open_in_new</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+        @if (filtered().length === 0) {
+          <p class="empty-message">No defaulters found.</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

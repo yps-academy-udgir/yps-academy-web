@@ -3,6 +3,7 @@ import { MainLayoutComponent } from './core/layout/main-layout/main-layout.compo
 import { MainDashboardComponent } from './features/dashboard/main-dashboard.component';
 import { STUDENT_ROUTES } from './features/student/student.routes';
 import { FACULTY_ROUTES } from './features/faculty/faculty.routes';
+import { CLASSROOM_ROUTES } from './features/classroom/classroom.routes';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -38,6 +39,10 @@ export const routes: Routes = [
       {
         path: 'faculty',
         children: FACULTY_ROUTES,
+      },
+      {
+        path: 'classrooms',
+        children: CLASSROOM_ROUTES,
       },
     ],
   },

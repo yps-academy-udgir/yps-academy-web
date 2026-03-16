@@ -1,0 +1,71 @@
+﻿<div class="fee-dashboard-container">
+  <div class="page-header">
+    <h2>Fee Management</h2>
+    <button mat-raised-button color="warn" (click)="goToDefaulters()">
+      <mat-icon>warning</mat-icon> View Defaulters
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="spinner-center"><mat-spinner diameter="48"></mat-spinner></div>
+  } @else {
+    @if (totals(); as t) {
+      <div class="totals-row">
+        <mat-card class="total-card total">
+          <mat-card-content>
+            <mat-icon>receipt_long</mat-icon>
+            <div class="amount">&#8377;{{ t.totalFees | number }}</div>
+            <div class="label">Total Fees</div>
+            <div class="sub">{{ t.studentCount }} students</div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="total-card collected">
+          <mat-card-content>
+            <mat-icon>check_circle</mat-icon>
+            <div class="amount">&#8377;{{ t.collected | number }}</div>
+            <div class="label">Collected</div>
+            <div class="sub">{{ collectionRate() }}% collection rate</div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="total-card pending">
+          <mat-card-content>
+            <mat-icon>pending</mat-icon>
+            <div class="amount">&#8377;{{ t.pending | number }}</div>
+            <div class="label">Pending</div>
+            <div class="sub">{{ t.studentCount }} students affected</div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+
+    <h3 class="section-title">Class-wise Breakdown</h3>
+    @if (!hasClassData()) {
+      <p class="section-title">No class fee data available.</p>
+    } @else {
+      <div class="class-grid">
+        @for (row of classRows(); track row.class) {
+          <mat-card class="class-card">
+            <mat-card-header>
+              <mat-card-title>Class {{ row.class }}</mat-card-title>
+              <mat-card-subtitle>{{ row.studentCount }} students</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="fee-row">
+                <span>Total</span><strong>&#8377;{{ row.totalFees | number }}</strong>
+              </div>
+              <div class="fee-row green">
+                <span>Collected</span><strong>&#8377;{{ row.collected | number }}</strong>
+              </div>
+              <div class="fee-row red">
+                <span>Pending</span><strong>&#8377;{{ row.pending | number }}</strong>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="row.totalFees ? (row.collected / row.totalFees * 100) : 0"></div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    }
+  }
+</div>

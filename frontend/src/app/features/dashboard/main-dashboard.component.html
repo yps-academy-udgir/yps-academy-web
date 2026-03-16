@@ -1,9 +1,11 @@
 <div class="dashboard-container">
   <!-- Header Section -->
   <div class="dashboard-header">
-    <h1 class="dashboard-title">Main Dashboard</h1>
-    <p class="dashboard-subtitle">Overview of all modules and key statistics</p>
-    <button mat-raised-button color="primary" (click)="refresh()" [disabled]="loading()">
+    <div class="header-text">
+      <h1 class="dashboard-title">Main Dashboard</h1>
+      <p class="dashboard-subtitle">Overview of all modules and key statistics</p>
+    </div>
+    <button mat-stroked-button (click)="refresh()" [disabled]="loading()">
       <mat-icon>refresh</mat-icon>
       Refresh
     </button>
@@ -12,49 +14,58 @@
   <!-- Loading Spinner -->
   @if (loading()) {
     <div class="loading-container">
-      <mat-spinner diameter="50"></mat-spinner>
+      <mat-spinner diameter="48"></mat-spinner>
       <p>Loading dashboard data...</p>
     </div>
   }
 
-  <!-- Module Cards Grid -->
+  <!-- Module Accordion -->
   @if (!loading()) {
-    <div class="modules-grid">
+    <mat-accordion class="modules-accordion" multi>
       @for (module of moduleCards(); track module.title) {
-        <mat-card class="module-card" (click)="navigateToModule(module.route)">
-          <mat-card-header>
-            <div class="module-icon" [style.background-color]="module.bgColor">
-              <mat-icon [style.color]="module.color">{{ module.icon }}</mat-icon>
-            </div>
-            <mat-card-title>{{ module.title }}</mat-card-title>
-            <mat-card-subtitle>{{ module.description }}</mat-card-subtitle>
-          </mat-card-header>
-
-          <mat-card-content>
-            <div class="stats-container">
-              @for (stat of module.stats; track stat.label) {
-                <div class="stat-item">
-                  @if (stat.icon) {
-                    <mat-icon class="stat-icon">{{ stat.icon }}</mat-icon>
-                  }
-                  <div class="stat-content">
-                    <span class="stat-value">{{ stat.value }}</span>
-                    <span class="stat-label">{{ stat.label }}</span>
-                  </div>
+        <mat-expansion-panel class="module-panel" expanded>
+          <!-- Panel Header -->
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <div class="panel-title-content">
+                <div class="module-icon" [style.background-color]="module.bgColor">
+                  <mat-icon [style.color]="module.color">{{ module.icon }}</mat-icon>
                 </div>
-              }
-            </div>
-          </mat-card-content>
+                <span class="module-name">{{ module.title }}</span>
+              </div>
+            </mat-panel-title>
+            <mat-panel-description>
+              {{ module.description }}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
 
-          <mat-card-actions>
-            <button mat-button color="primary">
+          <!-- Panel Body: Stats Row -->
+          <div class="stats-row">
+            @for (stat of module.stats; track stat.label) {
+              <div class="stat-chip">
+                @if (stat.icon) {
+                  <mat-icon class="stat-icon" [style.color]="module.color">{{ stat.icon }}</mat-icon>
+                }
+                <div class="stat-content">
+                  <span class="stat-value">{{ stat.value }}</span>
+                  <span class="stat-label">{{ stat.label }}</span>
+                </div>
+              </div>
+            }
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- Panel Actions -->
+          <mat-action-row>
+            <button mat-button color="primary" (click)="navigateToModule(module.route)">
               View Details
               <mat-icon>arrow_forward</mat-icon>
             </button>
-          </mat-card-actions>
-        </mat-card>
+          </mat-action-row>
+        </mat-expansion-panel>
       }
-    </div>
+    </mat-accordion>
   }
 
   <!-- Quick Actions Section -->
@@ -76,6 +87,18 @@
       <button mat-raised-button (click)="navigateToModule('/faculty/list')">
         <mat-icon>list</mat-icon>
         View All Faculty
+      </button>
+      <button mat-raised-button color="primary" (click)="navigateToModule('/classrooms/management/add')">
+        <mat-icon>add_circle</mat-icon>
+        Add Classroom
+      </button>
+      <button mat-raised-button (click)="navigateToModule('/classrooms/management/list')">
+        <mat-icon>meeting_room</mat-icon>
+        View All Classrooms
+      </button>
+      <button mat-raised-button (click)="navigateToModule('/classrooms/attendance/mark')">
+        <mat-icon>how_to_reg</mat-icon>
+        Mark Attendance
       </button>
     </div>
   </div>

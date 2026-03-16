@@ -1,0 +1,153 @@
+<div class="detail-container">
+  @if (loading()) {
+    <div class="loading-state">
+      <p>Loading classroom details...</p>
+    </div>
+  } @else if (classroom()) {
+    <mat-card class="detail-card">
+      <mat-card-content>
+        <div class="detail-header">
+          <div>
+            <p class="title-kicker">Classroom</p>
+            <h2 class="detail-title">
+              {{ classroom()!.class }} {{ classroom()!.section }}
+            </h2>
+            <p class="detail-subtitle">Room {{ classroom()!.roomNumber }} • {{ classroom()!.academicYear }}</p>
+          </div>
+          <div class="header-actions">
+            <button mat-stroked-button color="primary" (click)="edit()">
+              <mat-icon>edit</mat-icon>
+              Edit
+            </button>
+            <button mat-stroked-button color="warn" (click)="delete()">
+              <mat-icon>delete</mat-icon>
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <div class="stat-strip">
+          <div class="stat-box">
+            <span class="stat-label">Capacity</span>
+            <strong>{{ classroom()!.capacity }}</strong>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Enrolled</span>
+            <strong>{{ classroom()!.enrolledStudents.length }}</strong>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Occupancy</span>
+            <strong class="occupancy-badge" [ngClass]="getOccupancyClass()">{{ getOccupancy() }}%</strong>
+          </div>
+        </div>
+
+        <mat-tab-group>
+          <mat-tab label="Overview">
+            <div class="tab-content">
+              <div class="info-grid">
+                <div class="info-item">
+                  <label>Class</label>
+                  <span>{{ classroom()!.class }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Section</label>
+                  <span>{{ classroom()!.section }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Room Number</label>
+                  <span>{{ classroom()!.roomNumber }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Academic Year</label>
+                  <span>{{ classroom()!.academicYear }}</span>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <mat-tab>
+            <ng-template mat-tab-label>Faculty ({{ classroom()!.facultyAssignments.length }})</ng-template>
+            <div class="tab-content">
+              <div class="tab-header">
+                <p>Assigned faculty and subject ownership</p>
+                <button mat-raised-button color="primary" (click)="assignFaculty()" class="tab-action">
+                  <mat-icon>person_add</mat-icon>
+                  Assign Faculty
+                </button>
+              </div>
+              @if (classroom()!.facultyAssignments.length > 0) {
+                <div class="item-list">
+                  @for (fa of classroom()!.facultyAssignments; track fa.subject) {
+                    <div class="list-item">
+                      <div class="list-item-info">
+                        <strong>{{ getFacultyName(fa.facultyId) }}</strong>
+                        <span>{{ fa.subject }}</span>
+                        @if (fa.isPrimary) {
+                          <span class="badge primary">Primary</span>
+                        }
+                      </div>
+                      <button mat-icon-button color="warn" (click)="removeFaculty(fa)" matTooltip="Remove faculty">
+                        <mat-icon>remove_circle_outline</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="empty-message">No faculty assigned yet.</p>
+              }
+            </div>
+          </mat-tab>
+
+          <mat-tab>
+            <ng-template mat-tab-label>Students ({{ classroom()!.enrolledStudents.length }})</ng-template>
+            <div class="tab-content">
+              <div class="tab-header">
+                <p>Current student roster</p>
+                <button mat-raised-button color="primary" (click)="enrollStudents()" class="tab-action">
+                  <mat-icon>group_add</mat-icon>
+                  Enroll Students
+                </button>
+              </div>
+              @if (classroom()!.enrolledStudents.length > 0) {
+                <div class="item-list">
+                  @for (student of classroom()!.enrolledStudents; track student) {
+                    <div class="list-item">
+                      <div class="list-item-info">
+                        <strong>{{ getStudentName(student) }}</strong>
+                        <span>{{ getStudentEmail(student) }}</span>
+                      </div>
+                      <button mat-icon-button color="warn" (click)="removeStudent(student)" matTooltip="Remove student">
+                        <mat-icon>remove_circle_outline</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="empty-message">No students enrolled yet.</p>
+              }
+            </div>
+          </mat-tab>
+
+          <mat-tab label="Schedule">
+            <div class="tab-content">
+              <div class="tab-header">
+                <p>Weekly schedule plan</p>
+                <button mat-raised-button color="primary" (click)="editSchedule()" class="tab-action">
+                  <mat-icon>edit_calendar</mat-icon>
+                  Edit Schedule
+                </button>
+              </div>
+              @if (classroom()!.weeklySchedule.length > 0) {
+                <p class="schedule-count">{{ classroom()!.weeklySchedule.length }} schedule slots configured.</p>
+              } @else {
+                <p class="empty-message">No schedule created yet.</p>
+              }
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <p class="empty-message">Classroom not found.</p>
+  }
+</div>

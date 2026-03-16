@@ -63,6 +63,16 @@ export class SidebarComponent {
           icon: 'person_add',
           route: '/students/management/add',
         },
+        {
+          label: 'Fee Dashboard',
+          icon: 'payments',
+          route: '/students/fees/dashboard',
+        },
+        {
+          label: 'Fee Defaulters',
+          icon: 'warning',
+          route: '/students/fees/defaulters',
+        },
       ],
     },
     {
@@ -84,6 +94,38 @@ export class SidebarComponent {
           label: 'Add Faculty',
           icon: 'person_add',
           route: '/faculty/add',
+        },
+      ],
+    },
+    {
+      label: 'Classrooms',
+      icon: 'meeting_room',
+      expanded: false,
+      children: [
+        {
+          label: 'Classroom Dashboard',
+          icon: 'dashboard',
+          route: '/classrooms/dashboard',
+        },
+        {
+          label: 'Classrooms List',
+          icon: 'list',
+          route: '/classrooms/management/list',
+        },
+        {
+          label: 'Add Classroom',
+          icon: 'add',
+          route: '/classrooms/management/add',
+        },
+        {
+          label: 'Mark Attendance',
+          icon: 'how_to_reg',
+          route: '/classrooms/attendance/mark',
+        },
+        {
+          label: 'Attendance Report',
+          icon: 'bar_chart',
+          route: '/classrooms/attendance/report',
         },
       ],
     },

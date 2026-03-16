@@ -1,0 +1,79 @@
+<div class="attendance-container">
+  <div class="page-header">
+    <div class="header-left">
+      <button mat-icon-button (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h2>Mark Attendance</h2>
+    </div>
+  </div>
+
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <div class="filter-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Classroom</mat-label>
+          <mat-select [value]="selectedClassroomId()" (valueChange)="onClassroomChange($event)">
+            @for (c of classrooms(); track c._id) {
+              <mat-option [value]="c._id">Class {{ c.class }} {{ c.section }} - {{ c.roomNumber }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date</mat-label>
+          <input matInput type="date" [value]="selectedDate()" (change)="selectedDate.set($any($event.target).value)" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-select [value]="selectedSubject()" (valueChange)="selectedSubject.set($event)" [disabled]="!selectedClassroomId()">
+            <mat-label>Subject</mat-label>
+            @for (sub of subjectOptions(); track sub) {
+              <mat-option [value]="sub">{{ sub }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  @if (isReady()) {
+    <mat-card class="student-list-card">
+      <mat-card-header>
+        <mat-card-title>Students ({{ enrolledStudents().length }})</mat-card-title>
+        <mat-card-subtitle>{{ selectedDate() }} &mdash; {{ selectedSubject() }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="student-rows">
+          @for (student of enrolledStudents(); track getStudentId(student)) {
+            <div class="student-row"
+              [class.absent]="getStatus(getStudentId(student)) === 'absent'"
+              [class.late]="getStatus(getStudentId(student)) === 'late'">
+              <span class="student-name">{{ getStudentName(student) }}</span>
+              <mat-button-toggle-group
+                [value]="getStatus(getStudentId(student))"
+                (change)="setStatus(getStudentId(student), $event.value)">
+                <mat-button-toggle value="present">Present</mat-button-toggle>
+                <mat-button-toggle value="late">Late</mat-button-toggle>
+                <mat-button-toggle value="absent">Absent</mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+          }
+        </div>
+        <mat-divider></mat-divider>
+        <div class="submit-row">
+          <button mat-raised-button color="primary" (click)="submit()" [disabled]="saving()">
+            @if (saving()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              <mat-icon>save</mat-icon>
+            }
+            Save Attendance
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  } @else if (selectedClassroomId() && enrolledStudents().length === 0) {
+    <p class="empty-message">No students enrolled in this classroom.</p>
+  }
+</div>
