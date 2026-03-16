@@ -72,6 +72,28 @@ export class ResultsListComponent implements OnInit {
 
 	loading = signal(false);
 	rows = signal<FilteredExamResultRow[]>([]);
+	reportStats = computed(() => {
+		const rows = this.rows();
+		if (rows.length === 0) {
+			return {
+				studentCount: 0,
+				passCount: 0,
+				averagePercentage: 0,
+				topPercentage: 0,
+			};
+		}
+
+		const passCount = rows.filter((row) => row.percentage >= 35).length;
+		const averagePercentage = rows.reduce((sum, row) => sum + row.percentage, 0) / rows.length;
+		const topPercentage = Math.max(...rows.map((row) => row.percentage));
+
+		return {
+			studentCount: rows.length,
+			passCount,
+			averagePercentage: Number(averagePercentage.toFixed(1)),
+			topPercentage: Number(topPercentage.toFixed(1)),
+		};
+	});
 	subjectHeaders = computed(() => {
 		const headers = new Set<string>();
 		for (const row of this.rows()) {
@@ -137,6 +159,10 @@ export class ResultsListComponent implements OnInit {
 	getSubjectMark(row: FilteredExamResultRow, subject: string): string {
 		const mark = row.subjectMarks.find((m) => m.subject === subject);
 		return mark ? `${mark.marksObtained}/${mark.outOf}` : '-';
+	}
+
+	getResultStatus(row: FilteredExamResultRow): 'Pass' | 'Needs Improvement' {
+		return row.percentage >= 35 ? 'Pass' : 'Needs Improvement';
 	}
 
 	private getMonthLabel(monthValue: number): string {
