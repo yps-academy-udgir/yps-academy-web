@@ -12,6 +12,9 @@ import {
   updateStudent,
   deleteStudent,
   getStudentStats,
+  addPayment,
+  getFeesSummary,
+  getFeeDefaulters,
 } from '../controllers/student.controller';
 import { validateStudent, validateObjectId } from '../middleware/validation.middleware';
 import { verifyToken } from '../middleware/auth.middleware';
@@ -27,6 +30,8 @@ router.use(verifyToken);
  * @access  Public
  */
 router.get('/stats/overview', getStudentStats);
+router.get('/fees/summary', getFeesSummary);
+router.get('/fees/defaulters', getFeeDefaulters);
 
 /**
  * @route   GET /api/students
@@ -63,5 +68,6 @@ router.put('/:id', validateObjectId, validateStudent, updateStudent);
  * @access  Public
  */
 router.delete('/:id', validateObjectId, deleteStudent);
+router.post('/:id/payments', validateObjectId, addPayment);
 
 export default router;

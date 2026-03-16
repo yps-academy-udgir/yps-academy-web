@@ -5,7 +5,7 @@
 
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap, catchError, finalize } from 'rxjs';
+import { Observable, tap, catchError, finalize, forkJoin, of, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Classroom, ClassroomStats, FacultyAssignment, ScheduleSlot } from '../../features/classroom/models/classroom.model';
 
@@ -281,6 +281,39 @@ export class ClassroomService {
         }),
         finalize(() => this.loading.set(false))
       );
+  }
+
+  /**
+   * Enroll multiple students and return success/failure summary
+   */
+  enrollStudentsBulk(
+    classroomId: string,
+    studentIds: string[]
+  ): Observable<{ successCount: number; failedCount: number; failedIds: string[] }> {
+    if (studentIds.length === 0) {
+      return of({ successCount: 0, failedCount: 0, failedIds: [] });
+    }
+
+    const requests = studentIds.map((studentId) =>
+      this.http
+        .post<ApiResponse<Classroom>>(`${this.API_URL}/${classroomId}/students`, { studentId })
+        .pipe(
+          map(() => ({ studentId, ok: true })),
+          catchError(() => of({ studentId, ok: false }))
+        )
+    );
+
+    return forkJoin(requests).pipe(
+      map((results) => {
+        const failedIds = results.filter((r) => !r.ok).map((r) => r.studentId);
+        const successCount = results.length - failedIds.length;
+        return {
+          successCount,
+          failedCount: failedIds.length,
+          failedIds,
+        };
+      })
+    );
   }
 
   /**

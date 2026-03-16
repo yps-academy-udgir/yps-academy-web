@@ -9,7 +9,7 @@
  * Usage: Inject in app.config.ts
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   HttpEvent,
   HttpInterceptor,
@@ -20,10 +20,11 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError, finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AppHttpInterceptor implements HttpInterceptor {
-  constructor() {}
+  private router = inject(Router);
 
   /**
    * Intercept HTTP requests and responses
@@ -125,7 +126,7 @@ export class AppHttpInterceptor implements HttpInterceptor {
       errorMessage = 'Unauthorized access. Please login again.';
       localStorage.removeItem('yps_token');
       localStorage.removeItem('yps_user');
-      window.location.href = '/auth/login';
+      this.router.navigate(['/auth/login']);
     } else if (error.status === 403) {
       // Forbidden
       errorMessage = 'You do not have permission to access this resource.';

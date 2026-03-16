@@ -91,4 +91,22 @@ export const CLASSROOM_ROUTES: Routes = [
       ),
     data: { title: 'Edit Schedule' },
   },
+
+  // Attendance
+  {
+    path: 'attendance/mark',
+    loadComponent: () =>
+      import('./components/mark-attendance/mark-attendance.component').then(
+        (m) => m.MarkAttendanceComponent
+      ),
+    data: { title: 'Mark Attendance' },
+  },
+  {
+    path: 'attendance/report',
+    loadComponent: () =>
+      import('./components/attendance-report/attendance-report.component').then(
+        (m) => m.AttendanceReportComponent
+      ),
+    data: { title: 'Attendance Report' },
+  },
 ];

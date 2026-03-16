@@ -4,24 +4,44 @@
       <p>Loading classroom details...</p>
     </div>
   } @else if (classroom()) {
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>
-          {{ classroom()!.class }} {{ classroom()!.section }} - {{ classroom()!.roomNumber }}
-        </mat-card-title>
-        <div class="header-actions">
-          <button mat-icon-button (click)="edit()" matTooltip="Edit Classroom">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="delete()" matTooltip="Delete Classroom">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </mat-card-header>
-
+    <mat-card class="detail-card">
       <mat-card-content>
-        <mat-tab-group>
+        <div class="detail-header">
+          <div>
+            <p class="title-kicker">Classroom</p>
+            <h2 class="detail-title">
+              {{ classroom()!.class }} {{ classroom()!.section }}
+            </h2>
+            <p class="detail-subtitle">Room {{ classroom()!.roomNumber }} • {{ classroom()!.academicYear }}</p>
+          </div>
+          <div class="header-actions">
+            <button mat-stroked-button color="primary" (click)="edit()">
+              <mat-icon>edit</mat-icon>
+              Edit
+            </button>
+            <button mat-stroked-button color="warn" (click)="delete()">
+              <mat-icon>delete</mat-icon>
+              Delete
+            </button>
+          </div>
+        </div>
 
+        <div class="stat-strip">
+          <div class="stat-box">
+            <span class="stat-label">Capacity</span>
+            <strong>{{ classroom()!.capacity }}</strong>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Enrolled</span>
+            <strong>{{ classroom()!.enrolledStudents.length }}</strong>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Occupancy</span>
+            <strong class="occupancy-badge" [ngClass]="getOccupancyClass()">{{ getOccupancy() }}%</strong>
+          </div>
+        </div>
+
+        <mat-tab-group>
           <mat-tab label="Overview">
             <div class="tab-content">
               <div class="info-grid">
@@ -38,20 +58,6 @@
                   <span>{{ classroom()!.roomNumber }}</span>
                 </div>
                 <div class="info-item">
-                  <label>Capacity</label>
-                  <span>{{ classroom()!.capacity }} students</span>
-                </div>
-                <div class="info-item">
-                  <label>Enrolled</label>
-                  <span>{{ classroom()!.enrolledStudents.length }} students</span>
-                </div>
-                <div class="info-item">
-                  <label>Occupancy</label>
-                  <span class="occupancy-badge" [ngClass]="getOccupancyClass()">
-                    {{ getOccupancy() }}%
-                  </span>
-                </div>
-                <div class="info-item">
                   <label>Academic Year</label>
                   <span>{{ classroom()!.academicYear }}</span>
                 </div>
@@ -62,9 +68,13 @@
           <mat-tab>
             <ng-template mat-tab-label>Faculty ({{ classroom()!.facultyAssignments.length }})</ng-template>
             <div class="tab-content">
-              <button mat-raised-button color="primary" (click)="assignFaculty()" class="tab-action">
-                <mat-icon>person_add</mat-icon> Assign Faculty
-              </button>
+              <div class="tab-header">
+                <p>Assigned faculty and subject ownership</p>
+                <button mat-raised-button color="primary" (click)="assignFaculty()" class="tab-action">
+                  <mat-icon>person_add</mat-icon>
+                  Assign Faculty
+                </button>
+              </div>
               @if (classroom()!.facultyAssignments.length > 0) {
                 <div class="item-list">
                   @for (fa of classroom()!.facultyAssignments; track fa.subject) {
@@ -72,9 +82,11 @@
                       <div class="list-item-info">
                         <strong>{{ getFacultyName(fa.facultyId) }}</strong>
                         <span>{{ fa.subject }}</span>
-                        @if (fa.isPrimary) { <span class="badge primary">Primary</span> }
+                        @if (fa.isPrimary) {
+                          <span class="badge primary">Primary</span>
+                        }
                       </div>
-                      <button mat-icon-button color="warn" (click)="removeFaculty(fa)" matTooltip="Remove">
+                      <button mat-icon-button color="warn" (click)="removeFaculty(fa)" matTooltip="Remove faculty">
                         <mat-icon>remove_circle_outline</mat-icon>
                       </button>
                     </div>
@@ -89,9 +101,13 @@
           <mat-tab>
             <ng-template mat-tab-label>Students ({{ classroom()!.enrolledStudents.length }})</ng-template>
             <div class="tab-content">
-              <button mat-raised-button color="primary" (click)="enrollStudents()" class="tab-action">
-                <mat-icon>group_add</mat-icon> Enroll Students
-              </button>
+              <div class="tab-header">
+                <p>Current student roster</p>
+                <button mat-raised-button color="primary" (click)="enrollStudents()" class="tab-action">
+                  <mat-icon>group_add</mat-icon>
+                  Enroll Students
+                </button>
+              </div>
               @if (classroom()!.enrolledStudents.length > 0) {
                 <div class="item-list">
                   @for (student of classroom()!.enrolledStudents; track student) {
@@ -100,7 +116,7 @@
                         <strong>{{ getStudentName(student) }}</strong>
                         <span>{{ getStudentEmail(student) }}</span>
                       </div>
-                      <button mat-icon-button color="warn" (click)="removeStudent(student)" matTooltip="Remove">
+                      <button mat-icon-button color="warn" (click)="removeStudent(student)" matTooltip="Remove student">
                         <mat-icon>remove_circle_outline</mat-icon>
                       </button>
                     </div>
@@ -114,17 +130,20 @@
 
           <mat-tab label="Schedule">
             <div class="tab-content">
-              <button mat-raised-button color="primary" (click)="editSchedule()" class="tab-action">
-                <mat-icon>edit_calendar</mat-icon> Edit Schedule
-              </button>
+              <div class="tab-header">
+                <p>Weekly schedule plan</p>
+                <button mat-raised-button color="primary" (click)="editSchedule()" class="tab-action">
+                  <mat-icon>edit_calendar</mat-icon>
+                  Edit Schedule
+                </button>
+              </div>
               @if (classroom()!.weeklySchedule.length > 0) {
-                <p>{{ classroom()!.weeklySchedule.length }} schedule slots configured.</p>
+                <p class="schedule-count">{{ classroom()!.weeklySchedule.length }} schedule slots configured.</p>
               } @else {
                 <p class="empty-message">No schedule created yet.</p>
               }
             </div>
           </mat-tab>
-
         </mat-tab-group>
       </mat-card-content>
     </mat-card>

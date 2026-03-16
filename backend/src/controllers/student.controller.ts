@@ -241,3 +241,103 @@ export const getStudentStats = async (req: Request, res: Response): Promise<void
     errorResponse(res, 'Failed to retrieve statistics', 500, error.message);
   }
 };
+
+/**
+ * Record a fee payment for a student
+ * @route POST /api/students/:id/payments
+ */
+export const addPayment = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { amount, paymentMethod, remarks } = req.body;
+
+    if (!amount || Number(amount) <= 0) {
+      errorResponse(res, 'A valid positive payment amount is required', 400);
+      return;
+    }
+
+    const student = await Student.findById(id);
+    if (!student) {
+      errorResponse(res, 'Student not found', 404);
+      return;
+    }
+
+    if (!student.feeDetails) {
+      errorResponse(res, 'Student has no fee details configured', 400);
+      return;
+    }
+
+    student.feeDetails.paymentHistory.push({
+      amount: Number(amount),
+      paymentDate: new Date(),
+      ...(paymentMethod && { paymentMethod }),
+      ...(remarks && { remarks }),
+    });
+    student.feeDetails.paidAmount = (student.feeDetails.paidAmount || 0) + Number(amount);
+    student.feeDetails.pendingFees = Math.max(
+      0,
+      (student.feeDetails.totalFees || 0) - student.feeDetails.paidAmount
+    );
+
+    await student.save();
+    successResponse(res, student, 'Payment recorded successfully');
+  } catch (error: any) {
+    errorResponse(res, 'Failed to record payment', 500, error.message);
+  }
+};
+
+/**
+ * Get fee summary grouped by class
+ * @route GET /api/students/fees/summary
+ */
+export const getFeesSummary = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const students = await Student.find(
+      {},
+      'academicDetails.class feeDetails.totalFees feeDetails.paidAmount feeDetails.pendingFees'
+    ).lean();
+
+    type ClassSummary = { totalFees: number; collected: number; pending: number; studentCount: number };
+    const byClass: Record<string, ClassSummary> = {};
+    const totals: ClassSummary = { totalFees: 0, collected: 0, pending: 0, studentCount: 0 };
+
+    for (const student of students) {
+      const cls = (student as any).academicDetails?.class ?? 'Unassigned';
+      if (!byClass[cls]) byClass[cls] = { totalFees: 0, collected: 0, pending: 0, studentCount: 0 };
+
+      const fees = (student as any).feeDetails;
+      byClass[cls].studentCount++;
+      byClass[cls].totalFees += fees?.totalFees ?? 0;
+      byClass[cls].collected += fees?.paidAmount ?? 0;
+      byClass[cls].pending += fees?.pendingFees ?? 0;
+
+      totals.studentCount++;
+      totals.totalFees += fees?.totalFees ?? 0;
+      totals.collected += fees?.paidAmount ?? 0;
+      totals.pending += fees?.pendingFees ?? 0;
+    }
+
+    successResponse(res, { byClass, totals }, 'Fee summary retrieved successfully');
+  } catch (error: any) {
+    errorResponse(res, 'Failed to retrieve fee summary', 500, error.message);
+  }
+};
+
+/**
+ * Get fee defaulters (students with pending fees > 0)
+ * @route GET /api/students/fees/defaulters
+ */
+export const getFeeDefaulters = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const students = await Student.find(
+      { 'feeDetails.pendingFees': { $gt: 0 } },
+      'firstName lastName email contact academicDetails.class feeDetails.totalFees feeDetails.paidAmount feeDetails.pendingFees'
+    )
+      .sort({ 'feeDetails.pendingFees': -1 })
+      .lean();
+
+    successResponse(res, students, 'Fee defaulters retrieved successfully');
+  } catch (error: any) {
+    errorResponse(res, 'Failed to retrieve fee defaulters', 500, error.message);
+  }
+};

@@ -6,7 +6,63 @@
       <mat-card-subtitle>Add students to this classroom</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <p class="coming-soon">Student enrollment feature coming soon.</p>
+      @if (loading()) {
+        <div class="state"><mat-spinner diameter="40"></mat-spinner></div>
+      } @else {
+        @if (classroom(); as currentClassroom) {
+          <div class="header-row">
+            <div>
+              <h3>Class {{ currentClassroom.class }} {{ currentClassroom.section }}</h3>
+              <p>
+                Enrolled: {{ currentClassroom.enrolledStudents.length }} / {{ currentClassroom.capacity }}
+              </p>
+            </div>
+            <button mat-stroked-button (click)="backToClassroom()">
+              <mat-icon>arrow_back</mat-icon>
+              Back to Classroom
+            </button>
+          </div>
+        }
+
+        @if (availableStudents().length === 0) {
+          <p class="state">All students are already enrolled in this classroom.</p>
+        } @else {
+          <div class="student-list">
+            @for (student of availableStudents(); track student._id) {
+              @if (student._id; as sid) {
+                <div class="student-row">
+                  <mat-checkbox
+                    [checked]="isSelected(sid)"
+                    (change)="toggleStudent(sid, $event.checked)"
+                  >
+                    <strong>{{ student.firstName }} {{ student.lastName }}</strong>
+                    <span class="meta">Class {{ student.academicDetails?.class || 'N/A' }}</span>
+                  </mat-checkbox>
+                  <mat-chip-set>
+                    <mat-chip>{{ feeStatus(student) }}</mat-chip>
+                  </mat-chip-set>
+                </div>
+              }
+            }
+          </div>
+
+          <div class="actions">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="enrollSelected()"
+              [disabled]="saving() || selectedStudentIds().length === 0"
+            >
+              @if (saving()) {
+                <mat-spinner diameter="18"></mat-spinner>
+              } @else {
+                <mat-icon>done_all</mat-icon>
+              }
+              Enroll Selected ({{ selectedStudentIds().length }})
+            </button>
+          </div>
+        }
+      }
     </mat-card-content>
   </mat-card>
 </div>

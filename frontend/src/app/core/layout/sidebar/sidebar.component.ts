@@ -63,6 +63,16 @@ export class SidebarComponent {
           icon: 'person_add',
           route: '/students/management/add',
         },
+        {
+          label: 'Fee Dashboard',
+          icon: 'payments',
+          route: '/students/fees/dashboard',
+        },
+        {
+          label: 'Fee Defaulters',
+          icon: 'warning',
+          route: '/students/fees/defaulters',
+        },
       ],
     },
     {
@@ -106,6 +116,16 @@ export class SidebarComponent {
           label: 'Add Classroom',
           icon: 'add',
           route: '/classrooms/management/add',
+        },
+        {
+          label: 'Mark Attendance',
+          icon: 'how_to_reg',
+          route: '/classrooms/attendance/mark',
+        },
+        {
+          label: 'Attendance Report',
+          icon: 'bar_chart',
+          route: '/classrooms/attendance/report',
         },
       ],
     },
