@@ -122,11 +122,11 @@ export class AppHttpInterceptor implements HttpInterceptor {
       // Bad request
       errorMessage = error.error?.error || 'Invalid request';
     } else if (error.status === 401) {
-      // Unauthorized — clear session and redirect to login
+      // Unauthorized — clear session and redirect to public website
       errorMessage = 'Unauthorized access. Please login again.';
       localStorage.removeItem('yps_token');
       localStorage.removeItem('yps_user');
-      this.router.navigate(['/auth/login']);
+      this.router.navigate(['/website']);
     } else if (error.status === 403) {
       // Forbidden
       errorMessage = 'You do not have permission to access this resource.';
