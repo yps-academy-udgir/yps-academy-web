@@ -145,7 +145,7 @@ export class StudentListComponent implements OnInit {
    */
   viewStudent(student: Student): void {
     if (student._id) {
-      this.router.navigate(['/students', student._id]);
+      this.router.navigate(['/students', 'management', student._id]);
     }
   }
 
@@ -154,7 +154,7 @@ export class StudentListComponent implements OnInit {
    */
   editStudent(student: Student): void {
     if (student._id) {
-      this.router.navigate(['/students', student._id, 'edit']);
+      this.router.navigate(['/students', 'management', student._id, 'edit']);
     }
   }
 

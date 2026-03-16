@@ -100,14 +100,14 @@ export class DashboardComponent implements OnInit {
    * Navigate to add student form
    */
   navigateToAddStudent(): void {
-    this.router.navigate(['/students/add']);
+    this.router.navigate(['/students', 'management', 'add']);
   }
 
   /**
    * Navigate to student list
    */
   navigateToStudentList(): void {
-    this.router.navigate(['/students']);
+    this.router.navigate(['/students', 'management', 'list']);
   }
 
   /**

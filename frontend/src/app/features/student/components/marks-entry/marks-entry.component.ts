@@ -64,7 +64,7 @@ export class MarksEntryComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (!id) { this.router.navigate(['/students']); return; }
+    if (!id) { this.router.navigate(['/students', 'management', 'list']); return; }
 
     this.form = this.fb.group({
       examType: ['', Validators.required],
@@ -223,8 +223,8 @@ export class MarksEntryComponent implements OnInit {
 
   onBack(): void {
     const s = this.student();
-    if (s?._id) this.router.navigate(['/students', s._id]);
-    else this.router.navigate(['/students']);
+    if (s?._id) this.router.navigate(['/students', 'management', s._id]);
+    else this.router.navigate(['/students', 'management', 'list']);
   }
 
   getMonthName(month: number): string { return MONTH_NAMES[month - 1] ?? ''; }

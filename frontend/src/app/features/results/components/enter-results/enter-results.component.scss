@@ -1,15 +1,1 @@
-.results-container { padding: 24px; }
-.page-header { display: flex; align-items: center; margin-bottom: 20px; }
-.header-left { display: flex; align-items: center; gap: 8px; }
-.filter-card, .max-card { margin-bottom: 20px; }
-.filter-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-.loading-row { display: flex; align-items: center; gap: 12px; padding: 20px 0; color: var(--text-secondary); }
-.max-row { display: flex; flex-wrap: wrap; gap: 12px; }
-.max-field { width: 150px; }
-.table-wrap { overflow-x: auto; }
-.marks-table { width: 100%; border-collapse: collapse; }
-.marks-table th, .marks-table td { border-bottom: 1px solid var(--border-color); padding: 10px; text-align: center; }
-.marks-table th:first-child, .marks-table td:first-child { text-align: left; min-width: 180px; }
-.marks-input { width: 64px; text-align: center; }
-.submit-row { display: flex; justify-content: flex-end; padding-top: 14px; }
-.empty-message { text-align: center; color: var(--text-secondary); }
+

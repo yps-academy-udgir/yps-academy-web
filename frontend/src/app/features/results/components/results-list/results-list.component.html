@@ -81,17 +81,39 @@
 			<span>Loading results...</span>
 		</div>
 	} @else if (rows().length > 0) {
+		<div class="report-meta-card">
+			<div class="report-title">{{ reportHeader().academyName }} &mdash; {{ reportHeader().reportTitle }}</div>
+			<div class="report-meta-grid">
+				<div><strong>Class:</strong> {{ reportHeader().class }}</div>
+				<div><strong>Section:</strong> {{ reportHeader().section }}</div>
+				<div><strong>Exam:</strong> {{ reportHeader().examType }}</div>
+				<div><strong>Month/Year:</strong> {{ reportHeader().month }} {{ reportHeader().year }}</div>
+				<div><strong>Students:</strong> {{ reportHeader().totalStudents }}</div>
+				<div><strong>Generated:</strong> {{ reportHeader().generatedOn }}</div>
+			</div>
+		</div>
+
 		<mat-card>
 			<mat-card-content>
-				<div class="table-wrap" #resultsTableContainer>
+				<div class="export-container" #resultsTableContainer>
+					<div class="export-header">
+						<div class="academy-name">{{ reportHeader().academyName }}</div>
+						<div class="academy-subtitle">{{ reportHeader().academySubtitle }}</div>
+						<div class="export-details">
+							<span>Class: {{ reportHeader().class }}</span>
+							<span>Section: {{ reportHeader().section }}</span>
+							<span>Exam: {{ reportHeader().examType }}</span>
+							<span>Month/Year: {{ reportHeader().month }} {{ reportHeader().year }}</span>
+							<span>Students: {{ reportHeader().totalStudents }}</span>
+							<span>Generated: {{ reportHeader().generatedOn }}</span>
+						</div>
+					</div>
+
+					<div class="table-wrap">
 					<table class="results-table">
 						<thead>
 							<tr>
 								<th>Student</th>
-								<th>Class</th>
-								<th>Section</th>
-								<th>Exam</th>
-								<th>Month/Year</th>
 								@for (subject of subjectHeaders(); track subject) {
 									<th>{{ subject }}</th>
 								}
@@ -104,10 +126,6 @@
 							@for (row of rows(); track row._id) {
 								<tr>
 									<td>{{ row.studentName }}</td>
-									<td>{{ row.class }}</td>
-									<td>{{ row.section }}</td>
-									<td>{{ row.examType }}</td>
-									<td>{{ row.month }}/{{ row.year }}</td>
 									@for (subject of subjectHeaders(); track subject) {
 										<td>{{ getSubjectMark(row, subject) }}</td>
 									}
@@ -118,6 +136,7 @@
 							}
 						</tbody>
 					</table>
+					</div>
 				</div>
 			</mat-card-content>
 		</mat-card>

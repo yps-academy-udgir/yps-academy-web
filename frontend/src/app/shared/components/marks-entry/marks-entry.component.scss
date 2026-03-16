@@ -1,0 +1,87 @@
+.marks-container { padding: 24px; }
+
+.page-header { display: flex; align-items: center; margin-bottom: 20px; }
+
+.header-left { display: flex; align-items: center; gap: 8px; }
+
+.header-left h2 { margin: 0; font-size: 20px; font-weight: 600; color: var(--text-primary); }
+
+.filter-card, .max-marks-card, .marks-table-card { margin-bottom: 20px; }
+
+.filter-row {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 12px;
+}
+
+.subject-controls {
+	margin-top: 12px;
+	display: grid;
+	gap: 12px;
+}
+
+.subject-select-field { width: 100%; }
+
+.custom-subject-row {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.custom-subject-field {
+	min-width: 260px;
+	flex: 1 1 320px;
+}
+
+.loading-row { display: flex; align-items: center; gap: 12px; padding: 24px; color: var(--text-secondary); }
+
+.max-marks-row { display: flex; flex-wrap: wrap; gap: 16px; padding-top: 8px; }
+
+.max-marks-field { width: 160px; }
+
+.marks-table-scroll { overflow-x: auto; }
+
+.marks-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 14px;
+
+	th, td {
+		padding: 10px 12px;
+		border-bottom: 1px solid var(--border-color);
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	th { font-weight: 600; color: var(--text-secondary); background: var(--background-secondary); }
+
+	.col-name { text-align: left; min-width: 160px; }
+
+	.max-label { font-weight: 400; font-size: 11px; }
+
+	tbody tr:hover { background: var(--background-hover); }
+
+	&.row-danger { background: var(--error-background); }
+	&.row-warn   { background: color-mix(in srgb, var(--warn-color) 10%, var(--background-secondary)); }
+}
+
+.marks-input {
+	width: 64px;
+	text-align: center;
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	padding: 4px 6px;
+	background: var(--background-primary);
+	color: var(--text-primary);
+	font-size: 14px;
+	&:focus { outline: 2px solid var(--primary-color); border-color: transparent; }
+}
+
+.pct-good  { color: var(--success-color); font-weight: 600; }
+.pct-warn  { color: var(--warn-color); font-weight: 600; }
+.pct-bad   { color: var(--error-color); font-weight: 600; }
+
+.submit-row { display: flex; justify-content: flex-end; padding: 16px 0 4px; }
+
+.empty-message { text-align: center; padding: 32px; color: var(--text-secondary); font-style: italic; }
