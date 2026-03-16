@@ -1,0 +1,117 @@
+<div class="report-shell">
+  <div class="report-actions">
+    <button mat-stroked-button type="button" (click)="downloadPdf()">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Download PDF
+    </button>
+    <button mat-stroked-button type="button" (click)="downloadPng()">
+      <mat-icon>image</mat-icon>
+      Download PNG
+    </button>
+  </div>
+
+  <div class="report-wrapper" #reportContainer>
+    <div class="report-band"></div>
+
+    <div class="report-header">
+      <div class="brand-block">
+        <div class="academy-name">{{ report().header.academyName }}</div>
+        <div class="academy-subtitle">{{ report().header.academySubtitle }}</div>
+        <div class="academy-address">{{ report().header.address }}</div>
+        <div class="academy-contact">{{ report().header.contact }} · {{ report().header.email }}</div>
+      </div>
+
+      <div class="report-meta-card">
+        <div class="report-title">{{ report().header.reportTitle }}</div>
+        <div class="meta-row"><span>Exam</span><strong>{{ report().result.examType }}</strong></div>
+        <div class="meta-row"><span>Period</span><strong>{{ report().monthLabel }} {{ report().result.year }}</strong></div>
+        <div class="meta-row"><span>Generated</span><strong>{{ report().header.generatedOn }}</strong></div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="section-eyebrow">Student Profile</div>
+      <div class="student-grid">
+        <div class="info-item">
+          <span class="label">Student Name</span>
+          <strong>{{ report().studentName }}</strong>
+        </div>
+        <div class="info-item">
+          <span class="label">Student ID</span>
+          <strong>{{ report().studentId }}</strong>
+        </div>
+        <div class="info-item">
+          <span class="label">Class</span>
+          <strong>{{ report().classLabel }}</strong>
+        </div>
+        @if (report().studentEmail) {
+          <div class="info-item">
+            <span class="label">Email</span>
+            <strong>{{ report().studentEmail }}</strong>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card primary">
+        <span class="label">Total Obtained</span>
+        <strong>{{ report().result.totalMarksObtained }}</strong>
+      </div>
+      <div class="summary-card neutral">
+        <span class="label">Out Of</span>
+        <strong>{{ report().result.totalOutOf }}</strong>
+      </div>
+      <div class="summary-card accent">
+        <span class="label">Percentage</span>
+        <strong>{{ report().result.percentage | number:'1.0-1' }}%</strong>
+      </div>
+      <div class="summary-card" [class.success]="report().statusLabel === 'Pass'" [class.warn]="report().statusLabel !== 'Pass'">
+        <span class="label">Result</span>
+        <strong>{{ report().statusLabel }} · {{ report().gradeLabel }}</strong>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="section-eyebrow">Subject Breakdown</div>
+      <table class="marks-table">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th class="number-col">Marks Obtained</th>
+            <th class="number-col">Out Of</th>
+            <th class="number-col">Percentage</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (subject of report().result.subjectMarks; track subject.subject) {
+            <tr>
+              <td>{{ subject.subject }}</td>
+              <td class="number-col">{{ subject.marksObtained }}</td>
+              <td class="number-col">{{ subject.outOf }}</td>
+              <td class="number-col">{{ getSubjectPercentage(subject.marksObtained, subject.outOf) }}%</td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td class="number-col">{{ report().result.totalMarksObtained }}</td>
+            <td class="number-col">{{ report().result.totalOutOf }}</td>
+            <td class="number-col">{{ report().result.percentage | number:'1.0-1' }}%</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="report-footer">
+      <div class="footer-note">
+        <p><strong>Performance Summary:</strong> {{ report().statusLabel === 'Pass' ? 'Student has met the required passing criteria for this examination.' : 'Student requires improvement and follow-up support in this examination.' }}</p>
+      </div>
+      <div class="signature-block">
+        <div class="signature-line"></div>
+        <span>Class Teacher / Authorised Signatory</span>
+      </div>
+    </div>
+  </div>
+</div>

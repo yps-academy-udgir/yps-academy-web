@@ -76,6 +76,23 @@ export const STUDENT_ROUTES: Routes = [
           import('./components/fee-defaulters/fee-defaulters.component').then((m) => m.FeeDefaultersComponent),
         data: { title: 'Fee Defaulters' },
       },
+      {
+        path: ':id/receipt',
+        loadComponent: () =>
+          import('./components/fee-receipt-page/fee-receipt-page.component').then((m) => m.FeeReceiptPageComponent),
+        data: { title: 'Fee Receipt' },
+      },
+    ],
+  },
+  {
+    path: 'reports',
+    children: [
+      {
+        path: ':studentId/:resultId',
+        loadComponent: () =>
+          import('./components/student-marks-report-page/student-marks-report-page.component').then((m) => m.StudentMarksReportPageComponent),
+        data: { title: 'Student Marks Report' },
+      },
     ],
   },
 

@@ -43,6 +43,14 @@
                 <mat-icon>edit_note</mat-icon>
                 Enter Marks
               </button>
+              <button mat-stroked-button color="primary" (click)="onViewFeeReceipt()">
+                <mat-icon>receipt_long</mat-icon>
+                View Fee Receipt
+              </button>
+              <button mat-stroked-button color="primary" (click)="onGenerateLatestMarksReport()">
+                <mat-icon>description</mat-icon>
+                Generate Marks Report
+              </button>
               <button mat-raised-button color="primary" (click)="onEdit()">
                 <mat-icon>edit</mat-icon>
                 Edit
@@ -271,12 +279,18 @@
                         <mat-chip highlighted color="primary">{{ result.examType }}</mat-chip>
                         <span class="exam-period">{{ getMonthName(result.month) }} {{ result.year }}</span>
                       </div>
-                      <span class="exam-pct-badge"
-                        [class.pct-high]="result.percentage >= 75"
-                        [class.pct-mid]="result.percentage >= 40 && result.percentage < 75"
-                        [class.pct-low]="result.percentage < 40">
-                        {{ result.percentage | number:'1.0-1' }}%
-                      </span>
+                      <div class="exam-result-actions">
+                        <span class="exam-pct-badge"
+                          [class.pct-high]="result.percentage >= 75"
+                          [class.pct-mid]="result.percentage >= 40 && result.percentage < 75"
+                          [class.pct-low]="result.percentage < 40">
+                          {{ result.percentage | number:'1.0-1' }}%
+                        </span>
+                        <button mat-stroked-button type="button" color="primary" (click)="onGenerateMarksReport(result)">
+                          <mat-icon>description</mat-icon>
+                          Generate Marks Report
+                        </button>
+                      </div>
                     </div>
 
                     <table class="marks-mini-table">
@@ -363,6 +377,7 @@
           </mat-expansion-panel>
         </mat-accordion>
       </div>
+
     </div>
   }
 </div>

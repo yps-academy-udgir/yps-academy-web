@@ -6,6 +6,28 @@
   margin: 0 auto;
 }
 
+.header-content {
+  align-items: flex-start;
+}
+
+.student-header {
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  flex: 1 1 420px;
+  min-width: 0;
+
+  button {
+    flex: 0 1 auto;
+  }
+}
+
 .details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -89,6 +111,25 @@
 // Header-card, panel-content, info-row, and fee-breakdown responsive rules
 // are handled in src/styles/_utilities.scss under .student-detail-container.
 @media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .student-header,
+  .header-actions {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+
+    button {
+      flex: 1 1 220px;
+    }
+  }
+
   .details-grid {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -111,6 +152,13 @@
 
 // ── Exam Results ───────────────────────────────────────────────────────────────
 // Remaining exam-result styles are in src/styles/_utilities.scss.
+
+.exam-result-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
 // Exam-result block, marks-mini-table, exam-pct-badge, sm-pct, and responsive
 // overrides are all defined in src/styles/_utilities.scss under

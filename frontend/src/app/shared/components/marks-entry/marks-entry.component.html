@@ -1,0 +1,154 @@
+<div class="marks-container">
+	<div class="page-header">
+		<div class="header-left">
+			<button mat-icon-button (click)="back()">
+				<mat-icon>arrow_back</mat-icon>
+			</button>
+			<h2>{{ title() }}</h2>
+		</div>
+	</div>
+
+	<mat-card class="filter-card">
+		<mat-card-content>
+			<div class="filter-row">
+				<mat-form-field appearance="outline">
+					<mat-label>Classroom</mat-label>
+					<mat-select [value]="selectedClassroomId()" (valueChange)="onClassroomChange($event)">
+						@for (c of classrooms(); track c._id) {
+							<mat-option [value]="c._id">Class {{ c.class }} {{ c.section }} - {{ c.roomNumber }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline">
+					<mat-label>Exam Type</mat-label>
+					<mat-select [value]="selectedExamType()" (valueChange)="selectedExamType.set($event); onFilterChange()" [disabled]="!selectedClassroomId()">
+						@for (et of examTypes; track et) {
+							<mat-option [value]="et">{{ et }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline">
+					<mat-label>Month</mat-label>
+					<mat-select [value]="selectedMonth()" (valueChange)="selectedMonth.set($event); onFilterChange()" [disabled]="!selectedClassroomId()">
+						@for (m of months; track m.value) {
+							<mat-option [value]="m.value">{{ m.label }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline">
+					<mat-label>Year</mat-label>
+					<input matInput type="number" [value]="selectedYear()" (change)="selectedYear.set(+$any($event.target).value); onFilterChange()" min="2000" [disabled]="!selectedClassroomId()" />
+				</mat-form-field>
+			</div>
+
+			@if (selectedClassroomId()) {
+				<div class="subject-controls">
+					<mat-form-field appearance="outline" class="subject-select-field">
+						<mat-label>Subjects For This Exam</mat-label>
+						<mat-select multiple [value]="selectedSubjects()" (valueChange)="onSelectedSubjectsChange($event)">
+							@for (subj of availableSubjects(); track subj) {
+								<mat-option [value]="subj">{{ subj }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+
+					<div class="custom-subject-row">
+						<mat-form-field appearance="outline" class="custom-subject-field">
+							<mat-label>Add New Subject</mat-label>
+							<input matInput [value]="customSubjectInput()" (input)="customSubjectInput.set($any($event.target).value)" placeholder="e.g. Social Science" />
+						</mat-form-field>
+						<button mat-stroked-button type="button" (click)="addCustomSubject()" [disabled]="!customSubjectInput().trim()">
+							<mat-icon>add</mat-icon>
+							Add Subject
+						</button>
+					</div>
+				</div>
+			}
+		</mat-card-content>
+	</mat-card>
+
+	@if (loading()) {
+		<div class="loading-row">
+			<mat-spinner diameter="36"></mat-spinner>
+			<span>Loading existing marks...</span>
+		</div>
+	}
+
+	@if (isFilterReady() && enrolledStudents().length > 0 && selectedSubjects().length > 0 && !loading()) {
+		<mat-card class="max-marks-card">
+			<mat-card-header>
+				<mat-card-title>Maximum Marks per Subject</mat-card-title>
+				<mat-card-subtitle>Set the total marks for each subject (applies to all students)</mat-card-subtitle>
+			</mat-card-header>
+			<mat-card-content>
+				<div class="max-marks-row">
+					@for (subj of selectedSubjects(); track subj) {
+						<mat-form-field appearance="outline" class="max-marks-field">
+							<mat-label>{{ subj }}</mat-label>
+							<input matInput type="number" min="1" [value]="getMaxMarksValue(subj)" (change)="setMaxMarks(subj, $any($event.target).value)" />
+							<span matSuffix>marks</span>
+						</mat-form-field>
+					}
+				</div>
+			</mat-card-content>
+		</mat-card>
+
+		@if (allMaxMarksFilled()) {
+			<mat-card class="marks-table-card">
+				<mat-card-header>
+					<mat-card-title>Student Entries - {{ selectedExamType() }}</mat-card-title>
+					<mat-card-subtitle>{{ enrolledStudents().length }} students - Max: {{ totalMaxMarks() }}</mat-card-subtitle>
+				</mat-card-header>
+				<mat-card-content>
+					<div class="marks-table-scroll">
+						<table class="marks-table">
+							<thead>
+								<tr>
+									<th class="col-name">Student</th>
+									@for (subj of selectedSubjects(); track subj) {
+										<th class="col-subj">{{ subj }}<br/><span class="max-label">/ {{ maxMarksMap()[subj] }}</span></th>
+									}
+									<th class="col-total">Total</th>
+									<th class="col-pct">%</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (student of enrolledStudents(); track getStudentId(student)) {
+									<tr [class.row-danger]="getPercentage(getStudentId(student)) < 35" [class.row-warn]="getPercentage(getStudentId(student)) >= 35 && getPercentage(getStudentId(student)) < 60">
+										<td class="col-name">{{ getStudentName(student) }}</td>
+										@for (subj of selectedSubjects(); track subj) {
+											<td class="col-subj">
+												<input class="marks-input" type="number" min="0" [max]="maxMarksMap()[subj]" [value]="getMark(getStudentId(student), subj)" (change)="setMark(getStudentId(student), subj, $any($event.target).value)" />
+											</td>
+										}
+										<td class="col-total">{{ getTotal(getStudentId(student)) }}</td>
+										<td class="col-pct" [class.pct-good]="getPercentage(getStudentId(student)) >= 60" [class.pct-warn]="getPercentage(getStudentId(student)) >= 35 && getPercentage(getStudentId(student)) < 60" [class.pct-bad]="getPercentage(getStudentId(student)) < 35">{{ getPercentage(getStudentId(student)) }}%</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+
+					<mat-divider></mat-divider>
+					<div class="submit-row">
+						<button mat-raised-button color="primary" (click)="submit()" [disabled]="saving()">
+							@if (saving()) {
+								<mat-spinner diameter="20"></mat-spinner>
+							} @else {
+								<mat-icon>save</mat-icon>
+							}
+							{{ saveButtonLabel() }}
+						</button>
+					</div>
+				</mat-card-content>
+			</mat-card>
+		}
+	} @else if (isFilterReady() && enrolledStudents().length === 0) {
+		<p class="empty-message">No students enrolled in this classroom.</p>
+	} @else if (isFilterReady() && enrolledStudents().length > 0 && selectedSubjects().length === 0 && !loading()) {
+		<p class="empty-message">Select at least one subject to begin marks entry.</p>
+	}
+</div>

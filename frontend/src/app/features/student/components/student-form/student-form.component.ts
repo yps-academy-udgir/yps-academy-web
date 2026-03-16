@@ -205,7 +205,7 @@ export class StudentFormComponent implements OnInit {
       error: (error) => {
         this.notificationService.error('Failed to load student data');
         this.loading.set(false);
-        this.router.navigate(['/students']);
+        this.router.navigate(['/students', 'management', 'list']);
       },
     });
   }
@@ -366,7 +366,7 @@ export class StudentFormComponent implements OnInit {
       next: (response) => {
         this.notificationService.success('Student created successfully!');
         this.submitting.set(false);
-        this.router.navigate(['/students']);
+        this.router.navigate(['/students', 'management', 'list']);
       },
       error: (error) => {
         this.notificationService.error('Failed to create student');
@@ -386,7 +386,7 @@ export class StudentFormComponent implements OnInit {
       next: (response) => {
         this.notificationService.success('Student updated successfully!');
         this.submitting.set(false);
-        this.router.navigate(['/students']);
+        this.router.navigate(['/students', 'management', 'list']);
       },
       error: (error) => {
         this.notificationService.error('Failed to update student');
@@ -399,7 +399,7 @@ export class StudentFormComponent implements OnInit {
    * Cancel and navigate back
    */
   onCancel(): void {
-    this.router.navigate(['/students']);
+    this.router.navigate(['/students', 'management', 'list']);
   }
 
   /**

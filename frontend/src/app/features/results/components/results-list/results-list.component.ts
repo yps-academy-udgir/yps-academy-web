@@ -10,9 +10,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ClassroomService } from '../../../../shared/services/classroom.service';
 import { ExamResultService, FilteredExamResultRow } from '../../../../shared/services/exam-result.service';
+import { ResultExportFormat, ResultExportService } from '../../../../shared/services/result-export.service';
+import { ReportHeaderService } from '../../../../shared/services/report-header.service';
 import { ExamType } from '../../../../shared/models/student.model';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 @Component({
 	selector: 'app-results-list',
@@ -36,6 +36,8 @@ export class ResultsListComponent implements OnInit {
 
 	private classroomService = inject(ClassroomService);
 	private examResultService = inject(ExamResultService);
+	private resultExportService = inject(ResultExportService);
+	private reportHeaderService = inject(ReportHeaderService);
 	private router = inject(Router);
 
 	readonly examTypes = Object.values(ExamType);
@@ -66,6 +68,7 @@ export class ResultsListComponent implements OnInit {
 	selectedExamType = signal<ExamType | ''>('');
 	selectedMonth = signal(new Date().getMonth() + 1);
 	selectedYear = signal(new Date().getFullYear());
+	generatedAt = signal(new Date());
 
 	loading = signal(false);
 	rows = signal<FilteredExamResultRow[]>([]);
@@ -78,6 +81,23 @@ export class ResultsListComponent implements OnInit {
 		}
 		return Array.from(headers);
 	});
+	reportMonthLabel = computed(() => this.getMonthLabel(this.selectedMonth()));
+	reportExamLabel = computed(() => this.selectedExamType() || 'All Exams');
+	reportSectionLabel = computed(() => this.selectedSection() || 'All Sections');
+	reportGeneratedOn = computed(() => this.generatedAt().toLocaleString());
+
+	/** Drives the printable export header — single source of truth via ReportHeaderService. */
+	reportHeader = computed(() =>
+		this.reportHeaderService.buildClassMarksHeader({
+			class: this.selectedClass(),
+			section: this.reportSectionLabel(),
+			examType: this.reportExamLabel(),
+			month: this.reportMonthLabel(),
+			year: this.selectedYear(),
+			totalStudents: this.rows().length,
+			generatedOn: this.reportGeneratedOn(),
+		}),
+	);
 
 	ngOnInit(): void {
 		this.classroomService.getAllClassrooms(1, 100).subscribe();
@@ -100,6 +120,7 @@ export class ResultsListComponent implements OnInit {
 			.subscribe({
 				next: (res) => {
 					this.rows.set(res.data ?? []);
+					this.generatedAt.set(new Date());
 					this.loading.set(false);
 				},
 				error: () => {
@@ -118,58 +139,58 @@ export class ResultsListComponent implements OnInit {
 		return mark ? `${mark.marksObtained}/${mark.outOf}` : '-';
 	}
 
-	async downloadPng(): Promise<void> {
-		const canvas = await this.captureAsCanvas();
-		if (!canvas) return;
+	private getMonthLabel(monthValue: number): string {
+		return this.months.find((m) => m.value === monthValue)?.label ?? String(monthValue);
+	}
 
-		this.downloadDataUrl(canvas.toDataURL('image/png'), 'results-list.png');
+	async downloadPng(): Promise<void> {
+		await this.exportResults('png');
 	}
 
 	async downloadJpg(): Promise<void> {
-		const canvas = await this.captureAsCanvas();
-		if (!canvas) return;
-
-		this.downloadDataUrl(canvas.toDataURL('image/jpeg', 0.95), 'results-list.jpg');
+		await this.exportResults('jpg');
 	}
 
 	async downloadPdf(): Promise<void> {
-		const canvas = await this.captureAsCanvas();
-		if (!canvas) return;
-
-		const imageData = canvas.toDataURL('image/png');
-		const pdf = new jsPDF('p', 'mm', 'a4');
-		const pageWidth = pdf.internal.pageSize.getWidth();
-		const pageHeight = pdf.internal.pageSize.getHeight();
-		const imgWidth = pageWidth - 20;
-		const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-		if (imgHeight <= pageHeight - 20) {
-			pdf.addImage(imageData, 'PNG', 10, 10, imgWidth, imgHeight);
-		} else {
-			const ratio = (pageHeight - 20) / imgHeight;
-			pdf.addImage(imageData, 'PNG', 10, 10, imgWidth * ratio, imgHeight * ratio);
-		}
-
-		pdf.save('results-list.pdf');
+		await this.exportResults('pdf');
 	}
 
-	private async captureAsCanvas(): Promise<HTMLCanvasElement | null> {
+	private async exportResults(format: ResultExportFormat): Promise<void> {
 		const container = this.resultsTableContainer?.nativeElement;
 		if (!container) {
-			return null;
+			return;
 		}
 
-		return html2canvas(container, {
-			backgroundColor: '#ffffff',
-			scale: 2,
-			useCORS: true,
+		const header = this.reportHeaderService.buildClassMarksHeader({
+			class: this.selectedClass(),
+			section: this.reportSectionLabel(),
+			examType: this.reportExamLabel(),
+			month: this.reportMonthLabel(),
+			year: this.selectedYear(),
+			totalStudents: this.rows().length,
+			generatedOn: this.reportGeneratedOn(),
+		});
+
+		await this.resultExportService.export(container, {
+			format,
+			fileBaseName: this.getExportFileBaseName(),
+			metadata: {
+				academyName: header.academyName,
+				reportTitle: header.reportTitle,
+				classLabel: header.class,
+				sectionLabel: header.section,
+				examLabel: header.examType,
+				periodLabel: `${header.month} ${header.year}`,
+				generatedOn: header.generatedOn,
+			},
 		});
 	}
 
-	private downloadDataUrl(dataUrl: string, fileName: string): void {
-		const link = document.createElement('a');
-		link.href = dataUrl;
-		link.download = fileName;
-		link.click();
+	private getExportFileBaseName(): string {
+		const classPart = (this.selectedClass() || 'results').replace(/\s+/g, '-').toLowerCase();
+		const sectionPart = this.reportSectionLabel().replace(/\s+/g, '-').toLowerCase();
+		const examPart = this.reportExamLabel().replace(/\s+/g, '-').toLowerCase();
+		const monthPart = this.reportMonthLabel().replace(/\s+/g, '-').toLowerCase();
+		return `${classPart}-${sectionPart}-${examPart}-${monthPart}-${this.selectedYear()}-report`;
 	}
 }

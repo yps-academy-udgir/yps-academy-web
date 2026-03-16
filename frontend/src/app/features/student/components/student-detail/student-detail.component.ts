@@ -3,7 +3,7 @@
  * Displays detailed information about a single student
  * Uses Angular Material cards and follows Angular 20 patterns
  */
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -33,6 +33,7 @@ const MONTH_NAMES = [
   ],
   templateUrl: './student-detail.component.html',
   styleUrls: ['./student-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentDetailComponent implements OnInit {
   // Inject services
@@ -54,7 +55,7 @@ export class StudentDetailComponent implements OnInit {
     if (id) {
       this.loadStudent(id);
     } else {
-      this.router.navigate(['/students']);
+      this.router.navigate(['/students', 'management', 'list']);
     }
   }
 
@@ -86,7 +87,7 @@ export class StudentDetailComponent implements OnInit {
   onEdit(): void {
     const student = this.student();
     if (student?._id) {
-      this.router.navigate(['/students', student._id, 'edit']);
+      this.router.navigate(['/students', 'management', student._id, 'edit']);
     }
   }
 
@@ -95,6 +96,54 @@ export class StudentDetailComponent implements OnInit {
     if (student?._id) {
       this.router.navigate(['/students', student._id, 'marks']);
     }
+  }
+
+  onViewFeeReceipt(): void {
+    const student = this.student();
+    if (student?._id) {
+      this.router.navigate(['/students', 'fees', student._id, 'receipt']);
+    }
+  }
+
+  onGenerateLatestMarksReport(): void {
+    const student = this.student();
+    const latestResult = this.getLatestExamResult();
+
+    if (!student?._id || !latestResult?._id) {
+      this.notificationService.warning('No exam result is available to generate a marks report.');
+      return;
+    }
+
+    this.router.navigate(['/students', 'reports', student._id, latestResult._id]);
+  }
+
+  onGenerateMarksReport(result: ExamResult): void {
+    const student = this.student();
+    if (student?._id && result._id) {
+      this.router.navigate(['/students', 'reports', student._id, result._id]);
+    }
+  }
+
+  private getLatestExamResult(): ExamResult | null {
+    const results = [...this.examResults()];
+    if (results.length === 0) {
+      return null;
+    }
+
+    results.sort((left, right) => {
+      if (left.year !== right.year) {
+        return right.year - left.year;
+      }
+      if (left.month !== right.month) {
+        return right.month - left.month;
+      }
+
+      const leftTime = left.updatedAt ? new Date(left.updatedAt).getTime() : 0;
+      const rightTime = right.updatedAt ? new Date(right.updatedAt).getTime() : 0;
+      return rightTime - leftTime;
+    });
+
+    return results[0] ?? null;
   }
 
   private loadExamResults(studentId: string): void {
@@ -139,7 +188,7 @@ export class StudentDetailComponent implements OnInit {
     this.studentService.deleteStudent(id).subscribe({
       next: () => {
         this.notificationService.success('Student deleted successfully');
-        this.router.navigate(['/students']);
+        this.router.navigate(['/students', 'management', 'list']);
       },
       error: () => {
         this.notificationService.error('Failed to delete student');
@@ -151,7 +200,7 @@ export class StudentDetailComponent implements OnInit {
    * Navigate back to list
    */
   onBack(): void {
-    this.router.navigate(['/students']);
+    this.router.navigate(['/students', 'management', 'list']);
   }
 
   /**

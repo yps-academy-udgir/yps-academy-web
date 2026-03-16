@@ -1,0 +1,240 @@
+@use '../../../../styles/variables' as v;
+
+.report-shell {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-md;
+}
+
+.report-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: v.$spacing-sm;
+  flex-wrap: wrap;
+}
+
+.report-wrapper {
+  max-width: 920px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid v.$gray-300;
+  border-radius: v.$border-radius-lg;
+  overflow: hidden;
+  box-shadow: v.$shadow-sm;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.report-band {
+  height: 10px;
+  background: linear-gradient(90deg, v.$primary-700 0%, v.$success-500 100%);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  gap: v.$spacing-lg;
+  padding: v.$spacing-xl;
+}
+
+.academy-name {
+  font-size: v.$font-size-xxl;
+  font-weight: v.$font-weight-bold;
+  color: v.$primary-800;
+}
+
+.academy-subtitle,
+.academy-address,
+.academy-contact {
+  color: v.$gray-800;
+  font-size: v.$font-size-sm;
+}
+
+.report-meta-card,
+.info-card,
+.table-card {
+  border: 1px solid v.$gray-300;
+  border-radius: v.$border-radius-md;
+  background: #fff;
+}
+
+.report-meta-card {
+  min-width: 280px;
+  padding: v.$spacing-md;
+}
+
+.report-title {
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-bold;
+  color: v.$primary-700;
+  margin-bottom: v.$spacing-sm;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: v.$spacing-md;
+  font-size: v.$font-size-sm;
+  padding: v.$spacing-xxs 0;
+  color: #111827;
+}
+
+.info-card,
+.table-card,
+.summary-grid,
+.report-footer {
+  margin: 0 v.$spacing-xl v.$spacing-lg;
+}
+
+.info-card,
+.table-card {
+  padding: v.$spacing-lg;
+  background: #fff;
+}
+
+.section-eyebrow,
+.label {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: v.$gray-700;
+  font-size: v.$font-size-xs;
+}
+
+.student-grid,
+.summary-grid {
+  display: grid;
+  gap: v.$spacing-md;
+}
+
+.student-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: v.$spacing-md;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-xxs;
+}
+
+.summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-xs;
+  padding: v.$spacing-lg;
+  border-radius: v.$border-radius-md;
+  border: 1px solid v.$gray-300;
+  background: #fff;
+  color: #111827;
+}
+
+.summary-card strong {
+  font-size: v.$font-size-xl;
+  color: #111827;
+}
+
+.summary-card.primary { background: v.$primary-50; border-color: v.$primary-200; }
+.summary-card.neutral { background: v.$gray-50; border-color: v.$gray-200; }
+.summary-card.accent { background: v.$success-50; border-color: v.$success-200; }
+.summary-card.success { background: v.$success-50; border-color: v.$success-200; }
+.summary-card.warn { background: v.$warn-50; border-color: v.$warn-200; }
+
+.marks-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: v.$spacing-md;
+}
+
+.marks-table th,
+.marks-table td {
+  padding: v.$spacing-sm;
+  border-bottom: 1px solid v.$gray-300;
+  text-align: left;
+  font-size: v.$font-size-sm;
+  color: #111827;
+}
+
+.marks-table th {
+  background: #f3f4f6;
+  color: #111827;
+  font-weight: v.$font-weight-bold;
+}
+
+.marks-table tfoot td {
+  background: #f9fafb;
+  font-weight: v.$font-weight-bold;
+}
+
+.number-col {
+  text-align: right !important;
+}
+
+.report-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: v.$spacing-lg;
+  padding-bottom: v.$spacing-xl;
+}
+
+.footer-note {
+  font-size: v.$font-size-sm;
+  color: #111827;
+}
+
+.footer-note p {
+  margin: 0;
+}
+
+.signature-block {
+  min-width: 240px;
+  text-align: center;
+  font-size: v.$font-size-sm;
+  color: #111827;
+}
+
+.signature-line {
+  border-top: 1px solid v.$gray-700;
+  margin-bottom: v.$spacing-xs;
+}
+
+@media (max-width: 768px) {
+  .report-header,
+  .report-footer {
+    flex-direction: column;
+  }
+
+  .report-header {
+    padding: v.$spacing-md;
+  }
+
+  .info-card,
+  .table-card,
+  .summary-grid,
+  .report-footer {
+    margin-left: v.$spacing-md;
+    margin-right: v.$spacing-md;
+  }
+
+  .student-grid,
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-meta-card,
+  .signature-block {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .marks-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

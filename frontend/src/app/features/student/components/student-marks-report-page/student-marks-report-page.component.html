@@ -1,0 +1,27 @@
+<div class="student-report-page">
+  <div class="page-header">
+    <div>
+      <h2>Student Marks Report</h2>
+      @if (student() && result()) {
+        <p>{{ student()!.firstName }} {{ student()!.lastName }} · {{ result()!.examType }} · {{ result()!.year }}</p>
+      }
+    </div>
+
+    <button mat-stroked-button type="button" (click)="onBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Back To Student Details
+    </button>
+  </div>
+
+  @if (loading()) {
+    <app-loading [message]="'Preparing student marks report...'" />
+  } @else if (error()) {
+    <app-error-message
+      [title]="'Marks Report Unavailable'"
+      [message]="error()!"
+      (retry)="onRetry()"
+    />
+  } @else if (reportData()) {
+    <app-student-marks-report [report]="reportData()!" />
+  }
+</div>
