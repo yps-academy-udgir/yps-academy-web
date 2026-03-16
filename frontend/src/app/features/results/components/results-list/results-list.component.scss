@@ -1,0 +1,19 @@
+.results-list-container { padding: 24px; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.filter-card { margin-bottom: 20px; }
+.filters-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; align-items: center; }
+.search-btn { height: 48px; }
+.loading-row { display: flex; align-items: center; gap: 12px; color: var(--text-secondary); padding: 20px 0; }
+.table-wrap { overflow-x: auto; }
+.results-table { width: 100%; border-collapse: collapse; }
+.results-table th, .results-table td { border-bottom: 1px solid var(--border-color); padding: 10px; text-align: left; }
+.results-table th { color: var(--text-secondary); font-weight: 600; }
+.results-table tbody tr:hover { background: var(--background-hover); }
+.results-table td:nth-last-child(1),
+.results-table td:nth-last-child(2),
+.results-table td:nth-last-child(3),
+.results-table th:nth-last-child(1),
+.results-table th:nth-last-child(2),
+.results-table th:nth-last-child(3) { text-align: right; }
+.empty-message { text-align: center; color: var(--text-secondary); }

@@ -109,4 +109,14 @@ export const CLASSROOM_ROUTES: Routes = [
       ),
     data: { title: 'Attendance Report' },
   },
+
+  // Marks entry
+  {
+    path: 'marks/enter',
+    loadComponent: () =>
+      import('./components/enter-marks/enter-marks.component').then(
+        (m) => m.EnterMarksComponent
+      ),
+    data: { title: 'Enter Marks' },
+  },
 ];

@@ -2,8 +2,45 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ExamResult, ApiResponse } from '../models/student.model';
+import { ExamResult, ExamType, SubjectMark, ApiResponse } from '../models/student.model';
 import { environment } from '../../../environments/environment';
+
+export interface BulkMarksRecord {
+  studentId: string;
+  subjectMarks: SubjectMark[];
+}
+
+export interface BulkMarksPayload {
+  classroomId: string;
+  examType: ExamType;
+  month: number;
+  year: number;
+  records: BulkMarksRecord[];
+}
+
+export interface FilteredExamResultRow {
+  _id: string;
+  studentId: string;
+  studentName: string;
+  class: string;
+  section: string;
+  roomNumber: string;
+  examType: ExamType;
+  month: number;
+  year: number;
+  subjectMarks: SubjectMark[];
+  totalMarksObtained: number;
+  totalOutOf: number;
+  percentage: number;
+}
+
+export interface FilteredResultsQuery {
+  classValue: string;
+  section?: string;
+  examType?: ExamType;
+  month?: number;
+  year?: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ExamResultService {
@@ -23,8 +60,41 @@ export class ExamResultService {
     );
   }
 
+  getByClassroom(
+    classroomId: string,
+    examType?: ExamType,
+    month?: number,
+    year?: number
+  ): Observable<ApiResponse<ExamResult[]>> {
+    let params = new HttpParams();
+    if (examType) params = params.set('examType', examType);
+    if (month)    params = params.set('month', month.toString());
+    if (year)     params = params.set('year', year.toString());
+    return this.http.get<ApiResponse<ExamResult[]>>(`${this.API_URL}/classroom/${classroomId}`, { params }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getFilteredResults(query: FilteredResultsQuery): Observable<ApiResponse<FilteredExamResultRow[]>> {
+    let params = new HttpParams().set('class', query.classValue);
+    if (query.section) params = params.set('section', query.section);
+    if (query.examType) params = params.set('examType', query.examType);
+    if (query.month) params = params.set('month', String(query.month));
+    if (query.year) params = params.set('year', String(query.year));
+
+    return this.http.get<ApiResponse<FilteredExamResultRow[]>>(`${this.API_URL}/filter`, { params }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   create(payload: Omit<ExamResult, '_id' | 'totalMarksObtained' | 'totalOutOf' | 'percentage' | 'createdAt' | 'updatedAt'>): Observable<ApiResponse<ExamResult>> {
     return this.http.post<ApiResponse<ExamResult>>(this.API_URL, payload).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  bulkSave(payload: BulkMarksPayload): Observable<ApiResponse<{ count: number }>> {
+    return this.http.post<ApiResponse<{ count: number }>>(`${this.API_URL}/bulk`, payload).pipe(
       catchError(this.handleError)
     );
   }

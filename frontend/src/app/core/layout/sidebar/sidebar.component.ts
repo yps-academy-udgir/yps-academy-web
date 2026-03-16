@@ -123,9 +123,31 @@ export class SidebarComponent {
           route: '/classrooms/attendance/mark',
         },
         {
+          label: 'Enter Marks',
+          icon: 'grading',
+          route: '/classrooms/marks/enter',
+        },
+        {
           label: 'Attendance Report',
           icon: 'bar_chart',
           route: '/classrooms/attendance/report',
+        },
+      ],
+    },
+    {
+      label: 'Results',
+      icon: 'grading',
+      expanded: false,
+      children: [
+        {
+          label: 'Results List',
+          icon: 'table_view',
+          route: '/results/list',
+        },
+        {
+          label: 'Enter Results',
+          icon: 'edit_note',
+          route: '/results/enter',
         },
       ],
     },
