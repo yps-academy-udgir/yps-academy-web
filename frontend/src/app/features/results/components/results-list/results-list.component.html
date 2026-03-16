@@ -1,0 +1,127 @@
+<div class="results-list-container">
+	<div class="page-header">
+		<h2>Results List</h2>
+		<div class="header-actions">
+			<button mat-raised-button color="primary" (click)="goToEnterResults()">
+				<mat-icon>add</mat-icon>
+				Enter Results
+			</button>
+			<button mat-stroked-button (click)="downloadPdf()" [disabled]="rows().length === 0">
+				<mat-icon>picture_as_pdf</mat-icon>
+				PDF
+			</button>
+			<button mat-stroked-button (click)="downloadPng()" [disabled]="rows().length === 0">
+				<mat-icon>image</mat-icon>
+				PNG
+			</button>
+			<button mat-stroked-button (click)="downloadJpg()" [disabled]="rows().length === 0">
+				<mat-icon>image</mat-icon>
+				JPG
+			</button>
+		</div>
+	</div>
+
+	<mat-card class="filter-card">
+		<mat-card-content>
+			<div class="filters-row">
+				<mat-form-field appearance="outline">
+					<mat-label>Class</mat-label>
+					<mat-select [value]="selectedClass()" (valueChange)="selectedClass.set($event); selectedSection.set('')">
+						@for (c of classOptions(); track c) {
+							<mat-option [value]="c">{{ c }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline">
+					<mat-label>Section</mat-label>
+					<mat-select [value]="selectedSection()" (valueChange)="selectedSection.set($event)" [disabled]="!selectedClass()">
+						<mat-option value="">All Sections</mat-option>
+						@for (s of sectionOptions(); track s) {
+							<mat-option [value]="s">{{ s }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline">
+					<mat-label>Exam Type</mat-label>
+					<mat-select [value]="selectedExamType()" (valueChange)="selectedExamType.set($event)">
+						<mat-option value="">All Exams</mat-option>
+						@for (et of examTypes; track et) {
+							<mat-option [value]="et">{{ et }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline">
+					<mat-label>Month</mat-label>
+					<mat-select [value]="selectedMonth()" (valueChange)="selectedMonth.set($event)">
+						@for (m of months; track m.value) {
+							<mat-option [value]="m.value">{{ m.label }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
+
+				<mat-form-field appearance="outline">
+					<mat-label>Year</mat-label>
+					<input matInput type="number" min="2000" [value]="selectedYear()" (change)="selectedYear.set(+$any($event.target).value)" />
+				</mat-form-field>
+
+				<button mat-raised-button color="primary" class="search-btn" (click)="search()" [disabled]="!selectedClass() || loading()">
+					<mat-icon>search</mat-icon>
+					Search
+				</button>
+			</div>
+		</mat-card-content>
+	</mat-card>
+
+	@if (loading()) {
+		<div class="loading-row">
+			<mat-spinner diameter="36"></mat-spinner>
+			<span>Loading results...</span>
+		</div>
+	} @else if (rows().length > 0) {
+		<mat-card>
+			<mat-card-content>
+				<div class="table-wrap" #resultsTableContainer>
+					<table class="results-table">
+						<thead>
+							<tr>
+								<th>Student</th>
+								<th>Class</th>
+								<th>Section</th>
+								<th>Exam</th>
+								<th>Month/Year</th>
+								@for (subject of subjectHeaders(); track subject) {
+									<th>{{ subject }}</th>
+								}
+								<th>Total</th>
+								<th>Out Of</th>
+								<th>%</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (row of rows(); track row._id) {
+								<tr>
+									<td>{{ row.studentName }}</td>
+									<td>{{ row.class }}</td>
+									<td>{{ row.section }}</td>
+									<td>{{ row.examType }}</td>
+									<td>{{ row.month }}/{{ row.year }}</td>
+									@for (subject of subjectHeaders(); track subject) {
+										<td>{{ getSubjectMark(row, subject) }}</td>
+									}
+									<td>{{ row.totalMarksObtained }}</td>
+									<td>{{ row.totalOutOf }}</td>
+									<td>{{ row.percentage }}%</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</mat-card-content>
+		</mat-card>
+	} @else {
+		<p class="empty-message">No results found. Adjust filters and search again.</p>
+	}
+</div>

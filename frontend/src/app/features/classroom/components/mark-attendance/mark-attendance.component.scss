@@ -1,14 +1,42 @@
 .attendance-container { padding: 24px; }
+
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
 .header-left { display: flex; align-items: center; gap: 8px; }
-.header-left h2 { margin: 0; font-size: 20px; font-weight: 600; }
+
+.header-left h2 { margin: 0; font-size: 20px; font-weight: 600; color: var(--text-primary); }
+
 .filter-card { margin-bottom: 20px; }
+
 .filter-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+
 .student-list-card { margin-top: 8px; }
+
 .student-rows { display: flex; flex-direction: column; gap: 10px; padding: 12px 0; }
-.student-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-radius: 8px; background: #fafafa; transition: background 0.2s; }
-.student-row.absent { background: #fff3f3; }
-.student-row.late { background: #fffde7; }
-.student-name { font-weight: 500; font-size: 14px; }
+
+.student-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--background-secondary);
+  transition: background 0.2s;
+
+  &.absent {
+    background: var(--error-background);
+    border-color: var(--error-color);
+  }
+
+  &.late {
+    background: color-mix(in srgb, var(--warn-color) 12%, var(--background-secondary));
+    border-color: var(--warn-color);
+  }
+}
+
+.student-name { font-weight: 500; font-size: 14px; color: var(--text-primary); }
+
 .submit-row { display: flex; justify-content: flex-end; padding: 16px 0 4px; }
-.empty-message { text-align: center; padding: 32px; color: #757575; font-style: italic; }
+
+.empty-message { text-align: center; padding: 32px; color: var(--text-secondary); font-style: italic; }

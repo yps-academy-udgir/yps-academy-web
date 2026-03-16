@@ -4,6 +4,7 @@ import { MainDashboardComponent } from './features/dashboard/main-dashboard.comp
 import { STUDENT_ROUTES } from './features/student/student.routes';
 import { FACULTY_ROUTES } from './features/faculty/faculty.routes';
 import { CLASSROOM_ROUTES } from './features/classroom/classroom.routes';
+import { RESULTS_ROUTES } from './features/results/results.routes';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -48,6 +49,10 @@ export const routes: Routes = [
       {
         path: 'classrooms',
         children: CLASSROOM_ROUTES,
+      },
+      {
+        path: 'results',
+        children: RESULTS_ROUTES,
       },
     ],
   },

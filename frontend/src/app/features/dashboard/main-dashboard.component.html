@@ -100,6 +100,18 @@
         <mat-icon>how_to_reg</mat-icon>
         Mark Attendance
       </button>
+      <button mat-raised-button (click)="navigateToModule('/classrooms/marks/enter')">
+        <mat-icon>grading</mat-icon>
+        Enter Marks
+      </button>
+      <button mat-raised-button (click)="navigateToModule('/results/list')">
+        <mat-icon>table_view</mat-icon>
+        Results List
+      </button>
+      <button mat-raised-button (click)="navigateToModule('/results/enter')">
+        <mat-icon>edit_note</mat-icon>
+        Enter Results
+      </button>
     </div>
   </div>
 </div>

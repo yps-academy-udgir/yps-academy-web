@@ -49,4 +49,8 @@ export class ClassroomDashboardComponent implements OnInit {
   navigateToAdd(): void {
     this.router.navigate(['/classrooms/management/add']);
   }
+
+  navigateToEnterMarks(): void {
+    this.router.navigate(['/classrooms/marks/enter']);
+  }
 }
