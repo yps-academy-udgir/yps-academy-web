@@ -2,6 +2,7 @@ import { Router } from 'express';
 import studentRoutes from './student.routes';
 import examResultRoutes from './exam-result.routes';
 import facultyRoutes from './faculty.routes';
+import classroomRoutes from './classroom.routes';
 import authRoutes from './auth.routes';
 
 const router = Router();
@@ -21,5 +22,6 @@ router.use('/auth', authRoutes);
 router.use('/students', studentRoutes);
 router.use('/exam-results', examResultRoutes);
 router.use('/faculty', facultyRoutes);
+router.use('/classrooms', classroomRoutes);
 
 export default router;

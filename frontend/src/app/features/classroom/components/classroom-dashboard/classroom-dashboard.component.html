@@ -1,0 +1,80 @@
+﻿<div class="dashboard-container">
+  <h1 class="dashboard-title">Classroom Management</h1>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <p>Loading classrooms...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <mat-icon>error</mat-icon>
+      <p>{{ error() }}</p>
+    </div>
+  } @else {
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card green">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>meeting_room</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h2>{{ totalClassrooms() }}</h2>
+            <p>Total Classrooms</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card blue">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>event_seat</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h2>{{ totalCapacity() }}</h2>
+            <p>Total Capacity</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card orange">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h2>{{ totalEnrolled() }}</h2>
+            <p>Enrolled Students</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card purple">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>pie_chart</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h2>{{ occupancyRate() }}%</h2>
+            <p>Occupancy Rate</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-container">
+      <h2>Quick Actions</h2>
+      <div class="actions-grid">
+        <button mat-raised-button color="primary" (click)="navigateToAdd()">
+          <mat-icon>add</mat-icon>
+          Add Classroom
+        </button>
+        <button mat-raised-button (click)="navigateToList()">
+          <mat-icon>list</mat-icon>
+          View All Classrooms
+        </button>
+      </div>
+    </div>
+  }
+</div>

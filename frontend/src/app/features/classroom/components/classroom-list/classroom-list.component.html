@@ -1,0 +1,183 @@
+﻿<div class="list-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Classrooms</mat-card-title>
+      <button mat-raised-button color="primary" (click)="addClassroom()">
+        <mat-icon>add</mat-icon>
+        Add Classroom
+      </button>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Filters -->
+      <div class="filters-section">
+        <mat-form-field appearance="outline">
+          <mat-label>Search by room</mat-label>
+          <input matInput [formControl]="searchControl" placeholder="Room 101" />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Filter by Class</mat-label>
+          <mat-select [formControl]="classFilterControl">
+            <mat-option value="">All Classes</mat-option>
+            @for (cls of classOptions; track cls) {
+              <mat-option [value]="cls">{{ cls }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Section</mat-label>
+          <input matInput [formControl]="sectionFilterControl" placeholder="A" maxlength="1" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Academic Year</mat-label>
+          <input matInput [formControl]="yearFilterControl" placeholder="2025-2026" />
+        </mat-form-field>
+
+        <button mat-button (click)="clearFilters()">Clear Filters</button>
+      </div>
+
+      <!-- Loading State -->
+      @if (loading()) {
+        <div class="loading-container">
+          <p>Loading classrooms...</p>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (error() && !loading()) {
+        <div class="error-container">
+          <mat-icon>error</mat-icon>
+          <p>{{ error() }}</p>
+        </div>
+      }
+
+      <!-- Classrooms Table -->
+      @if (!loading() && !error() && classrooms().length > 0) {
+        <div class="table-container">
+          <table mat-table [dataSource]="classrooms()">
+            <!-- Class Column -->
+            <ng-container matColumnDef="class">
+              <th mat-header-cell *matHeaderCellDef>Class</th>
+              <td mat-cell *matCellDef="let classroom">{{ classroom.class }}</td>
+            </ng-container>
+
+            <!-- Section Column -->
+            <ng-container matColumnDef="section">
+              <th mat-header-cell *matHeaderCellDef>Section</th>
+              <td mat-cell *matCellDef="let classroom">{{ classroom.section }}</td>
+            </ng-container>
+
+            <!-- Room Column -->
+            <ng-container matColumnDef="room">
+              <th mat-header-cell *matHeaderCellDef>Room</th>
+              <td mat-cell *matCellDef="let classroom">{{ classroom.roomNumber }}</td>
+            </ng-container>
+
+            <!-- Capacity Column -->
+            <ng-container matColumnDef="capacity">
+              <th mat-header-cell *matHeaderCellDef>Capacity</th>
+              <td mat-cell *matCellDef="let classroom">{{ classroom.capacity }}</td>
+            </ng-container>
+
+            <!-- Enrolled Column -->
+            <ng-container matColumnDef="enrolled">
+              <th mat-header-cell *matHeaderCellDef>Enrolled</th>
+              <td mat-cell *matCellDef="let classroom">{{ classroom.enrolledStudents.length }}</td>
+            </ng-container>
+
+            <!-- Occupancy Column -->
+            <ng-container matColumnDef="occupancy">
+              <th mat-header-cell *matHeaderCellDef>Occupancy</th>
+              <td mat-cell *matCellDef="let classroom">
+                <span 
+                  class="occupancy-badge"
+                  [class]="getOccupancyColorClass(getOccupancy(classroom))">
+                  {{ getOccupancy(classroom) }}%
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Faculty Column -->
+            <ng-container matColumnDef="faculty">
+              <th mat-header-cell *matHeaderCellDef>Faculty</th>
+              <td mat-cell *matCellDef="let classroom">
+                {{ classroom.facultyAssignments.length }} assigned
+              </td>
+            </ng-container>
+
+            <!-- Year Column -->
+            <ng-container matColumnDef="year">
+              <th mat-header-cell *matHeaderCellDef>Academic Year</th>
+              <td mat-cell *matCellDef="let classroom">{{ classroom.academicYear }}</td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let classroom">
+                <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Actions">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="viewClassroom(classroom._id)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>View Details</span>
+                  </button>
+                  <button mat-menu-item (click)="editClassroom(classroom._id)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button mat-menu-item (click)="assignFaculty(classroom._id)">
+                    <mat-icon>person_add</mat-icon>
+                    <span>Assign Faculty</span>
+                  </button>
+                  <button mat-menu-item (click)="enrollStudents(classroom._id)">
+                    <mat-icon>group_add</mat-icon>
+                    <span>Enroll Students</span>
+                  </button>
+                  <button mat-menu-item (click)="viewSchedule(classroom._id)">
+                    <mat-icon>schedule</mat-icon>
+                    <span>View Schedule</span>
+                  </button>
+                  <button mat-menu-item (click)="deleteClassroom(classroom)" class="delete-action">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+
+          <!-- Paginator -->
+          <mat-paginator
+            [length]="totalClassrooms()"
+            [pageSize]="pageSize"
+            [pageIndex]="currentPage"
+            [pageSizeOptions]="[5, 10, 25, 50]"
+            (page)="onPageChange($event)"
+            showFirstLastButtons>
+          </mat-paginator>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (!loading() && !error() && classrooms().length === 0) {
+        <div class="empty-container">
+          <mat-icon>meeting_room</mat-icon>
+          <p>No classrooms found</p>
+          <button mat-raised-button color="primary" (click)="addClassroom()">
+            <mat-icon>add</mat-icon>
+            Add First Classroom
+          </button>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

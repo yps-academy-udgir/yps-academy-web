@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { StudentService } from '../../shared/services/student.service';
 import { FacultyService } from '../../shared/services/faculty.service';
+import { ClassroomService } from '../../shared/services/classroom.service';
 
 interface ModuleCard {
   title: string;
@@ -49,11 +50,17 @@ export class MainDashboardComponent implements OnInit {
   private router = inject(Router);
   private studentService = inject(StudentService);
   private facultyService = inject(FacultyService);
+  private classroomService = inject(ClassroomService);
 
   // Access service signals
   students = this.studentService.students;
   faculty = this.facultyService.faculty;
-  loading = computed(() => this.studentService.loading() || this.facultyService.loading());
+  classrooms = this.classroomService.classrooms;
+  loading = computed(() => 
+    this.studentService.loading() || 
+    this.facultyService.loading() || 
+    this.classroomService.loading()
+  );
 
   // Computed statistics
   totalStudents = computed(() => this.students().length);
@@ -64,6 +71,13 @@ export class MainDashboardComponent implements OnInit {
     this.students().filter(s => s.gender === 'female').length
   );
   totalFaculty = computed(() => this.faculty().length);
+  totalClassrooms = computed(() => this.classrooms().length);
+  totalCapacity = computed(() =>
+    this.classrooms().reduce((sum, c) => sum + c.capacity, 0)
+  );
+  totalEnrolled = computed(() =>
+    this.classrooms().reduce((sum, c) => sum + c.enrolledStudents.length, 0)
+  );
 
   // Module cards - extensible for future modules
   moduleCards = computed<ModuleCard[]>(() => [
@@ -81,29 +95,18 @@ export class MainDashboardComponent implements OnInit {
       ],
     },
     {
-      title: 'Faculty',
-      icon: 'school',
-      color: '#4caf50',
-      bgColor: 'rgba(76, 175, 80, 0.1)',
-      description: 'Manage faculty members and their information',
-      route: '/faculty',
+      title: 'Classrooms',
+      icon: 'meeting_room',
+      color: '#ff9800',
+      bgColor: 'rgba(255, 152, 0, 0.1)',
+      description: 'Manage classroom allocation and schedules',
+      route: '/classrooms',
       stats: [
-        { label: 'Total Faculty', value: this.totalFaculty(), icon: 'school' },
+        { label: 'Total Classrooms', value: this.totalClassrooms(), icon: 'meeting_room' },
+        { label: 'Total Capacity', value: this.totalCapacity(), icon: 'event_seat' },
+        { label: 'Enrolled Students', value: this.totalEnrolled(), icon: 'people' },
       ],
     },
-    // Future modules can be added here:
-    // {
-    //   title: 'Classrooms',
-    //   icon: 'meeting_room',
-    //   color: '#ff9800',
-    //   bgColor: 'rgba(255, 152, 0, 0.1)',
-    //   description: 'Manage classroom allocation and schedules',
-    //   route: '/classrooms',
-    //   stats: [
-    //     { label: 'Total Classrooms', value: 0, icon: 'meeting_room' },
-    //     { label: 'Occupied', value: 0, icon: 'event_seat' },
-    //   ],
-    // },
   ]);
 
   ngOnInit(): void {
@@ -114,6 +117,7 @@ export class MainDashboardComponent implements OnInit {
   loadData(): void {
     this.studentService.getAllStudents(1, 1000).subscribe();
     this.facultyService.getAllFaculty(1, 1000).subscribe();
+    this.classroomService.getAllClassrooms(1, 1000).subscribe();
   }
 
   refresh(): void {

@@ -87,6 +87,28 @@ export class SidebarComponent {
         },
       ],
     },
+    {
+      label: 'Classrooms',
+      icon: 'meeting_room',
+      expanded: false,
+      children: [
+        {
+          label: 'Classroom Dashboard',
+          icon: 'dashboard',
+          route: '/classrooms/dashboard',
+        },
+        {
+          label: 'Classrooms List',
+          icon: 'list',
+          route: '/classrooms/management/list',
+        },
+        {
+          label: 'Add Classroom',
+          icon: 'add',
+          route: '/classrooms/management/add',
+        },
+      ],
+    },
   ]);
 
   constructor(private router: Router) {}
