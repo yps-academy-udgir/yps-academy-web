@@ -96,46 +96,97 @@
 		<mat-card>
 			<mat-card-content>
 				<div class="export-container" #resultsTableContainer>
+					<div class="report-band"></div>
 					<div class="export-header">
-						<div class="academy-name">{{ reportHeader().academyName }}</div>
-						<div class="academy-subtitle">{{ reportHeader().academySubtitle }}</div>
-						<div class="export-details">
-							<span>Class: {{ reportHeader().class }}</span>
-							<span>Section: {{ reportHeader().section }}</span>
-							<span>Exam: {{ reportHeader().examType }}</span>
-							<span>Month/Year: {{ reportHeader().month }} {{ reportHeader().year }}</span>
-							<span>Students: {{ reportHeader().totalStudents }}</span>
-							<span>Generated: {{ reportHeader().generatedOn }}</span>
+						<div class="brand-block">
+							<div class="academy-name">{{ reportHeader().academyName }}</div>
+							<div class="academy-subtitle">{{ reportHeader().academySubtitle }}</div>
+							<div class="academy-address">{{ reportHeader().address }}</div>
+							<div class="academy-contact">{{ reportHeader().contact }} · {{ reportHeader().email }}</div>
+						</div>
+
+						<div class="report-summary-card">
+							<div class="report-summary-title">Class Result Report</div>
+							<div class="report-summary-row"><span>Class</span><strong>{{ reportHeader().class }}</strong></div>
+							<div class="report-summary-row"><span>Section</span><strong>{{ reportHeader().section }}</strong></div>
+							<div class="report-summary-row"><span>Exam</span><strong>{{ reportHeader().examType }}</strong></div>
+							<div class="report-summary-row"><span>Period</span><strong>{{ reportHeader().month }} {{ reportHeader().year }}</strong></div>
+							<div class="report-summary-row"><span>Generated</span><strong>{{ reportHeader().generatedOn }}</strong></div>
 						</div>
 					</div>
 
-					<div class="table-wrap">
-					<table class="results-table">
-						<thead>
-							<tr>
-								<th>Student</th>
-								@for (subject of subjectHeaders(); track subject) {
-									<th>{{ subject }}</th>
-								}
-								<th>Total</th>
-								<th>Out Of</th>
-								<th>%</th>
-							</tr>
-						</thead>
-						<tbody>
-							@for (row of rows(); track row._id) {
-								<tr>
-									<td>{{ row.studentName }}</td>
-									@for (subject of subjectHeaders(); track subject) {
-										<td>{{ getSubjectMark(row, subject) }}</td>
+					<div class="stats-grid">
+						<div class="stat-card primary">
+							<span class="stat-label">Students</span>
+							<strong class="stat-value">{{ reportStats().studentCount }}</strong>
+						</div>
+						<div class="stat-card success">
+							<span class="stat-label">Pass Count</span>
+							<strong class="stat-value">{{ reportStats().passCount }}</strong>
+						</div>
+						<div class="stat-card neutral">
+							<span class="stat-label">Average %</span>
+							<strong class="stat-value">{{ reportStats().averagePercentage | number:'1.0-1' }}%</strong>
+						</div>
+						<div class="stat-card accent">
+							<span class="stat-label">Top %</span>
+							<strong class="stat-value">{{ reportStats().topPercentage | number:'1.0-1' }}%</strong>
+						</div>
+					</div>
+
+					<div class="table-card">
+						<div class="section-eyebrow">Class Performance Ledger</div>
+						<div class="table-wrap">
+							<table class="results-table">
+								<thead>
+									<tr>
+										<th>Student</th>
+										@for (subject of subjectHeaders(); track subject) {
+											<th>{{ subject }}</th>
+										}
+										<th>Total</th>
+										<th>Out Of</th>
+										<th>%</th>
+										<th>Status</th>
+									</tr>
+								</thead>
+								<tbody>
+									@for (row of rows(); track row._id) {
+										<tr>
+											<td class="student-name-cell">{{ row.studentName }}</td>
+											@for (subject of subjectHeaders(); track subject) {
+												<td>{{ getSubjectMark(row, subject) }}</td>
+											}
+											<td>{{ row.totalMarksObtained }}</td>
+											<td>{{ row.totalOutOf }}</td>
+											<td>{{ row.percentage | number:'1.0-1' }}%</td>
+											<td>
+												<span class="status-badge" [class.status-pass]="row.percentage >= 35" [class.status-warn]="row.percentage < 35">
+													{{ getResultStatus(row) }}
+												</span>
+											</td>
+										</tr>
 									}
-									<td>{{ row.totalMarksObtained }}</td>
-									<td>{{ row.totalOutOf }}</td>
-									<td>{{ row.percentage }}%</td>
-								</tr>
-							}
-						</tbody>
-					</table>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td [attr.colspan]="subjectHeaders().length + 3">Class Average</td>
+										<td>{{ reportStats().averagePercentage | number:'1.0-1' }}%</td>
+										<td></td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+
+					<div class="report-footer">
+						<div class="footer-note">
+							<p><strong>Summary:</strong> {{ reportStats().passCount }} out of {{ reportStats().studentCount }} students achieved the required passing criteria in this report.</p>
+						</div>
+						<div class="signature-block">
+							<div class="signature-line"></div>
+							<span>Class Teacher / Authorised Signatory</span>
+						</div>
 					</div>
 				</div>
 			</mat-card-content>
