@@ -3,10 +3,64 @@
     <mat-card-header>
       <mat-icon mat-card-avatar>person_add</mat-icon>
       <mat-card-title>Assign Faculty</mat-card-title>
-      <mat-card-subtitle>Assign subject-wise faculty to this classroom</mat-card-subtitle>
+      <mat-card-subtitle>Assign subject-wise faculty to {{classroom.class}} class  {{classroom.academicYear}}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      <p class="coming-soon">Faculty assignment feature coming soon.</p>
+      <form [formGroup]="assignmentForm" (ngSubmit)="assignFaculty()" class="assignment-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Subject</mat-label>
+          <mat-select formControlName="subject" required>
+            @for(subject of subjects; track subject) {
+              <mat-option [value]="subject">{{ subject }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Faculty</mat-label>
+          <mat-select formControlName="facultyId" required>
+            @for(faculty of facultyList(); track faculty._id) {
+              <mat-option [value]="faculty._id">
+                {{ faculty.firstName }} {{ faculty.lastName }} ({{ faculty.speciality }})
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-checkbox formControlName="isPrimary">Primary Class Teacher</mat-checkbox>
+        <button mat-raised-button color="primary" type="submit" [disabled]="assignmentForm.invalid || loading()">Assign</button>
+      </form>
+
+      <h3 style="margin-top: 2em;">Current Assignments</h3>
+      <!-- @if="classroom.facultyAssignments?.length" -->
+       @if(classroom.facultyAssignments?.length){
+
+         <table mat-table [dataSource]="classroom.facultyAssignments" class="mat-elevation-z1" >
+           <ng-container matColumnDef="subject">
+             <th mat-header-cell *matHeaderCellDef>Subject</th>
+             <td mat-cell *matCellDef="let fa">{{ fa.subject }}</td>
+           </ng-container>
+           <ng-container matColumnDef="faculty">
+             <th mat-header-cell *matHeaderCellDef>Faculty</th>
+             <td mat-cell *matCellDef="let fa">{{ getFacultyDisplay(fa) }}</td>
+           </ng-container>
+           <ng-container matColumnDef="isPrimary">
+             <th mat-header-cell *matHeaderCellDef>Primary</th>
+             <td mat-cell *matCellDef="let fa">{{ fa.isPrimary ? 'Yes' : 'No' }}</td>
+           </ng-container>
+           <ng-container matColumnDef="actions">
+             <th mat-header-cell *matHeaderCellDef>Actions</th>
+             <td mat-cell *matCellDef="let fa">
+               <button mat-icon-button color="warn" (click)="removeAssignment(getFacultyId(fa), fa.subject)" [disabled]="loading()">
+                 <mat-icon>delete</mat-icon>
+               </button>
+             </td>
+           </ng-container>
+           <tr mat-header-row *matHeaderRowDef="['subject', 'faculty', 'isPrimary', 'actions']"></tr>
+           <tr mat-row *matRowDef="let row; columns: ['subject', 'faculty', 'isPrimary', 'actions'];"></tr>
+         </table>
+       }
+      @if(!classroom.facultyAssignments?.length){
+        <p  class="coming-soon">No faculty assigned yet.</p>
+      }
     </mat-card-content>
   </mat-card>
 </div>
