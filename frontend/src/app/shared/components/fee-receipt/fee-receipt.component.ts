@@ -34,6 +34,14 @@ export class FeeReceiptComponent {
     const el = this.receiptContainer?.nativeElement;
     if (!el) return;
     const r = this.receipt();
+    // Ensure fonts and layout are settled before capture
+    try {
+      if ((document as any).fonts && (document as any).fonts.ready) await (document as any).fonts.ready;
+    } catch {
+      // ignore
+    }
+    await new Promise((res) => setTimeout(res, 60));
+
     await this.exportService.export(el, {
       format,
       fileBaseName: `fee-receipt-${r.studentId}-${r.receiptNo}`,

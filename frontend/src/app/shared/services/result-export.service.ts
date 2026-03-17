@@ -42,38 +42,67 @@ export class ResultExportService {
   private async capture(element: HTMLElement, options: ResultExportOptions): Promise<HTMLCanvasElement> {
     const deviceScale = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
 
+    // Wait for web fonts to be ready so text renders correctly in the canvas
+    try {
+      if (typeof document !== 'undefined' && (document as any).fonts && (document as any).fonts.ready) {
+        await (document as any).fonts.ready;
+      }
+    } catch {
+      // ignore
+    }
+
+    // Clamp scale to avoid extremely large canvases while keeping crisp output
+    const scale = options.scale ?? Math.min(Math.max(deviceScale, 1), 2);
+
     return html2canvas(element, {
       backgroundColor: options.backgroundColor ?? '#ffffff',
-      scale: options.scale ?? Math.max(deviceScale, 3),
+      scale,
       useCORS: true,
-      foreignObjectRendering: true,
+      // foreignObjectRendering can cause inconsistent results in some browsers; keep false for better fidelity
+      foreignObjectRendering: false,
       removeContainer: true,
       logging: false,
-      windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight,
+      // prefer visible element sizes to capture the rendered layout
+      windowWidth: element.offsetWidth || element.scrollWidth,
+      windowHeight: element.offsetHeight || element.scrollHeight,
       scrollX: 0,
       scrollY: 0,
     });
   }
 
   private exportPdf(canvas: HTMLCanvasElement, fileBaseName: string): void {
-    const imageData = canvas.toDataURL('image/png');
     const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 8;
+    const usablePageWidth = pageWidth - margin * 2;
     const usablePageHeight = pageHeight - margin * 2;
-    const imgWidth = pageWidth - margin * 2;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    pdf.addImage(imageData, 'PNG', margin, margin, imgWidth, imgHeight, undefined, 'FAST');
+    // Calculate mm per px scaling so we can slice the canvas into page-height chunks
+    const mmPerPx = usablePageWidth / canvas.width;
+    const fullImgHeightMM = canvas.height * mmPerPx;
+    const totalPages = Math.ceil(fullImgHeightMM / usablePageHeight);
 
-    let heightLeft = imgHeight - usablePageHeight;
-    while (heightLeft > 0) {
-      const offsetY = margin - (imgHeight - heightLeft);
-      pdf.addPage();
-      pdf.addImage(imageData, 'PNG', margin, offsetY, imgWidth, imgHeight, undefined, 'FAST');
-      heightLeft -= usablePageHeight;
+    const slicePxHeight = Math.floor(usablePageHeight / mmPerPx) || canvas.height;
+
+    for (let page = 0; page < totalPages; page++) {
+      const srcY = page * slicePxHeight;
+      const thisSliceHeight = Math.min(slicePxHeight, canvas.height - srcY);
+
+      const tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = canvas.width;
+      tmpCanvas.height = thisSliceHeight;
+      const ctx = tmpCanvas.getContext('2d');
+      if (!ctx) continue;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
+      ctx.drawImage(canvas, 0, srcY, canvas.width, thisSliceHeight, 0, 0, canvas.width, thisSliceHeight);
+
+      const imgData = tmpCanvas.toDataURL('image/png');
+      const imgHeightMM = thisSliceHeight * mmPerPx;
+
+      if (page > 0) pdf.addPage();
+      pdf.addImage(imgData, 'PNG', margin, margin, usablePageWidth, imgHeightMM, undefined, 'FAST');
     }
 
     pdf.save(`${fileBaseName}.pdf`);
