@@ -43,6 +43,11 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
+                ,
+                {
+                  "replace": "src/app/shared/services/logger.service.ts",
+                  "with": "src/app/shared/services/logger.service.prod.ts"
+                }
               ],
               "budgets": [
                 {
