@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 import { createApp } from './app';
 import { connectDatabase } from './config/database.config';
 import { seedAuthUsers } from './utils/seed-auth.util';
+import logger from './utils/logger';
 
 // Load environment variables
 dotenv.config();
@@ -31,18 +32,26 @@ const startServer = async (): Promise<void> => {
 
     // Start listening
     app.listen(PORT, () => {
-      console.log('=================================');
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-      console.log(`📝 Environment: ${NODE_ENV}`);
-      console.log(`📚 API Documentation: http://localhost:${PORT}/api`);
-      console.log('=================================');
+      logger.info('=================================');
+      logger.info(`🚀 Server running on http://localhost:${PORT}`);
+      logger.info(`📝 Environment: ${NODE_ENV}`);
+      logger.info(`📚 API Documentation: http://localhost:${PORT}/api`);
+      logger.info('=================================');
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    logger.error('Failed to start server:', { error });
     process.exit(1);
   }
 };
 
 // Start the server
 startServer();
+
+process.on('uncaughtException', (err) => {
+  logger.error('uncaughtException', { err });
+  process.exit(1);
+});
+process.on('unhandledRejection', (reason) => {
+  logger.error('unhandledRejection', { reason });
+});
 
