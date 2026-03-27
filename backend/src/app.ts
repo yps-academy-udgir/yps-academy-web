@@ -8,6 +8,8 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import apiRoutes from './routes';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware';
+import { requestLogger } from './middleware/request-logger.middleware';
+import logRoutes from './routes/log.routes';
 
 /**
  * Create and configure Express application
@@ -36,15 +38,13 @@ export const createApp = (): Express => {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-  // Request logging middleware (development only)
-  if (process.env.NODE_ENV === 'development') {
-    app.use((req, res, next) => {
-      console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-      next();
-    });
+  // Request logging middleware (development or enabled via LOG_REQUESTS)
+  if (process.env.NODE_ENV === 'development' || process.env.LOG_REQUESTS === 'true') {
+    app.use(requestLogger as any);
   }
 
   // API Routes
+  app.use('/api', logRoutes);
   app.use('/api', apiRoutes);
 
   // Root endpoint

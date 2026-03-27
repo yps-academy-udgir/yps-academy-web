@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, ErrorHandler } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -6,6 +6,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 
 import { routes } from './app.routes';
 import { AppHttpInterceptor } from './core/interceptors/http.interceptor';
+import { GlobalErrorHandler } from './core/handlers/global-error.handler';
 
 /**
  * Application Configuration
@@ -32,5 +33,7 @@ export const appConfig: ApplicationConfig = {
     },
     // Provide application routes
     provideRouter(routes),
+    // Global client-side error handler
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
   ],
 };

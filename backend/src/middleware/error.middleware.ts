@@ -4,6 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
+import logger from '../utils/logger';
 
 /**
  * 404 Not Found handler
@@ -25,7 +26,7 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ): void => {
-  console.error('Error:', err);
+  logger.error('Unhandled error', { err, path: req?.originalUrl, method: req?.method });
 
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
