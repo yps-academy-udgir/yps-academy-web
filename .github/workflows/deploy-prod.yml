@@ -36,7 +36,6 @@ jobs:
 
       - name: Deploy to Vercel (production)
         run: |
-          npx vercel build --cwd frontend --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
           npx vercel deploy --prebuilt --cwd frontend --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
