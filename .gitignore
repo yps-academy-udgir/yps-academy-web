@@ -40,3 +40,5 @@ yarn.lock
 
 # Vercel local link (contains project/org IDs — keep out of version control)
 .vercel/
+.vercel
+.env*.local
