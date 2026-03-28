@@ -36,8 +36,7 @@ jobs:
         working-directory: frontend
 
       - name: Deploy to Vercel (production)
-        run: |
-           run: npx vercel deploy --token="${{ secrets.VERCEL_TOKEN }}" --prod --yes
+        run: npx vercel deploy --token="${{ secrets.VERCEL_TOKEN }}" --prod --yes
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
