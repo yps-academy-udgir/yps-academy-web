@@ -102,6 +102,12 @@ export const createStudent = async (req: Request, res: Response): Promise<void> 
     // Calculate fee details based on academic details
     const calculatedFeeDetails = calculateFeeDetails(academicDetails, feeDetails);
 
+    // Handle image upload
+    let imagePath;
+    if (req.file) {
+      imagePath = `/uploads/${req.file.filename}`;
+    }
+
     // Create new student
     const student = await Student.create({
       firstName,
@@ -111,6 +117,7 @@ export const createStudent = async (req: Request, res: Response): Promise<void> 
       gender,
       ...(academicDetails && { academicDetails }),
       feeDetails: calculatedFeeDetails,
+      ...(imagePath && { image: imagePath }),
     });
 
     successResponse(res, student, 'Student created successfully', 201);
@@ -163,6 +170,12 @@ export const updateStudent = async (req: Request, res: Response): Promise<void> 
       feeDetails || existingStudent.feeDetails
     );
 
+    // Handle image upload
+    let imagePath = existingStudent.image;
+    if (req.file) {
+      imagePath = `/uploads/${req.file.filename}`;
+    }
+
     // Update student
     const updatedStudent = await Student.findByIdAndUpdate(
       id,
@@ -174,6 +187,7 @@ export const updateStudent = async (req: Request, res: Response): Promise<void> 
         ...(gender && { gender }),
         ...(academicDetails && { academicDetails }),
         feeDetails: calculatedFeeDetails,
+        ...(imagePath && { image: imagePath }),
       },
       { new: true, runValidators: true }
     ).lean();

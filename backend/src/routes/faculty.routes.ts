@@ -49,14 +49,16 @@ router.get('/:id', validateObjectId, getFacultyById);
  * @desc    Create new faculty member
  * @access  Public
  */
-router.post('/', validateFaculty, createFaculty);
+import { upload } from '../middleware/upload.middleware';
+
+router.post('/', upload.single('image'), validateFaculty, createFaculty);
 
 /**
  * @route   PUT /api/faculty/:id
  * @desc    Update faculty member
  * @access  Public
  */
-router.put('/:id', validateObjectId, validateFaculty, updateFaculty);
+router.put('/:id', upload.single('image'), validateObjectId, validateFaculty, updateFaculty);
 
 /**
  * @route   DELETE /api/faculty/:id

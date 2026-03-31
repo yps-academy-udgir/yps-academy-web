@@ -82,6 +82,12 @@ export const createFaculty = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
+    // Handle image upload
+    let imagePath;
+    if (req.file) {
+      imagePath = `/uploads/${req.file.filename}`;
+    }
+
     const faculty = await Faculty.create({
       firstName,
       lastName,
@@ -94,6 +100,7 @@ export const createFaculty = async (req: Request, res: Response): Promise<void> 
       pastExperience: pastExperience ?? [],
       annualSalary,
       salaryPayments: salaryPayments ?? [],
+      ...(imagePath && { image: imagePath }),
     });
 
     successResponse(res, faculty, 'Faculty member created successfully', 201);
@@ -130,6 +137,12 @@ export const updateFaculty = async (req: Request, res: Response): Promise<void> 
       }
     }
 
+    // Handle image upload
+    let imagePath = existing.image;
+    if (req.file) {
+      imagePath = `/uploads/${req.file.filename}`;
+    }
+
     const updated = await Faculty.findByIdAndUpdate(
       id,
       {
@@ -144,6 +157,7 @@ export const updateFaculty = async (req: Request, res: Response): Promise<void> 
         ...(pastExperience !== undefined && { pastExperience }),
         ...(annualSalary !== undefined && { annualSalary }),
         ...(salaryPayments !== undefined && { salaryPayments }),
+        ...(imagePath && { image: imagePath }),
       },
       { new: true, runValidators: true }
     ).lean();

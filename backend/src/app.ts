@@ -5,6 +5,7 @@
  */
 
 import express, { Express } from 'express';
+import path from 'path';
 import cors from 'cors';
 import apiRoutes from './routes';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware';
@@ -34,9 +35,13 @@ export const createApp = (): Express => {
     })
   );
 
+
   // Body parsing middleware
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+  // Serve uploaded images statically
+  app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 
   // Request logging middleware (development or enabled via LOG_REQUESTS)
   if (process.env.NODE_ENV === 'development' || process.env.LOG_REQUESTS === 'true') {

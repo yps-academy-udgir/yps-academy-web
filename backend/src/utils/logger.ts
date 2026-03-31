@@ -1,4 +1,5 @@
 import { createLogger, format, transports } from 'winston';
+import { TransformableInfo } from 'logform';
 const { combine, timestamp, printf, errors, json, colorize } = format;
 
 const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
@@ -8,7 +9,8 @@ const consoleFormat = combine(
   timestamp(),
   errors({ stack: true }),
   isProd ? json() : colorize({ all: true }),
-  printf(({ level, message, timestamp, stack, ...meta }) => {
+  printf((info: TransformableInfo) => {
+    const { level, message, timestamp, stack, ...meta } = info;
     const base = `${timestamp} [${level}]: ${message}`;
     return stack ? `${base}\n${stack}` : `${base} ${Object.keys(meta).length ? JSON.stringify(meta) : ''}`;
   })
