@@ -71,6 +71,7 @@ export interface IStudent extends Document {
   gender: Gender;
   academicDetails?: IAcademicDetails;
   feeDetails?: IFeeDetails;
+  image?: string; // Path to uploaded image
   createdAt: Date;
   updatedAt: Date;
 }
@@ -231,6 +232,11 @@ const StudentSchema: Schema = new Schema(
     },
     academicDetails: AcademicDetailsSchema,
     feeDetails: FeeDetailsSchema,
+    image: {
+      type: String,
+      required: false,
+      trim: true,
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt

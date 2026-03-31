@@ -53,14 +53,16 @@ router.get('/:id', validateObjectId, getStudentById);
  * @desc    Create new student
  * @access  Public
  */
-router.post('/', validateStudent, createStudent);
+import { upload } from '../middleware/upload.middleware';
+
+router.post('/', upload.single('image'), validateStudent, createStudent);
 
 /**
  * @route   PUT /api/students/:id
  * @desc    Update student
  * @access  Public
  */
-router.put('/:id', validateObjectId, validateStudent, updateStudent);
+router.put('/:id', upload.single('image'), validateObjectId, validateStudent, updateStudent);
 
 /**
  * @route   DELETE /api/students/:id
