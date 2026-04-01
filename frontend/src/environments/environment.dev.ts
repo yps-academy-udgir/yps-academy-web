@@ -6,7 +6,7 @@ export const environment = {
   // apiUrl: 'https://yps-backend-dev.onrender.com/api',
   apiUrl: 'http://localhost:4026/api',
   apiTimeout: 30000,
-  enableLogging: true,
+  enableLogging: false,
   features: {
     enableAnalytics: false,
     enableNotifications: true,

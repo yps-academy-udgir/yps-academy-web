@@ -10,7 +10,7 @@ import cors from 'cors';
 import apiRoutes from './routes';
 import { notFoundHandler, errorHandler } from './middleware/error.middleware';
 import { requestLogger } from './middleware/request-logger.middleware';
-import logRoutes from './routes/log.routes';
+import logRoutes from './modules/log/log.routes';
 
 /**
  * Create and configure Express application

@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
 })
 export class LoggerService {
   private http = inject(HttpClient);
-  private api = `${environment.apiUrl}/logs`;
+  private api = `${environment.apiUrl}/logs/client`;
   private enabled = !!environment.enableLogging;
 
   private send(level: string, message: string, meta?: any) {

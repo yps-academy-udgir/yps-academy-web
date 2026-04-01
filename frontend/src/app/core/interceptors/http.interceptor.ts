@@ -79,7 +79,9 @@ export class AppHttpInterceptor implements HttpInterceptor {
       errorMessage = error.error?.error || `Error code: ${error.status}`;
     }
 
-    this.logger.error('HTTP Error', { status: error.status, statusText: error.statusText, message: errorMessage, url: error.url, timestamp: new Date().toISOString() });
+    if (!error.url?.includes('/logs')) {
+      this.logger.error('HTTP Error', { status: error.status, statusText: error.statusText, message: errorMessage, url: error.url, timestamp: new Date().toISOString() });
+    }
 
     return throwError(() => ({ status: error.status, message: errorMessage, originalError: error }));
   }
