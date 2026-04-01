@@ -2,9 +2,11 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
 import { SharedMaterialModule } from '../../../../shared/shared-material.module';
 import { FacultyService } from '../../../../shared/services/faculty.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
 import { Department, Speciality } from '../../models/faculty.model';
 
 @Component({
@@ -21,6 +23,7 @@ export class FacultyFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private facultyService = inject(FacultyService);
   private notificationService = inject(NotificationService);
+  private dialog = inject(MatDialog);
 
   departmentOptions = Object.values(Department);
   specialityOptions = Object.values(Speciality);
@@ -197,9 +200,26 @@ export class FacultyFormComponent implements OnInit {
       });
     } else {
       this.facultyService.createFaculty(this.facultyForm.value as any).subscribe({
-        next: () => {
-          this.notificationService.success('Faculty member added successfully.');
-          this.router.navigate(['/faculty']);
+        next: (response) => {
+          const result = response.data;
+          if (result) {
+            const dialogRef = this.dialog.open(CredentialsDialogComponent, {
+              data: {
+                name: `${this.facultyForm.value.firstName} ${this.facultyForm.value.lastName}`,
+                userId: result.userId,
+                defaultPassword: result.defaultPassword,
+                role: 'faculty',
+              },
+              disableClose: true,
+            });
+            dialogRef.afterClosed().subscribe(() => {
+              this.notificationService.success('Faculty member added successfully.');
+              this.router.navigate(['/faculty']);
+            });
+          } else {
+            this.notificationService.success('Faculty member added successfully.');
+            this.router.navigate(['/faculty']);
+          }
         },
         error: () => this.notificationService.error('Failed to add faculty member. Please try again.'),
       });

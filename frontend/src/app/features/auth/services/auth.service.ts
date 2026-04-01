@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { tap, catchError, finalize } from 'rxjs/operators';
+import { tap, catchError, finalize, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { LoginRequest, LoginResponse, AuthUser, UserRole } from '../models/auth.model';
@@ -34,14 +34,9 @@ export class AuthService {
     const token = this.getToken();
     const user = this.currentUser();
 
-    console.log('[AuthService] Startup validation - Token:', token ? 'Present' : 'Missing');
-    console.log('[AuthService] Startup validation - User:', user ? user.userId : 'None');
-
     if (token && !user) {
-      console.warn('[AuthService] Token exists but no user data. Clearing session.');
       this.logout();
     } else if (!token && user) {
-      console.warn('[AuthService] User data exists but no token. Clearing session.');
       this.currentUser.set(null);
       localStorage.removeItem(USER_KEY);
     }
@@ -72,6 +67,26 @@ export class AuthService {
     localStorage.removeItem(USER_KEY);
     this.currentUser.set(null);
     this.router.navigate(['/website']);
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(this.API_URL + '/change-password', { currentPassword, newPassword }).pipe(
+      tap(() => {
+        const user = this.currentUser();
+        if (user) this.currentUser.set({ ...user, isFirstLogin: false });
+        const stored = localStorage.getItem('yps_user');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          localStorage.setItem('yps_user', JSON.stringify({ ...parsed, isFirstLogin: false }));
+        }
+      })
+    );
+  }
+
+  resetPassword(entityId: string, role: 'faculty' | 'student'): Observable<{ userId: string; defaultPassword: string }> {
+    return this.http.post<{ success: boolean; data: { userId: string; defaultPassword: string } }>(
+      this.API_URL + '/reset-password', { entityId, role }
+    ).pipe(map(r => r.data));
   }
 
   getToken(): string | null {

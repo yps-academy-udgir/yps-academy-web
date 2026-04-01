@@ -92,6 +92,10 @@ export class MarkAttendanceComponent implements OnInit {
     return typeof student === 'object' ? student._id : student;
   }
 
+  getStudentRollNumber(student: string | StudentInfo): string {
+    return typeof student === 'object' ? (student.rollNumber || '-') : '-';
+  }
+
   submit(): void {
     if (!this.isReady()) return;
     const records: BulkAttendanceInput[] = this.enrolledStudents().map(s => ({

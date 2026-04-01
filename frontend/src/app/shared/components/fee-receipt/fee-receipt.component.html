@@ -57,6 +57,12 @@
           <span class="data-label">Student ID</span>
           <span class="data-value">{{ receipt().studentId }}</span>
         </div>
+        @if (receipt().rollNumber) {
+          <div class="data-item">
+            <span class="data-label">Roll Number</span>
+            <span class="data-value">{{ receipt().rollNumber }}</span>
+          </div>
+        }
         <div class="data-item">
           <span class="data-label">Class</span>
           <span class="data-value">{{ receipt().class }}{{ receipt().section ? ' - ' + receipt().section : '' }}</span>

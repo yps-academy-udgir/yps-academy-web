@@ -78,6 +78,12 @@ export class StudentService {
     );
   }
 
+  getMe(): Observable<ApiResponse<Student>> {
+    return this.http.get<ApiResponse<Student>>(`${this.API_URL}/me`).pipe(
+      catchError((error) => this.handleError(error))
+    );
+  }
+
   /**
    * Get single student by ID
    * @param id - Student document ID
@@ -103,15 +109,14 @@ export class StudentService {
    * @param student - Student data
    * @returns Observable of created student
    */
-  createStudent(student: Partial<Student>): Observable<ApiResponse<Student>> {
+  createStudent(student: Partial<Student>): Observable<ApiResponse<{ student: Student; userId: string; defaultPassword: string }>> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.post<ApiResponse<Student>>(this.API_URL, student).pipe(
+    return this.http.post<ApiResponse<{ student: Student; userId: string; defaultPassword: string }>>(this.API_URL, student).pipe(
       tap((response) => {
-        if (response.data) {
-          // Add new student to the list
-          this.students.update(students => [response.data!, ...students]);
+        if (response.data?.student) {
+          this.students.update(students => [response.data!.student, ...students]);
           this.totalStudents.update(total => total + 1);
         }
       }),

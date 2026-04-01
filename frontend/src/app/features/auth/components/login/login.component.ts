@@ -89,7 +89,7 @@ export class LoginComponent {
         if (userRole === UserRole.FACULTY) {
           this.router.navigate(['/faculty']);
         } else if (userRole === UserRole.STUDENT) {
-          this.router.navigate(['/students']);
+          this.router.navigate(['/my-profile']);
         } else {
           this.router.navigate(['/dashboard']);
         }

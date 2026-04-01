@@ -26,7 +26,7 @@ export const classroomRepository = {
     const [classrooms, total] = await Promise.all([
       Classroom.find(query)
         .populate('facultyAssignments.facultyId', 'firstName lastName email speciality')
-        .populate('enrolledStudents', 'firstName lastName email')
+        .populate('enrolledStudents', 'firstName lastName email rollNumber')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -40,7 +40,7 @@ export const classroomRepository = {
   async findById(id: string) {
     return Classroom.findById(id)
       .populate('facultyAssignments.facultyId', 'firstName lastName email contact department speciality')
-      .populate('enrolledStudents', 'firstName lastName email contact academicDetails')
+      .populate('enrolledStudents', 'firstName lastName email contact academicDetails rollNumber')
       .lean();
   },
 
@@ -54,6 +54,15 @@ export const classroomRepository = {
     return Classroom.findOne(query).lean();
   },
 
+  async findFirstAvailableByClass(classValue: string) {
+    return Classroom.findOne({
+      class: classValue,
+      $expr: { $lt: [{ $size: '$enrolledStudents' }, '$capacity'] },
+    })
+      .sort({ academicYear: -1, section: 1, createdAt: 1 })
+      .lean();
+  },
+
   async create(data: Record<string, unknown>) {
     const classroom = new Classroom(data);
     return classroom.save();
@@ -62,7 +71,7 @@ export const classroomRepository = {
   async update(id: string, data: Record<string, unknown>) {
     return Classroom.findByIdAndUpdate(id, data, { new: true, runValidators: true })
       .populate('facultyAssignments.facultyId', 'firstName lastName email speciality')
-      .populate('enrolledStudents', 'firstName lastName email');
+      .populate('enrolledStudents', 'firstName lastName email rollNumber');
   },
 
   async delete(id: string) {

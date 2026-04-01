@@ -34,8 +34,8 @@ export const createFaculty = async (req: Request, res: Response): Promise<void> 
       errorResponse(res, 'Validation failed', 400, parsed.error.issues.map(i => i.message).join(', '));
       return;
     }
-    const faculty = await facultyService.create(parsed.data, req.file);
-    successResponse(res, faculty, 'Faculty member created successfully', 201);
+    const result = await facultyService.create(parsed.data, req.file);
+    successResponse(res, result, 'Faculty member created successfully', 201);
   } catch (error: any) {
     if (error.statusCode) { errorResponse(res, error.message, error.statusCode); return; }
     if (error.name === 'ValidationError') {

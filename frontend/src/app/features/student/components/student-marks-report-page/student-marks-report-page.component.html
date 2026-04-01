@@ -3,7 +3,7 @@
     <div>
       <h2>Student Marks Report</h2>
       @if (student() && result()) {
-        <p>{{ student()!.firstName }} {{ student()!.lastName }} · {{ result()!.examType }} · {{ result()!.year }}</p>
+        <p>{{ student()!.firstName }} {{ student()!.lastName }} · Roll No: {{ student()!.rollNumber || '-' }} · {{ result()!.examType }} · {{ result()!.year }}</p>
       }
     </div>
 

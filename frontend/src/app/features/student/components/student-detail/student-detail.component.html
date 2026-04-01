@@ -28,6 +28,12 @@
                 <h1 class="student-name">
                   {{ student()!.firstName }} {{ student()!.lastName }}
                 </h1>
+                @if (student()!.rollNumber) {
+                  <p class="student-email">
+                    <mat-icon>tag</mat-icon>
+                    Roll No: {{ student()!.rollNumber }}
+                  </p>
+                }
                 <p class="student-email">
                   <mat-icon>email</mat-icon>
                   {{ student()!.email }}
@@ -55,10 +61,16 @@
                 <mat-icon>edit</mat-icon>
                 Edit
               </button>
-              <button mat-raised-button color="warn" (click)="onDelete()">
-                <mat-icon>delete</mat-icon>
-                Delete
-              </button>
+              @if (roleService.isAdmin()) {
+                <button mat-stroked-button color="warn" (click)="onResetPassword()">
+                  <mat-icon>lock_reset</mat-icon>
+                  Reset Password
+                </button>
+                <button mat-raised-button color="warn" (click)="onDelete()">
+                  <mat-icon>delete</mat-icon>
+                  Delete
+                </button>
+              }
             </div>
           </div>
         </mat-card-header>
@@ -80,6 +92,10 @@
               <div class="info-row">
                 <span class="info-label">First Name:</span>
                 <span class="info-value">{{ student()!.firstName }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Roll Number:</span>
+                <span class="info-value">{{ student()!.rollNumber || '-' }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label">Last Name:</span>

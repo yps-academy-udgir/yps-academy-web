@@ -36,6 +36,7 @@
                     (change)="toggleStudent(sid, $event.checked)"
                   >
                     <strong>{{ student.firstName }} {{ student.lastName }}</strong>
+                    <span class="meta">Roll No: {{ student.rollNumber || '-' }}</span>
                     <span class="meta">Class {{ student.academicDetails?.class || 'N/A' }}</span>
                   </mat-checkbox>
                   <mat-chip-set>

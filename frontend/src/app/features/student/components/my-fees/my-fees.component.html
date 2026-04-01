@@ -1,0 +1,26 @@
+<div class="fee-receipt-page">
+  <div class="page-header">
+    <div>
+      <h2>My Fee Receipt</h2>
+      @if (student()) {
+        <p>{{ student()!.firstName }} {{ student()!.lastName }} &middot; {{ student()!.email }}</p>
+      }
+    </div>
+    <button mat-stroked-button type="button" (click)="onBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Back To My Profile
+    </button>
+  </div>
+
+  @if (loading()) {
+    <app-loading [message]="'Preparing fee receipt...'" />
+  } @else if (error()) {
+    <app-error-message
+      [title]="'Fee Receipt Unavailable'"
+      [message]="error()!"
+      (retry)="load()"
+    />
+  } @else if (receiptData()) {
+    <app-fee-receipt [receipt]="receiptData()!" />
+  }
+</div>

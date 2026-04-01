@@ -99,6 +99,7 @@ export class StudentListComponent implements OnInit {
 
   // Table columns to display
   displayedColumns: string[] = [
+    'rollNumber',
     'name',
     'email',
     'contact',

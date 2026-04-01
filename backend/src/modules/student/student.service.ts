@@ -1,5 +1,10 @@
 import { studentRepository, StudentFilter, PaginationOptions } from './student.repository';
+import { classroomRepository } from '../classroom/classroom.repository';
+import { classroomService } from '../classroom/classroom.service';
 import { calculateFeeDetails } from '../../utils/fee-calculator.util';
+import { createAuthUser, deleteAuthUser } from '../../utils/auth-user.util';
+import { generateStudentRollNumber } from '../../utils/generate-roll-number.util';
+import { generateUserId } from '../../utils/generate-user-id.util';
 import type { CreateStudentDto, UpdateStudentDto, AddPaymentDto } from './dto/student.dto';
 import type { IAcademicDetails, IFeeDetails } from '../../models/student.model';
 
@@ -26,12 +31,52 @@ export const studentService = {
     );
 
     const imagePath = imageFile ? `/uploads/${imageFile.filename}` : undefined;
+    const classValue = dto.academicDetails?.class;
+    const rollNumber = await generateStudentRollNumber(classValue ?? 'unassigned');
 
-    return studentRepository.create({
+    const userId = await generateUserId('student', dto.firstName, rollNumber);
+
+    const student = await studentRepository.create({
       ...dto,
+      userId,
+      rollNumber,
       feeDetails,
       ...(imagePath && { image: imagePath }),
     });
+
+    let assignedClassroomId: string | null = null;
+
+    if (classValue) {
+      const classroom = await classroomRepository.findFirstAvailableByClass(classValue);
+      if (!classroom?._id) {
+        await studentRepository.delete((student._id as unknown as string).toString());
+        throw serviceError(
+          `No classroom with available seats found for class ${classValue}. Please create or free a classroom first.`,
+          400
+        );
+      }
+
+      try {
+        assignedClassroomId = (classroom._id as unknown as string).toString();
+        await classroomService.enrollStudent(assignedClassroomId, {
+          studentId: (student._id as unknown as string).toString(),
+        });
+      } catch (error) {
+        await studentRepository.delete((student._id as unknown as string).toString());
+        throw error;
+      }
+    }
+
+    try {
+      const { defaultPassword } = await createAuthUser(userId, `${dto.firstName} ${dto.lastName}`, 'student');
+      return { student, userId, defaultPassword };
+    } catch (error) {
+      if (assignedClassroomId) {
+        await classroomService.removeStudent(assignedClassroomId, (student._id as unknown as string).toString());
+      }
+      await studentRepository.delete((student._id as unknown as string).toString());
+      throw error;
+    }
   },
 
   async update(id: string, dto: UpdateStudentDto, imageFile?: Express.Multer.File) {
@@ -66,6 +111,7 @@ export const studentService = {
   async delete(id: string) {
     const deleted = await studentRepository.delete(id);
     if (!deleted) throw serviceError('Student not found', 404);
+    if (deleted.userId) await deleteAuthUser(deleted.userId, 'student');
     return deleted;
   },
 
@@ -91,6 +137,12 @@ export const studentService = {
 
   async getStats() {
     return studentRepository.getStats();
+  },
+
+  async getMe(userId: string) {
+    const student = await studentRepository.findByUserId(userId);
+    if (!student) throw serviceError('Student profile not found', 404);
+    return student;
   },
 
   async getFeesSummary() {

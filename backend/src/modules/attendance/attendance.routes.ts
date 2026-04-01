@@ -3,15 +3,19 @@ import {
   bulkMarkAttendance, getAttendanceByClassroom,
   getStudentAttendance, getAttendanceSummary,
 } from './attendance.controller';
-import { verifyToken } from '../../middleware/auth.middleware';
+import { verifyToken, requireRoles } from '../../middleware/auth.middleware';
 
 const router = Router();
 
 router.use(verifyToken);
 
-router.post('/bulk', bulkMarkAttendance);
-router.get('/summary', getAttendanceSummary);
-router.get('/students/:id', getStudentAttendance);
-router.get('/', getAttendanceByClassroom);
+// Admin + Faculty write
+router.post('/bulk', requireRoles('admin', 'faculty'), bulkMarkAttendance);
+
+// All roles readable
+router.get('/summary', requireRoles('admin', 'faculty'), getAttendanceSummary);
+router.get('/students/:id', requireRoles('admin', 'faculty', 'student'), getStudentAttendance);
+router.get('/', requireRoles('admin', 'faculty'), getAttendanceByClassroom);
 
 export default router;
+

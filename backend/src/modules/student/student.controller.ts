@@ -3,6 +3,16 @@ import { studentService } from './student.service';
 import { successResponse, errorResponse, paginatedResponse } from '../../utils/response.util';
 import { createStudentSchema, updateStudentSchema, addPaymentSchema } from './dto/student.dto';
 
+export const getMe = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const student = await studentService.getMe(req.user!.userId);
+    successResponse(res, student, 'Profile retrieved successfully');
+  } catch (error: any) {
+    if (error.statusCode) { errorResponse(res, error.message, error.statusCode); return; }
+    errorResponse(res, 'Failed to retrieve profile', 500, error.message);
+  }
+};
+
 export const getAllStudents = async (req: Request, res: Response): Promise<void> => {
   try {
     const page = parseInt(req.query['page'] as string) || 1;
@@ -34,8 +44,8 @@ export const createStudent = async (req: Request, res: Response): Promise<void> 
       errorResponse(res, 'Validation failed', 400, parsed.error.issues.map(i => i.message).join(', '));
       return;
     }
-    const student = await studentService.create(parsed.data, req.file);
-    successResponse(res, student, 'Student created successfully', 201);
+    const result = await studentService.create(parsed.data, req.file);
+    successResponse(res, result, 'Student created successfully', 201);
   } catch (error: any) {
     if (error.statusCode) { errorResponse(res, error.message, error.statusCode); return; }
     if (error.name === 'ValidationError') {

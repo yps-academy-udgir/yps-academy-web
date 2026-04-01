@@ -14,8 +14,11 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
 import { Student, ExamResult } from '../../../../shared/models/student.model';
 import { ExamResultService } from '../../../../shared/services/exam-result.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { RoleService } from '../../../../shared/services/role.service';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -42,7 +45,9 @@ export class StudentDetailComponent implements OnInit {
   private studentService = inject(StudentService);
   private examResultService = inject(ExamResultService);
   private notificationService = inject(NotificationService);
+  private authService = inject(AuthService);
   private dialog = inject(MatDialog);
+  roleService = inject(RoleService);
 
   // Signals
   student = signal<Student | null>(null);
@@ -193,6 +198,34 @@ export class StudentDetailComponent implements OnInit {
       error: () => {
         this.notificationService.error('Failed to delete student');
       },
+    });
+  }
+
+  onResetPassword(): void {
+    const s = this.student();
+    if (!s?.userId) {
+      this.notificationService.error('No login account found for this student.');
+      return;
+    }
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Reset Password',
+        message: `Reset the password for ${s.firstName} ${s.lastName}? They will be prompted to change it on next login.`,
+        confirmText: 'Reset',
+        cancelText: 'Cancel',
+      },
+    });
+    ref.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.authService.resetPassword(s.userId!, 'student').subscribe({
+        next: (result) => {
+          this.dialog.open(CredentialsDialogComponent, {
+            data: { name: `${s.firstName} ${s.lastName}`, userId: result.userId, defaultPassword: result.defaultPassword, role: 'student' },
+            disableClose: true,
+          });
+        },
+        error: () => this.notificationService.error('Failed to reset password.'),
+      });
     });
   }
 

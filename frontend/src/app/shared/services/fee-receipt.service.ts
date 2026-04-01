@@ -38,6 +38,7 @@ export class FeeReceiptService {
       }),
       studentName: `${student.firstName} ${student.lastName}`,
       studentId: student._id ?? '',
+      rollNumber: student.rollNumber,
       class: academic?.class ?? '',
       contact: student.contact,
       totalFees: feeDetails?.totalFees ?? 0,

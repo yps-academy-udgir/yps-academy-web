@@ -1,4 +1,7 @@
 import { facultyRepository, FacultyFilter, PaginationOptions } from './faculty.repository';
+import { createAuthUser, deleteAuthUser } from '../../utils/auth-user.util';
+import { generateFacultyRollNumber } from '../../utils/generate-roll-number.util';
+import { generateUserId } from '../../utils/generate-user-id.util';
 import type { CreateFacultyDto, UpdateFacultyDto, AddSalaryPaymentDto } from './dto/faculty.dto';
 
 function serviceError(message: string, statusCode: number): Error {
@@ -19,11 +22,20 @@ export const facultyService = {
     if (existing) throw serviceError('A faculty member with this email already exists', 400);
 
     const imagePath = imageFile ? `/uploads/${imageFile.filename}` : undefined;
+    const rollNumber = await generateFacultyRollNumber();
 
-    return facultyRepository.create({
+    const userId = await generateUserId('faculty', dto.firstName, rollNumber);
+
+    const faculty = await facultyRepository.create({
       ...dto,
+      userId,
+      rollNumber,
       ...(imagePath && { image: imagePath }),
     });
+
+    const { defaultPassword } = await createAuthUser(userId, `${dto.firstName} ${dto.lastName}`, 'faculty');
+
+    return { faculty, userId, defaultPassword };
   },
 
   async update(id: string, dto: UpdateFacultyDto, imageFile?: Express.Multer.File) {
@@ -56,6 +68,7 @@ export const facultyService = {
   async delete(id: string) {
     const deleted = await facultyRepository.delete(id);
     if (!deleted) throw serviceError('Faculty member not found', 404);
+    if (deleted.userId) await deleteAuthUser(deleted.userId, 'faculty');
     return deleted;
   },
 

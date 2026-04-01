@@ -51,6 +51,12 @@
       <mat-card-content>
         <div class="table-container">
           <table mat-table [dataSource]="filteredStudents()" class="students-table">
+            <!-- Roll Number Column -->
+            <ng-container matColumnDef="rollNumber">
+              <th mat-header-cell *matHeaderCellDef>Roll No.</th>
+              <td mat-cell *matCellDef="let student">{{ student.rollNumber || '-' }}</td>
+            </ng-container>
+
             <!-- Name Column -->
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef>Name</th>

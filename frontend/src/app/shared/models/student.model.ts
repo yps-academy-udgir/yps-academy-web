@@ -68,6 +68,8 @@ export interface FeeDetails {
 
 export interface Student {
   _id?: string;
+  userId?: string;
+  rollNumber?: string;
   firstName: string;
   lastName: string;
   email: string;

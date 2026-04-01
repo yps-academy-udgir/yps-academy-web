@@ -40,6 +40,12 @@
           <span class="label">Student ID</span>
           <strong>{{ report().studentId }}</strong>
         </div>
+        @if (report().rollNumber) {
+          <div class="info-item">
+            <span class="label">Roll Number</span>
+            <strong>{{ report().rollNumber }}</strong>
+          </div>
+        }
         <div class="info-item">
           <span class="label">Class</span>
           <strong>{{ report().classLabel }}</strong>
