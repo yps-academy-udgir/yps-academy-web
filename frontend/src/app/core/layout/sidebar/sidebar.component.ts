@@ -4,11 +4,12 @@
  * Uses Angular Material navigation list
  * Follows Angular 20 patterns with signals
  */
-import { Component, output, signal } from '@angular/core';
+import { Component, inject, output, signal, computed } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { RoleService } from '../../../shared/services/role.service';
 
 interface MenuItem {
   label: string;
@@ -35,6 +36,20 @@ interface MenuItem {
 export class SidebarComponent {
   // Output event when navigation item is clicked
   navigationClick = output<void>();
+  private roleService = inject(RoleService);
+
+  // Student portal — items visible only to students
+  private readonly studentMenuItems: MenuItem[] = [
+    { label: 'My Profile',       icon: 'person',        route: '/my-profile' },
+    { label: 'My Fees',          icon: 'payments',      route: '/my-fees' },
+    { label: 'My Marks',         icon: 'grade',         route: '/my-marks' },
+    { label: 'Change Password',  icon: 'lock_reset',    route: '/auth/change-password' },
+  ];
+
+  // Computed: returns student menu or full admin/faculty menu based on role
+  visibleMenuItems = computed(() =>
+    this.roleService.isStudent() ? this.studentMenuItems : this.menuItems()
+  );
 
   // Menu items using signals with hierarchical structure
   menuItems = signal<MenuItem[]>([

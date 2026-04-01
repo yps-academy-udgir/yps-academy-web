@@ -44,10 +44,16 @@
                 <mat-icon>edit</mat-icon>
                 Edit
               </button>
-              <button mat-raised-button color="warn" (click)="onDelete()">
-                <mat-icon>delete</mat-icon>
-                Delete
-              </button>
+              @if (roleService.isAdmin()) {
+                <button mat-stroked-button color="warn" (click)="onResetPassword()">
+                  <mat-icon>lock_reset</mat-icon>
+                  Reset Password
+                </button>
+                <button mat-raised-button color="warn" (click)="onDelete()">
+                  <mat-icon>delete</mat-icon>
+                  Delete
+                </button>
+              }
             </div>
           </div>
         </mat-card-header>

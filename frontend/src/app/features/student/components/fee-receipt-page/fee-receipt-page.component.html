@@ -3,7 +3,7 @@
     <div>
       <h2>Student Fee Receipt</h2>
       @if (student()) {
-        <p>{{ student()!.firstName }} {{ student()!.lastName }} · {{ student()!.email }}</p>
+        <p>{{ student()!.firstName }} {{ student()!.lastName }} · Roll No: {{ student()!.rollNumber || '-' }} · {{ student()!.email }}</p>
       }
     </div>
 

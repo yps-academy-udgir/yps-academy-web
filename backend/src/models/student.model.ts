@@ -64,6 +64,8 @@ export interface IFeeDetails {
 
 // Student Interface
 export interface IStudent extends Document {
+  userId?: string;          // Human-readable login ID e.g. 26-YPS-STUD-JOHN-001
+  rollNumber?: string;      // Class-wise sequential roll number e.g. 001
   firstName: string;
   lastName: string;
   email: string;
@@ -188,6 +190,16 @@ const FeeDetailsSchema = new Schema({
 // Student Schema
 const StudentSchema: Schema = new Schema(
   {
+    userId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    rollNumber: {
+      type: String,
+      required: false,
+      trim: true,
+    },
     firstName: {
       type: String,
       required: [true, 'First name is required'],
@@ -249,6 +261,7 @@ const StudentSchema: Schema = new Schema(
 StudentSchema.index({ firstName: 1, lastName: 1 });
 StudentSchema.index({ gender: 1 });
 StudentSchema.index({ createdAt: -1 });
+StudentSchema.index({ 'academicDetails.class': 1, rollNumber: 1 }, { unique: true, sparse: true });
 
 // Export the model
 export const Student = mongoose.model<IStudent>('Student', StudentSchema);

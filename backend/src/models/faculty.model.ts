@@ -31,6 +31,8 @@ export interface ISalaryPayment {
 }
 
 export interface IFaculty extends Document {
+  userId?: string;          // Human-readable login ID e.g. 26-YPS-FAC-RAM-001
+  rollNumber?: string;      // Global sequential faculty roll number e.g. 001
   firstName: string;
   lastName: string;
   email: string;
@@ -66,6 +68,18 @@ const SalaryPaymentSchema = new Schema<ISalaryPayment>(
 );
 
 const FacultySchema = new Schema<IFaculty>({
+  userId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
+  rollNumber: {
+    type: String,
+    required: false,
+    trim: true,
+    unique: true,
+    sparse: true,
+  },
   firstName: {
     type: String,
     required: [true, 'First name is required'],

@@ -39,6 +39,10 @@ export const studentRepository = {
     return Student.findById(id).lean();
   },
 
+  async findByUserId(userId: string) {
+    return Student.findOne({ userId }).lean();
+  },
+
   async findByEmail(email: string, excludeId?: string) {
     const query: FilterQuery<IStudent> = { email };
     if (excludeId) query._id = { $ne: excludeId };

@@ -12,6 +12,7 @@ import { StudentMarksReportService } from '../../../../shared/services/student-m
 import { StudentMarksReportComponent } from '../../../../shared/components/student-marks-report/student-marks-report.component';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
+import { RoleService } from '../../../../shared/services/role.service';
 
 @Component({
   selector: 'app-student-marks-report-page',
@@ -33,6 +34,7 @@ export class StudentMarksReportPageComponent implements OnInit {
   private studentService = inject(StudentService);
   private examResultService = inject(ExamResultService);
   private studentMarksReportService = inject(StudentMarksReportService);
+  private roleService = inject(RoleService);
 
   student = signal<Student | null>(null);
   result = signal<ExamResult | null>(null);
@@ -60,6 +62,10 @@ export class StudentMarksReportPageComponent implements OnInit {
   }
 
   onBack(): void {
+    if (this.roleService.isStudent()) {
+      this.router.navigate(['/my-marks']);
+      return;
+    }
     const student = this.student();
     if (student?._id) {
       this.router.navigate(['/students', 'management', student._id]);
@@ -80,8 +86,12 @@ export class StudentMarksReportPageComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
+    const studentObs = this.roleService.isStudent()
+      ? this.studentService.getMe()
+      : this.studentService.getStudentById(studentId);
+
     forkJoin({
-      studentResponse: this.studentService.getStudentById(studentId),
+      studentResponse: studentObs,
       resultResponse: this.examResultService.getById(resultId),
     }).subscribe({
       next: ({ studentResponse, resultResponse }) => {

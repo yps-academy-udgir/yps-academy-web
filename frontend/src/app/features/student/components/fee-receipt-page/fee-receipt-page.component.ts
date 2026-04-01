@@ -9,6 +9,7 @@ import { FeeReceiptService } from '../../../../shared/services/fee-receipt.servi
 import { FeeReceiptComponent } from '../../../../shared/components/fee-receipt/fee-receipt.component';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
+import { RoleService } from '../../../../shared/services/role.service';
 
 @Component({
   selector: 'app-fee-receipt-page',
@@ -29,6 +30,7 @@ export class FeeReceiptPageComponent implements OnInit {
   private router = inject(Router);
   private studentService = inject(StudentService);
   private feeReceiptService = inject(FeeReceiptService);
+  private roleService = inject(RoleService);
 
   student = signal<Student | null>(null);
   loading = signal(false);
@@ -56,12 +58,15 @@ export class FeeReceiptPageComponent implements OnInit {
   }
 
   onBack(): void {
+    if (this.roleService.isStudent()) {
+      this.router.navigate(['/my-fees']);
+      return;
+    }
     const student = this.student();
     if (student?._id) {
       this.router.navigate(['/students', 'management', student._id]);
       return;
     }
-
     this.router.navigate(['/students', 'management', 'list']);
   }
 
@@ -76,7 +81,11 @@ export class FeeReceiptPageComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.studentService.getStudentById(id).subscribe({
+    const obs = this.roleService.isStudent()
+      ? this.studentService.getMe()
+      : this.studentService.getStudentById(id);
+
+    obs.subscribe({
       next: (response) => {
         if (response.data) {
           this.student.set(response.data);

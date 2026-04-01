@@ -31,7 +31,7 @@
 
       <h3 style="margin-top: 2em;">Current Assignments</h3>
       <!-- @if="classroom.facultyAssignments?.length" -->
-       @if(classroom.facultyAssignments?.length){
+        @if(classroom.facultyAssignments.length){
 
          <table mat-table [dataSource]="classroom.facultyAssignments" class="mat-elevation-z1" >
            <ng-container matColumnDef="subject">
@@ -58,7 +58,7 @@
            <tr mat-row *matRowDef="let row; columns: ['subject', 'faculty', 'isPrimary', 'actions'];"></tr>
          </table>
        }
-      @if(!classroom.facultyAssignments?.length){
+      @if(!classroom.facultyAssignments.length){
         <p  class="coming-soon">No faculty assigned yet.</p>
       }
     </mat-card-content>

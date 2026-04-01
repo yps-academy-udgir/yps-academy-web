@@ -7,6 +7,7 @@ export interface IAuthUser extends Document {
   passwordHash: string;
   role: UserRole;
   name: string;
+  isFirstLogin: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +18,7 @@ const AuthUserSchema = new Schema<IAuthUser>(
     passwordHash: { type: String, required: true },
     role: { type: String, enum: ['admin', 'faculty', 'student'], required: true },
     name: { type: String, required: true },
+    isFirstLogin: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

@@ -10,6 +10,9 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
+import { AuthService } from '../../../auth/services/auth.service';
+import { RoleService } from '../../../../shared/services/role.service';
 import { Faculty } from '../../models/faculty.model';
 
 @Component({
@@ -25,7 +28,9 @@ export class FacultyDetailComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private facultyService = inject(FacultyService);
   private notificationService = inject(NotificationService);
+  private authService = inject(AuthService);
   private dialog = inject(MatDialog);
+  roleService = inject(RoleService);
 
   faculty = signal<Faculty | null>(null);
   loading = signal<boolean>(false);
@@ -98,6 +103,34 @@ export class FacultyDetailComponent implements OnInit, OnDestroy {
           error: () => this.notificationService.error('Failed to delete faculty member.'),
         });
       }
+    });
+  }
+
+  onResetPassword(): void {
+    const f = this.faculty();
+    if (!f?.userId) {
+      this.notificationService.error('No login account found for this faculty member.');
+      return;
+    }
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Reset Password',
+        message: `Reset the password for ${f.firstName} ${f.lastName}? They will be prompted to change it on next login.`,
+        confirmText: 'Reset',
+        cancelText: 'Cancel',
+      },
+    });
+    ref.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.authService.resetPassword(f.userId!, 'faculty').subscribe({
+        next: (result) => {
+          this.dialog.open(CredentialsDialogComponent, {
+            data: { name: `${f.firstName} ${f.lastName}`, userId: result.userId, defaultPassword: result.defaultPassword, role: 'faculty' },
+            disableClose: true,
+          });
+        },
+        error: () => this.notificationService.error('Failed to reset password.'),
+      });
     });
   }
 

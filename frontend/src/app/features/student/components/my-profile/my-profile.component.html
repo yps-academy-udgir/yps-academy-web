@@ -1,0 +1,272 @@
+<div class="my-profile-container">
+  @if (loading()) {
+    <app-loading [message]="'Loading your profile...'"></app-loading>
+  }
+
+  @if (error() && !loading()) {
+    <app-error-message
+      [title]="'Error Loading Profile'"
+      [message]="error()!"
+      (retry)="load()"
+    ></app-error-message>
+  }
+
+  @if (student() && !loading() && !error()) {
+    <div class="detail-content">
+      <!-- Header -->
+      <mat-card class="header-card">
+        <mat-card-header>
+          <div class="header-content">
+            <div class="student-header">
+              <div class="avatar"><mat-icon>account_circle</mat-icon></div>
+              <div class="student-info">
+                <h1 class="student-name">{{ student()!.firstName }} {{ student()!.lastName }}</h1>
+                <p class="student-email">
+                  <mat-icon>email</mat-icon>
+                  {{ student()!.email }}
+                </p>
+                @if (student()!.userId) {
+                  <p class="student-email">
+                    <mat-icon>badge</mat-icon>
+                    {{ student()!.userId }}
+                  </p>
+                }
+                @if (student()!.rollNumber) {
+                  <p class="student-email">
+                    <mat-icon>tag</mat-icon>
+                    Roll No: {{ student()!.rollNumber }}
+                  </p>
+                }
+              </div>
+            </div>
+            <div class="header-actions">
+              <button mat-stroked-button color="primary" (click)="onViewFeeReceipt()">
+                <mat-icon>receipt_long</mat-icon>
+                View Fee Receipt
+              </button>
+            </div>
+          </div>
+        </mat-card-header>
+      </mat-card>
+
+      <!-- Details Grid -->
+      <div class="details-grid">
+        <!-- Left Column -->
+        <mat-accordion class="details-accordion" multi>
+
+          <!-- Personal Information -->
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+              <mat-panel-title><mat-icon>person</mat-icon> Personal Information</mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="panel-content">
+              <div class="info-row">
+                <span class="info-label">First Name:</span>
+                <span class="info-value">{{ student()!.firstName }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Last Name:</span>
+                <span class="info-value">{{ student()!.lastName }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Roll Number:</span>
+                <span class="info-value">{{ student()!.rollNumber || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Email:</span>
+                <span class="info-value"><a [href]="'mailto:' + student()!.email">{{ student()!.email }}</a></span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Contact:</span>
+                <span class="info-value">{{ student()!.contact }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Gender:</span>
+                <span class="info-value">
+                  <mat-chip highlighted>{{ student()!.gender | uppercase }}</mat-chip>
+                </span>
+              </div>
+            </div>
+          </mat-expansion-panel>
+
+          <!-- Fee Details -->
+          @if (student()!.feeDetails) {
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title><mat-icon>payments</mat-icon> Fee Details</mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="panel-content fee-panel-content">
+                <div class="fee-summary-section">
+                  <div class="info-row total-fee-row">
+                    <span class="info-label">Total Fees:</span>
+                    <span class="info-value total-amount">₹{{ student()!.feeDetails!.totalFees | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="info-row paid-fee-row">
+                    <span class="info-label">Paid Amount:</span>
+                    <span class="info-value paid-amount">₹{{ student()!.feeDetails!.paidAmount | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="info-row pending-fee-row">
+                    <span class="info-label">Pending Fees:</span>
+                    <span class="info-value pending-amount" [class.has-pending]="student()!.feeDetails!.pendingFees > 0">
+                      ₹{{ student()!.feeDetails!.pendingFees | number:'1.2-2' }}
+                    </span>
+                  </div>
+                </div>
+
+                @if (student()!.feeDetails!.paymentHistory && student()!.feeDetails!.paymentHistory.length > 0) {
+                  <mat-divider class="section-divider"></mat-divider>
+                  <div class="payment-history-section">
+                    <h4 class="subsection-title"><mat-icon>history</mat-icon> Payment History</h4>
+                    <div class="payment-timeline">
+                      @for (payment of student()!.feeDetails!.paymentHistory; track $index) {
+                        <div class="payment-record">
+                          <div class="payment-icon"><mat-icon>check_circle</mat-icon></div>
+                          <div class="payment-info">
+                            <div class="payment-header">
+                              <span class="payment-amount">₹{{ payment.amount | number:'1.2-2' }}</span>
+                              <span class="payment-date">{{ payment.paymentDate | date:'medium' }}</span>
+                            </div>
+                            @if (payment.remarks) {
+                              <div class="payment-remarks">{{ payment.remarks }}</div>
+                            }
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </mat-expansion-panel>
+          }
+
+        </mat-accordion>
+
+        <!-- Right Column -->
+        <mat-accordion class="details-accordion" multi>
+
+          <!-- Academic Details -->
+          @if (student()!.academicDetails) {
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title><mat-icon>school</mat-icon> Academic Details</mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="panel-content">
+                @if (student()!.academicDetails!.yearOfAdmission) {
+                  <div class="info-row">
+                    <span class="info-label">Year of Admission:</span>
+                    <span class="info-value">{{ student()!.academicDetails!.yearOfAdmission }}</span>
+                  </div>
+                }
+                @if (student()!.academicDetails!.class) {
+                  <div class="info-row">
+                    <span class="info-label">Class:</span>
+                    <span class="info-value">
+                      <mat-chip highlighted>{{ student()!.academicDetails!.class }}</mat-chip>
+                    </span>
+                  </div>
+                }
+                @if (student()!.academicDetails!.subjects && student()!.academicDetails!.subjects!.length > 0) {
+                  <div class="info-row">
+                    <span class="info-label">Subjects:</span>
+                    <span class="info-value">
+                      <div class="subjects-list">
+                        @for (subject of student()!.academicDetails!.subjects; track subject) {
+                          <mat-chip>{{ subject }}</mat-chip>
+                        }
+                      </div>
+                    </span>
+                  </div>
+                }
+                <div class="info-row">
+                  <span class="info-label">Self Study Mode:</span>
+                  <span class="info-value">
+                    @if (student()!.academicDetails!.selfStudyMode) {
+                      <mat-chip color="accent" highlighted><mat-icon>check_circle</mat-icon> Enabled</mat-chip>
+                    } @else {
+                      <mat-chip><mat-icon>cancel</mat-icon> Disabled</mat-chip>
+                    }
+                  </span>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          }
+
+          <!-- Exam Results -->
+          @if (examResults().length > 0) {
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title><mat-icon>grade</mat-icon> Exam Results</mat-panel-title>
+                <mat-panel-description>
+                  {{ examResults().length }} record{{ examResults().length !== 1 ? 's' : '' }}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="panel-content">
+                @for (result of examResults(); track result._id; let last = $last) {
+                  <div class="exam-result-block">
+                    <div class="exam-result-header">
+                      <div class="exam-result-meta">
+                        <mat-chip highlighted color="primary">{{ result.examType }}</mat-chip>
+                        <span class="exam-period">{{ getMonthName(result.month) }} {{ result.year }}</span>
+                      </div>
+                      <div class="exam-result-actions">
+                        <span class="exam-pct-badge"
+                          [class.pct-high]="result.percentage >= 75"
+                          [class.pct-mid]="result.percentage >= 40 && result.percentage < 75"
+                          [class.pct-low]="result.percentage < 40">
+                          {{ result.percentage | number:'1.0-1' }}%
+                        </span>
+                        <button mat-stroked-button type="button" color="primary" (click)="onGenerateMarksReport(result)">
+                          <mat-icon>description</mat-icon>
+                          Marks Report
+                        </button>
+                      </div>
+                    </div>
+                    <table class="marks-mini-table">
+                      <thead>
+                        <tr><th>Subject</th><th>Obtained</th><th>Out of</th><th>%</th></tr>
+                      </thead>
+                      <tbody>
+                        @for (sm of result.subjectMarks; track sm.subject) {
+                          <tr>
+                            <td>{{ sm.subject }}</td>
+                            <td class="marks-val">{{ sm.marksObtained }}</td>
+                            <td class="marks-outof">{{ sm.outOf }}</td>
+                            <td>
+                              <span class="sm-pct"
+                                [class.pct-high]="(sm.marksObtained / sm.outOf) >= 0.75"
+                                [class.pct-mid]="(sm.marksObtained / sm.outOf) >= 0.4 && (sm.marksObtained / sm.outOf) < 0.75"
+                                [class.pct-low]="(sm.marksObtained / sm.outOf) < 0.4">
+                                {{ ((sm.marksObtained / sm.outOf) * 100) | number:'1.0-1' }}%
+                              </span>
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                      <tfoot>
+                        <tr class="total-row">
+                          <td><strong>Total</strong></td>
+                          <td class="marks-val"><strong>{{ result.totalMarksObtained }}</strong></td>
+                          <td class="marks-outof"><strong>{{ result.totalOutOf }}</strong></td>
+                          <td>
+                            <span class="sm-pct"
+                              [class.pct-high]="result.percentage >= 75"
+                              [class.pct-mid]="result.percentage >= 40 && result.percentage < 75"
+                              [class.pct-low]="result.percentage < 40">
+                              <strong>{{ result.percentage | number:'1.0-1' }}%</strong>
+                            </span>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  @if (!last) { <mat-divider class="section-divider"></mat-divider> }
+                }
+              </div>
+            </mat-expansion-panel>
+          }
+
+        </mat-accordion>
+      </div>
+    </div>
+  }
+</div>

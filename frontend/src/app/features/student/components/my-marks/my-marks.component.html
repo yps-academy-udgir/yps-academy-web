@@ -1,0 +1,62 @@
+<div class="my-marks-page">
+  <div class="page-header">
+    <div>
+      <h2>My Marks &amp; Reports</h2>
+      <p>View and download your exam result reports.</p>
+    </div>
+    <button mat-stroked-button type="button" (click)="onBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Back To My Profile
+    </button>
+  </div>
+
+  @if (loading()) {
+    <app-loading [message]="'Loading your marks...'" />
+  } @else if (error()) {
+    <app-error-message
+      [title]="'Marks Unavailable'"
+      [message]="error()!"
+      (retry)="load()"
+    />
+  } @else if (examResults().length === 0) {
+    <div class="empty-state">
+      <mat-icon>grade</mat-icon>
+      <p>No exam results available yet.</p>
+    </div>
+  } @else {
+    <div class="results-grid">
+      @for (result of examResults(); track result._id) {
+        <mat-card class="result-card">
+          <mat-card-header>
+            <mat-card-title>
+              {{ result.examType }} &mdash; {{ getMonthName(result.month) }} {{ result.year }}
+            </mat-card-title>
+            <mat-card-subtitle>
+              <span class="pct-badge" [class]="pctClass(result.percentage)">
+                {{ result.percentage | number:'1.0-1' }}%
+              </span>
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="marks-summary">
+              <span>Total: <strong>{{ result.totalMarksObtained }}/{{ result.totalOutOf }}</strong></span>
+            </div>
+            <div class="subject-chips">
+              @for (sm of result.subjectMarks; track sm.subject) {
+                <mat-chip [class]="pctClass((sm.marksObtained / sm.outOf) * 100)">
+                  {{ sm.subject }}: {{ sm.marksObtained }}/{{ sm.outOf }}
+                </mat-chip>
+              }
+            </div>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-raised-button color="primary" (click)="onViewReport(result)">
+              <mat-icon>description</mat-icon>
+              View &amp; Download Report
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

@@ -51,13 +51,13 @@ export class FacultyService {
     );
   }
 
-  createFaculty(faculty: Partial<Faculty>): Observable<ApiResponse<Faculty>> {
+  createFaculty(faculty: Partial<Faculty>): Observable<ApiResponse<{ faculty: Faculty; userId: string; defaultPassword: string }>> {
     this.loading.set(true);
     this.error.set(null);
-    return this.http.post<ApiResponse<Faculty>>(this.API_URL, faculty).pipe(
+    return this.http.post<ApiResponse<{ faculty: Faculty; userId: string; defaultPassword: string }>>(this.API_URL, faculty).pipe(
       tap((res) => {
-        if (res.data) {
-          this.faculty.update((list) => [res.data!, ...list]);
+        if (res.data?.faculty) {
+          this.faculty.update((list) => [res.data!.faculty, ...list]);
           this.totalFaculty.update((total) => total + 1);
         }
       }),

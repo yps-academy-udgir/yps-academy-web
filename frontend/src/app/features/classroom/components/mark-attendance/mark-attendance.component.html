@@ -49,7 +49,7 @@
             <div class="student-row"
               [class.absent]="getStatus(getStudentId(student)) === 'absent'"
               [class.late]="getStatus(getStudentId(student)) === 'late'">
-              <span class="student-name">{{ getStudentName(student) }}</span>
+              <span class="student-name">{{ getStudentName(student) }} (Roll: {{ getStudentRollNumber(student) }})</span>
               <mat-button-toggle-group
                 [value]="getStatus(getStudentId(student))"
                 (change)="setStatus(getStudentId(student), $event.value)">

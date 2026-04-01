@@ -4,6 +4,7 @@ import { StudentMarksReportHeader } from './report-header.model';
 export interface StudentMarksReportData {
   header: StudentMarksReportHeader;
   studentId: string;
+  rollNumber?: string;
   studentName: string;
   studentEmail?: string;
   contact?: string;

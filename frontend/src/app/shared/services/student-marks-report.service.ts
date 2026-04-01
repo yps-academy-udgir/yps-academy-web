@@ -18,6 +18,7 @@ export class StudentMarksReportService {
     const header = this.reportHeaderService.buildStudentMarksHeader({
       studentName: `${student.firstName} ${student.lastName}`,
       studentId: student._id,
+      rollNo: student.rollNumber,
       class: classLabel,
       examType: result.examType,
       month: monthLabel,
@@ -29,6 +30,7 @@ export class StudentMarksReportService {
       header,
       studentId: student._id ?? '',
       studentName: `${student.firstName} ${student.lastName}`,
+      rollNumber: student.rollNumber,
       studentEmail: student.email,
       contact: student.contact,
       classLabel,

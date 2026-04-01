@@ -6,7 +6,7 @@
 
   <!-- Navigation Menu -->
   <mat-nav-list class="nav-list">
-    @for (item of menuItems(); track item.label) {
+    @for (item of visibleMenuItems(); track item.label) {
       <!-- Parent item with children -->
       @if (hasChildren(item)) {
         <a

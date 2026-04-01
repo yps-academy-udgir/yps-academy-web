@@ -15,7 +15,7 @@ export const seedAuthUsers = async (): Promise<void> => {
       const exists = await AuthUser.findOne({ userId: user.userId, role: user.role });
       if (!exists) {
         const passwordHash = await bcrypt.hash(user.password, SALT_ROUNDS);
-        await AuthUser.create({ userId: user.userId, passwordHash, role: user.role, name: user.name });
+        await AuthUser.create({ userId: user.userId, passwordHash, role: user.role, name: user.name, isFirstLogin: false });
         console.log(`✓ Seeded auth user: ${user.userId} (${user.role})`);
       }
     }

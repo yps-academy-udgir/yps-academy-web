@@ -8,6 +8,7 @@ import { Component, OnInit, inject, signal, computed, effect } from '@angular/co
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
 
 import { SharedMaterialModule } from '../../../../shared/shared-material.module';
 import { StudentService } from '../../../../shared/services/student.service';
@@ -15,6 +16,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { Student, Gender, Class, Subject, Payment } from '../../../../shared/models/student.model';
 import { calculateFees, calculatePendingFees, calculateTotalPaid } from '../../../../shared/utils/fee-calculator.util';
+import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
 
 @Component({
   selector: 'app-student-form',
@@ -35,6 +37,7 @@ export class StudentFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private studentService = inject(StudentService);
   private notificationService = inject(NotificationService);
+  private dialog = inject(MatDialog);
 
   // Signals for reactive state
   studentId = signal<string | null>(null);
@@ -364,11 +367,28 @@ export class StudentFormComponent implements OnInit {
   private createStudent(data: Partial<Student>): void {
     this.studentService.createStudent(data).subscribe({
       next: (response) => {
-        this.notificationService.success('Student created successfully!');
         this.submitting.set(false);
-        this.router.navigate(['/students', 'management', 'list']);
+        const result = response.data;
+        if (result) {
+          const dialogRef = this.dialog.open(CredentialsDialogComponent, {
+            data: {
+              name: `${data.firstName} ${data.lastName}`,
+              userId: result.userId,
+              defaultPassword: result.defaultPassword,
+              role: 'student',
+            },
+            disableClose: true,
+          });
+          dialogRef.afterClosed().subscribe(() => {
+            this.notificationService.success('Student created successfully!');
+            this.router.navigate(['/students', 'management', 'list']);
+          });
+        } else {
+          this.notificationService.success('Student created successfully!');
+          this.router.navigate(['/students', 'management', 'list']);
+        }
       },
-      error: (error) => {
+      error: () => {
         this.notificationService.error('Failed to create student');
         this.submitting.set(false);
       },

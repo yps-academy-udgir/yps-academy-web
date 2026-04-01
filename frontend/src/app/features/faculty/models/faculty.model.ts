@@ -30,6 +30,8 @@ export interface SalaryPayment {
 
 export interface Faculty {
   _id?: string;
+  userId?: string;
+  rollNumber?: string;
   firstName: string;
   lastName: string;
   email: string;

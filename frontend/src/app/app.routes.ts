@@ -7,12 +7,8 @@ import { CLASSROOM_ROUTES } from './features/classroom/classroom.routes';
 import { RESULTS_ROUTES } from './features/results/results.routes';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { authGuard } from './core/guards/auth.guard';
+import { firstLoginGuard } from './core/guards/first-login.guard';
 
-/**
- * Application Routes
- * Defines routing structure for the entire application
- * Uses main layout wrapper for consistent UI
- */
 export const routes: Routes = [
   {
     path: '',
@@ -26,12 +22,36 @@ export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, firstLoginGuard],
     children: [
       {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',
+      },
+      {
+        path: 'my-profile',
+        loadComponent: () =>
+          import('./features/student/components/my-profile/my-profile.component').then(
+            (m) => m.MyProfileComponent
+          ),
+        data: { title: 'My Profile' },
+      },
+      {
+        path: 'my-fees',
+        loadComponent: () =>
+          import('./features/student/components/my-fees/my-fees.component').then(
+            (m) => m.MyFeesComponent
+          ),
+        data: { title: 'My Fees' },
+      },
+      {
+        path: 'my-marks',
+        loadComponent: () =>
+          import('./features/student/components/my-marks/my-marks.component').then(
+            (m) => m.MyMarksComponent
+          ),
+        data: { title: 'My Marks' },
       },
       {
         path: 'dashboard',

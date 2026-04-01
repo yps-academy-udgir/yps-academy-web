@@ -54,6 +54,7 @@ export interface FacultyInfo {
  */
 export interface StudentInfo {
   _id: string;
+  rollNumber?: string;
   firstName: string;
   lastName: string;
   email: string;

@@ -26,6 +26,7 @@ export interface FeeReceiptData {
   // Student info
   studentName: string;
   studentId: string;
+  rollNumber?: string;
   class: string;
   section?: string;
   contact?: string;

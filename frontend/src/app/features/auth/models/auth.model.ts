@@ -12,10 +12,11 @@ export interface LoginRequest {
 
 export interface AuthUser {
   _id: string;
-  userId?: string; // Optional for backward compatibility
+  userId?: string;
   email: string;
   role: UserRole;
   name: string;
+  isFirstLogin: boolean;
   token: string;
 }
 
@@ -24,3 +25,4 @@ export interface LoginResponse {
   message: string;
   data: AuthUser;
 }
+

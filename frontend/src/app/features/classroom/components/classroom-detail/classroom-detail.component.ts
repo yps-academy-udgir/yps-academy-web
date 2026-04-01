@@ -62,6 +62,10 @@ export class ClassroomDetailComponent implements OnInit {
     return typeof student === 'object' && student !== null ? student.email : '';
   }
 
+  getStudentRollNumber(student: any): string {
+    return typeof student === 'object' && student !== null ? (student.rollNumber || '-') : '-';
+  }
+
   edit(): void {
     this.router.navigate(['/classrooms/management', this.classroom()?._id, 'edit']);
   }
