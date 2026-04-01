@@ -20,28 +20,26 @@ export class AppHttpInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const clonedReq = this.addHeaders(req);
 
-    // Log request
-    this.logger.info('HTTP Request', { method: clonedReq.method, url: clonedReq.url, timestamp: new Date().toISOString() });
+    // Skip logging for logger API calls to prevent infinite loop
+    const isLogRequest = req.url.includes('/logs');
+
+    if (!isLogRequest) {
+      this.logger.info('HTTP Request', { method: clonedReq.method, url: clonedReq.url, timestamp: new Date().toISOString() });
+    }
 
     return next.handle(clonedReq).pipe(
       tap((event) => {
-        if (event instanceof HttpResponse) {
+        if (event instanceof HttpResponse && !isLogRequest) {
           this.logger.info('HTTP Response', { status: event.status, url: event.url, timestamp: new Date().toISOString() });
         }
       }),
       catchError((error: HttpErrorResponse) => this.handleError(error)),
-      finalize(() => this.logger.info('HTTP Request Complete', { timestamp: new Date().toISOString() }))
+      finalize(() => { if (!isLogRequest) this.logger.info('HTTP Request Complete', { timestamp: new Date().toISOString() }); })
     );
   }
 
   private addHeaders(req: HttpRequest<any>): HttpRequest<any> {
     const token = localStorage.getItem('yps_token');
-
-    if (token) {
-      this.logger.info('HTTP Interceptor: Token attached', { url: req.url });
-    } else {
-      this.logger.info('HTTP Interceptor: No token found', { url: req.url });
-    }
 
     let clonedReq = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
 
