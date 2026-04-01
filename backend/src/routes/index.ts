@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import studentRoutes from './student.routes';
-import examResultRoutes from './exam-result.routes';
-import facultyRoutes from './faculty.routes';
-import classroomRoutes from './classroom.routes';
-import attendanceRoutes from './attendance.routes';
-import authRoutes from './auth.routes';
+import studentRoutes from '../modules/student/student.routes';
+import examResultRoutes from '../modules/exam-result/exam-result.routes';
+import facultyRoutes from '../modules/faculty/faculty.routes';
+import classroomRoutes from '../modules/classroom/classroom.routes';
+import attendanceRoutes from '../modules/attendance/attendance.routes';
+import authRoutes from '../modules/auth/auth.routes';
 
 const router = Router();
 
