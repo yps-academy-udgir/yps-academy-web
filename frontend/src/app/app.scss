@@ -79,6 +79,50 @@ button {
   width: 100%;
 }
 
+.app-update-banner {
+  position: sticky;
+  top: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #0f172a;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.app-update-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.update-btn,
+.dismiss-btn {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #ffffff;
+  background: transparent;
+  cursor: pointer;
+}
+
+.update-btn {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.update-btn:hover {
+  background: #1d4ed8;
+}
+
+.dismiss-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 // ==================== Utility Classes ====================
 .sr-only {
   position: absolute;
