@@ -46,10 +46,17 @@ export class SidebarComponent {
     { label: 'Change Password',  icon: 'lock_reset',    route: '/auth/change-password' },
   ];
 
-  // Computed: returns student menu or full admin/faculty menu based on role
-  visibleMenuItems = computed(() =>
-    this.roleService.isStudent() ? this.studentMenuItems : this.menuItems()
-  );
+  // Computed: returns role-appropriate menu
+  visibleMenuItems = computed(() => {
+    if (this.roleService.isStudent()) return this.studentMenuItems;
+    if (this.roleService.isFaculty()) {
+      return [
+        { label: 'My Profile', icon: 'person', route: '/my-faculty-profile' },
+        ...this.menuItems(),
+      ];
+    }
+    return this.menuItems();
+  });
 
   // Menu items using signals with hierarchical structure
   menuItems = signal<MenuItem[]>([

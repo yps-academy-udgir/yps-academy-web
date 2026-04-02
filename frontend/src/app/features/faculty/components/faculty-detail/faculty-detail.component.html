@@ -40,6 +40,12 @@
                 <mat-icon>arrow_back</mat-icon>
                 Back
               </button>
+              @if (roleService.isAdmin() || isOwnProfile()) {
+                <button mat-stroked-button color="primary" (click)="onViewPaymentReceipt()">
+                  <mat-icon>receipt_long</mat-icon>
+                  View Payment Receipt
+                </button>
+              }
               <button mat-raised-button color="primary" (click)="onEdit()">
                 <mat-icon>edit</mat-icon>
                 Edit

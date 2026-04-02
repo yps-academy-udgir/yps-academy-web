@@ -1,0 +1,303 @@
+@use '../../../../styles/variables' as v;
+
+.receipt-shell {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-md;
+}
+
+.receipt-actions {
+  display: flex;
+  gap: v.$spacing-sm;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.receipt-wrapper {
+  background: #fff;
+  max-width: 920px;
+  margin: 0 auto;
+  border: 1px solid v.$gray-300;
+  border-radius: v.$border-radius-lg;
+  overflow: hidden;
+  font-family: v.$font-family-base;
+  color: v.$gray-900;
+  box-shadow: v.$shadow-sm;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.receipt-topband {
+  height: 10px;
+  background: linear-gradient(90deg, v.$primary-700 0%, v.$primary-400 100%);
+}
+
+.receipt-header {
+  display: flex;
+  justify-content: space-between;
+  gap: v.$spacing-lg;
+  padding: v.$spacing-xl;
+  align-items: flex-start;
+}
+
+.brand-block,
+.receipt-meta-card {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-xs;
+}
+
+.academy-name {
+  font-size: v.$font-size-xxl;
+  font-weight: v.$font-weight-bold;
+  color: v.$primary-800;
+}
+
+.academy-subtitle,
+.academy-address,
+.academy-contact {
+  color: v.$gray-800;
+  font-size: v.$font-size-sm;
+}
+
+.receipt-meta-card {
+  min-width: 240px;
+  padding: v.$spacing-md;
+  border: 1px solid v.$gray-300;
+  border-radius: v.$border-radius-md;
+  background: #fff;
+}
+
+.receipt-title {
+  font-size: v.$font-size-lg;
+  font-weight: v.$font-weight-bold;
+  color: v.$primary-700;
+  margin-bottom: v.$spacing-xs;
+}
+
+.receipt-meta-item {
+  display: flex;
+  justify-content: space-between;
+  gap: v.$spacing-md;
+  align-items: center;
+}
+
+.meta-label,
+.data-label,
+.summary-label,
+.section-eyebrow {
+  font-size: v.$font-size-xs;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: v.$gray-700;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: v.$font-size-xs;
+  font-weight: v.$font-weight-medium;
+  background: v.$success-100;
+  color: v.$success-800;
+}
+
+.status-due {
+  background: v.$warn-100;
+  color: v.$warn-800;
+}
+
+.status-clear {
+  background: v.$success-100;
+  color: v.$success-800;
+}
+
+.section-card {
+  margin: 0 v.$spacing-xl v.$spacing-lg;
+  border: 1px solid v.$gray-300;
+  border-radius: v.$border-radius-md;
+  padding: v.$spacing-lg;
+  background: #fff;
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: v.$spacing-md;
+}
+
+.section-title-row h3 {
+  margin: 2px 0 0;
+  font-size: v.$font-size-lg;
+}
+
+.student-grid,
+.summary-grid {
+  display: grid;
+  gap: v.$spacing-md;
+}
+
+.student-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.data-item {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-xxs;
+}
+
+.data-value {
+  font-size: v.$font-size-md;
+  color: #111827;
+}
+
+.emphasis {
+  font-weight: v.$font-weight-bold;
+}
+
+.summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 v.$spacing-xl v.$spacing-lg;
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-xs;
+  padding: v.$spacing-lg;
+  border-radius: v.$border-radius-md;
+  border: 1px solid v.$gray-300;
+  background: #fff;
+  color: #111827;
+}
+
+.summary-card.total {
+  background: v.$primary-50;
+  border-color: v.$primary-200;
+}
+
+.summary-card.paid {
+  background: v.$success-50;
+  border-color: v.$success-200;
+}
+
+.summary-card.pending {
+  background: v.$warn-50;
+  border-color: v.$warn-200;
+}
+
+.summary-card.pending-clear {
+  background: v.$success-50;
+  border-color: v.$success-200;
+}
+
+.summary-amount {
+  font-size: v.$font-size-xxl;
+  font-weight: v.$font-weight-bold;
+  color: #111827;
+}
+
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ledger-table th,
+.ledger-table td {
+  padding: v.$spacing-sm;
+  border-bottom: 1px solid v.$gray-300;
+  text-align: left;
+  font-size: v.$font-size-sm;
+  color: #111827;
+}
+
+.ledger-table th {
+  background: #f3f4f6;
+  font-weight: v.$font-weight-bold;
+  color: #111827;
+}
+
+.ledger-table tfoot td {
+  font-weight: v.$font-weight-bold;
+  background: #f9fafb;
+}
+
+.amount-col {
+  text-align: right !important;
+}
+
+.empty-ledger {
+  display: flex;
+  align-items: center;
+  gap: v.$spacing-sm;
+  color: v.$gray-800;
+  padding: v.$spacing-md 0;
+}
+
+.receipt-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: v.$spacing-lg;
+  padding: 0 v.$spacing-xl v.$spacing-xl;
+}
+
+.footer-note {
+  color: #111827;
+  font-size: v.$font-size-sm;
+}
+
+.footer-note p {
+  margin: 0;
+}
+
+.signature-block {
+  min-width: 220px;
+  text-align: center;
+  color: #111827;
+  font-size: v.$font-size-sm;
+}
+
+.signature-line {
+  border-top: 1px solid v.$gray-700;
+  margin-bottom: v.$spacing-xs;
+}
+
+@media (max-width: 768px) {
+  .receipt-header,
+  .receipt-footer {
+    flex-direction: column;
+  }
+
+  .section-card,
+  .summary-grid {
+    margin-left: v.$spacing-md;
+    margin-right: v.$spacing-md;
+  }
+
+  .receipt-header {
+    padding: v.$spacing-md;
+  }
+
+  .student-grid,
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .receipt-meta-card,
+  .signature-block {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .ledger-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

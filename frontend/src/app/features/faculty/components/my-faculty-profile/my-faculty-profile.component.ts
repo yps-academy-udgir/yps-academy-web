@@ -53,4 +53,8 @@ export class MyFacultyProfileComponent implements OnInit {
   onChangePassword(): void {
     this.router.navigate(['/auth/change-password']);
   }
+
+  onViewPaymentReceipt(): void {
+    this.router.navigate(['/my-faculty-payment-receipt']);
+  }
 }

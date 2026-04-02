@@ -1,0 +1,10 @@
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.top-actions {
+  display: flex;
+  justify-content: flex-start;
+}

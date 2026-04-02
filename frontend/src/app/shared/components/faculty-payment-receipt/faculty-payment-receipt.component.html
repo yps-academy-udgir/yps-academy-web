@@ -1,0 +1,158 @@
+<div class="receipt-shell">
+  <div class="receipt-actions">
+    <button mat-stroked-button type="button" (click)="downloadPdf()">
+      <mat-icon>picture_as_pdf</mat-icon>
+      Download PDF
+    </button>
+    <button mat-stroked-button type="button" (click)="downloadPng()">
+      <mat-icon>image</mat-icon>
+      Download PNG
+    </button>
+  </div>
+
+  <div class="receipt-wrapper" #receiptContainer>
+    <div class="receipt-topband"></div>
+
+    <div class="receipt-header">
+      <div class="brand-block">
+        <div class="academy-name">{{ receipt().header.academyName }}</div>
+        <div class="academy-subtitle">{{ receipt().header.academySubtitle }}</div>
+        <div class="academy-address">{{ receipt().header.address }}</div>
+        <div class="academy-contact">{{ receipt().header.contact }} · {{ receipt().header.email }}</div>
+      </div>
+
+      <div class="receipt-meta-card">
+        <div class="receipt-title">{{ receipt().header.reportTitle }}</div>
+        <div class="receipt-meta-item">
+          <span class="meta-label">Receipt No</span>
+          <strong>{{ receipt().receiptNo }}</strong>
+        </div>
+        <div class="receipt-meta-item">
+          <span class="meta-label">Date</span>
+          <strong>{{ receipt().receiptDate }}</strong>
+        </div>
+        <div class="receipt-meta-item">
+          <span class="meta-label">Status</span>
+          <span class="status-badge" [class.status-due]="receipt().remainingBalance > 0" [class.status-clear]="receipt().remainingBalance === 0">
+            {{ receipt().remainingBalance > 0 ? 'Balance Remaining' : 'Settled' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card student-card">
+      <div class="section-title-row">
+        <div>
+          <div class="section-eyebrow">Paid To</div>
+          <h3>Faculty Information</h3>
+        </div>
+      </div>
+
+      <div class="student-grid">
+        <div class="data-item">
+          <span class="data-label">Faculty Name</span>
+          <span class="data-value emphasis">{{ receipt().facultyName }}</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">Faculty ID</span>
+          <span class="data-value">{{ receipt().facultyId }}</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">Department</span>
+          <span class="data-value">{{ receipt().department }}</span>
+        </div>
+        <div class="data-item">
+          <span class="data-label">Speciality</span>
+          <span class="data-value">{{ receipt().speciality }}</span>
+        </div>
+        @if (receipt().email) {
+          <div class="data-item">
+            <span class="data-label">Email</span>
+            <span class="data-value">{{ receipt().email }}</span>
+          </div>
+        }
+        @if (receipt().contact) {
+          <div class="data-item">
+            <span class="data-label">Contact</span>
+            <span class="data-value">{{ receipt().contact }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card total">
+        <span class="summary-label">Annual Salary</span>
+        <strong class="summary-amount">{{ receipt().annualSalary | currency:'INR':'symbol':'1.0-0' }}</strong>
+      </div>
+      <div class="summary-card paid">
+        <span class="summary-label">Paid</span>
+        <strong class="summary-amount">{{ receipt().totalPaid | currency:'INR':'symbol':'1.0-0' }}</strong>
+      </div>
+      <div class="summary-card pending" [class.pending-clear]="receipt().remainingBalance === 0">
+        <span class="summary-label">Balance</span>
+        <strong class="summary-amount">{{ receipt().remainingBalance | currency:'INR':'symbol':'1.0-0' }}</strong>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title-row">
+        <div>
+          <div class="section-eyebrow">Payments</div>
+          <h3>Salary Ledger</h3>
+        </div>
+      </div>
+
+      @if (receipt().transactions.length > 0) {
+        <table class="ledger-table">
+          <thead>
+            <tr>
+              <th>Txn ID</th>
+              <th>Date</th>
+              <th>Remarks</th>
+              <th class="amount-col">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (txn of receipt().transactions; track txn.receiptNo) {
+              <tr>
+                <td>{{ txn.receiptNo ?? '—' }}</td>
+                <td>{{ txn.date | date:'dd MMM yyyy' }}</td>
+                <td>{{ txn.note ?? '—' }}</td>
+                <td class="amount-col emphasis">{{ txn.amount | currency:'INR':'symbol':'1.0-0' }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">Total Paid</td>
+              <td class="amount-col">{{ receipt().totalPaid | currency:'INR':'symbol':'1.0-0' }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      } @else {
+        <div class="empty-ledger">
+          <mat-icon>receipt_long</mat-icon>
+          <span>No salary payment transactions recorded yet.</span>
+        </div>
+      }
+    </div>
+
+    <div class="receipt-footer">
+      <div class="footer-note">
+        @if (receipt().remarks) {
+          <p><strong>Remarks:</strong> {{ receipt().remarks }}</p>
+        } @else if (receipt().remainingBalance > 0) {
+          <p><strong>Note:</strong> This receipt reflects current payments and pending balance.</p>
+        } @else {
+          <p><strong>Note:</strong> Salary payout is fully settled for the recorded cycle.</p>
+        }
+      </div>
+
+      <div class="signature-block">
+        <div class="signature-line"></div>
+        <span>{{ receipt().cashierName ?? 'Accounts Department' }}</span>
+      </div>
+    </div>
+  </div>
+</div>

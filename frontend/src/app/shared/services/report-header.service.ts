@@ -81,4 +81,15 @@ export class ReportHeaderService {
       reportTitle: 'Fee Receipt',
     };
   }
+
+  /**
+   * Build the base ReportMeta used in the faculty payment receipt header block.
+   */
+  buildFacultyPaymentReceiptMeta(): ReportMeta {
+    return {
+      ...ACADEMY,
+      reportType: 'FACULTY_PAYMENT_RECEIPT',
+      reportTitle: 'Faculty Payment Receipt',
+    };
+  }
 }
