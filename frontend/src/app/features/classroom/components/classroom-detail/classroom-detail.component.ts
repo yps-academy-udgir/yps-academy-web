@@ -8,12 +8,14 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ClassroomService } from '../../../../shared/services/classroom.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { RoleService } from '../../../../shared/services/role.service';
 import { getOccupancyPercentage, getOccupancyColor } from '../../models/classroom.model';
+import { ClassroomChatComponent } from '../classroom-chat/classroom-chat.component';
 
 @Component({
   selector: 'app-classroom-detail',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatTabsModule, MatTooltipModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatTabsModule, MatTooltipModule, ClassroomChatComponent],
   templateUrl: './classroom-detail.component.html',
   styleUrls: ['./classroom-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,13 +25,24 @@ export class ClassroomDetailComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private notification = inject(NotificationService);
+  private roleService = inject(RoleService);
 
   classroom = this.classroomService.selectedClassroom;
   loading = this.classroomService.loading;
+  classroomId = '';
+  selectedTabIndex = 0;
+
+  get isStudentUser(): boolean {
+    return this.roleService.isStudent();
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+    this.selectedTabIndex = tab === 'chat' ? (this.isStudentUser ? 0 : 4) : 0;
+
     if (id) {
+      this.classroomId = id;
       this.classroomService.getClassroomById(id).subscribe();
     }
   }
@@ -64,6 +77,14 @@ export class ClassroomDetailComponent implements OnInit {
 
   getStudentRollNumber(student: any): string {
     return typeof student === 'object' && student !== null ? (student.rollNumber || '-') : '-';
+  }
+
+  getFacultyUserId(faculty: any): string {
+    return typeof faculty === 'object' && faculty !== null ? (faculty.userId || '-') : '-';
+  }
+
+  getStudentUserId(student: any): string {
+    return typeof student === 'object' && student !== null ? (student.userId || '-') : '-';
   }
 
   edit(): void {

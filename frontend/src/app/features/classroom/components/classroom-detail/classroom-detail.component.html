@@ -6,6 +6,7 @@
   } @else if (classroom()) {
     <mat-card class="detail-card">
       <mat-card-content>
+        @if (!isStudentUser) {
         <div class="detail-header">
           <div>
             <p class="title-kicker">Classroom</p>
@@ -40,8 +41,10 @@
             <strong class="occupancy-badge" [ngClass]="getOccupancyClass()">{{ getOccupancy() }}%</strong>
           </div>
         </div>
+        }
 
-        <mat-tab-group>
+        <mat-tab-group [selectedIndex]="selectedTabIndex">
+          @if (!isStudentUser) {
           <mat-tab label="Overview">
             <div class="tab-content">
               <div class="info-grid">
@@ -81,6 +84,7 @@
                     <div class="list-item">
                       <div class="list-item-info">
                         <strong>{{ getFacultyName(fa.facultyId) }}</strong>
+                        <span>User ID: {{ getFacultyUserId(fa.facultyId) }}</span>
                         <span>{{ fa.subject }}</span>
                         @if (fa.isPrimary) {
                           <span class="badge primary">Primary</span>
@@ -114,6 +118,7 @@
                     <div class="list-item">
                       <div class="list-item-info">
                         <strong>{{ getStudentName(student) }}</strong>
+                        <span>User ID: {{ getStudentUserId(student) }}</span>
                         <span>Roll No: {{ getStudentRollNumber(student) }}</span>
                         <span>{{ getStudentEmail(student) }}</span>
                       </div>
@@ -142,6 +147,15 @@
                 <p class="schedule-count">{{ classroom()!.weeklySchedule.length }} schedule slots configured.</p>
               } @else {
                 <p class="empty-message">No schedule created yet.</p>
+              }
+            </div>
+          </mat-tab>
+          }
+
+          <mat-tab label="Chat">
+            <div class="tab-content chat-tab">
+              @if (classroomId) {
+                <app-classroom-chat [classroomId]="classroomId" />
               }
             </div>
           </mat-tab>

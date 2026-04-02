@@ -16,6 +16,17 @@ function handleError(res: Response, error: any, fallback: string): void {
   errorResponse(res, fallback, 500);
 }
 
+export const getMyClassrooms = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user!.userId;
+    const role = req.user!.role;
+    const classrooms = await classroomService.getMyClassrooms(userId, role as 'student' | 'faculty');
+    successResponse(res, classrooms, 'Classrooms retrieved successfully');
+  } catch (error: any) {
+    handleError(res, error, 'Failed to fetch classrooms');
+  }
+};
+
 export const getAllClassrooms = async (req: Request, res: Response): Promise<void> => {
   try {
     const page = parseInt(req.query['page'] as string) || 1;

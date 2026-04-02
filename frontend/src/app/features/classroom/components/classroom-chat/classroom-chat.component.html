@@ -1,0 +1,185 @@
+<div class="chat-container">
+  <!-- Loading State -->
+  @if (isClassroomLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading messages...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (getClassroomError()) {
+    <div class="error-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ getClassroomError() }}</p>
+      <button mat-raised-button color="primary" (click)="retryLoadMessages()">
+        Retry
+      </button>
+    </div>
+  }
+
+  <!-- Messages Container -->
+  @if (!isClassroomLoading() && !getClassroomError()) {
+    <div class="messages-wrapper">
+      <div class="messages-container" #messagesContainer>
+        @if (getClassroomMessages().length === 0) {
+          <div class="empty-state">
+            <mat-icon>chat</mat-icon>
+            <p>No messages yet. Start the conversation!</p>
+          </div>
+        }
+
+        @for (message of getClassroomMessages(); track message._id) {
+          <div
+            class="message-group"
+            [class.sent]="isSentByCurrentUser(message)"
+            [class.received]="!isSentByCurrentUser(message)"
+          >
+            <!-- Sender Info -->
+            <div class="message-header">
+              <span class="sender-name">{{ message.senderName }}</span>
+              <span class="sender-role" [class]="message.senderRole">
+                {{ message.senderRole }}
+              </span>
+              <span class="message-time" [matTooltip]="message.createdAt | date : 'medium'">
+                {{ formatTime(message.createdAt) }}
+              </span>
+            </div>
+
+            <!-- Message Text -->
+            <div class="message-bubble">
+              <div class="message-text">
+                {{ message.messageText }}
+              </div>
+
+              <!-- Attachments -->
+              @if (message.attachments && message.attachments.length > 0) {
+                <div class="attachments">
+                  @for (attachment of message.attachments; track attachment.fileName) {
+                    <div class="attachment-item" [class]="attachment.fileType">
+                      @switch (attachment.fileType) {
+                        @case ('image') {
+                          <img
+                            [src]="attachment.fileUrl"
+                            [alt]="attachment.fileName"
+                            class="attachment-image"
+                          />
+                        }
+                        @case ('document') {
+                          <div class="attachment-document">
+                            <mat-icon>description</mat-icon>
+                            <a [href]="attachment.fileUrl" target="_blank" download>
+                              {{ attachment.fileName }}
+                            </a>
+                          </div>
+                        }
+                        @case ('video') {
+                          <video controls class="attachment-video">
+                            <source [src]="attachment.fileUrl" />
+                            Your browser does not support the video tag.
+                          </video>
+                        }
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Read Receipts -->
+            @if (isSentByCurrentUser(message) && message.readBy && message.readBy.length > 0) {
+              <div class="read-receipts">
+                <mat-icon
+                  [matTooltip]="getReadByTooltip(message)"
+                  class="read-icon"
+                >
+                  done_all
+                </mat-icon>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Message Input & Send -->
+    <div class="input-section">
+      <!-- Attachments Preview -->
+      @if (uploadedAttachments.length > 0) {
+        <div class="attachments-preview">
+          <div class="preview-title">Attachments ({{ uploadedAttachments.length }}/5, max 10 MB each)</div>
+          <div class="preview-list">
+            @for (attachment of uploadedAttachments; track attachment.fileName; let i = $index) {
+              <div class="preview-item">
+                <span class="preview-name">{{ attachment.fileName }}</span>
+                <button
+                  mat-icon-button
+                  small
+                  (click)="removeAttachment(i)"
+                  matTooltip="Remove"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+          <mat-divider></mat-divider>
+        </div>
+      }
+
+      <!-- Form -->
+      <form [formGroup]="messageForm" class="message-input-form">
+        <mat-form-field appearance="fill" class="message-field composer-field">
+          <mat-label>Type a message...</mat-label>
+          <button
+            mat-icon-button
+            matPrefix
+            type="button"
+            (click)="triggerFileUpload()"
+            matTooltip="Attach files"
+            [disabled]="sending"
+            class="attach-inline-btn"
+          >
+            <mat-icon>attach_file</mat-icon>
+          </button>
+          <textarea
+            matInput
+            formControlName="messageText"
+            rows="2"
+            maxlength="5000"
+            placeholder="Your message..."
+            class="composer-textarea"
+          ></textarea>
+          <button
+            mat-icon-button
+            matSuffix
+            color="primary"
+            type="button"
+            (click)="sendMessage()"
+            [disabled]="messageForm.invalid || sending"
+            matTooltip="Send"
+            class="send-inline-btn"
+          >
+            @if (sending) {
+              <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+            } @else {
+              <mat-icon>send</mat-icon>
+            }
+          </button>
+          <mat-hint align="end">
+            {{ messageForm.get('messageText')?.value?.length || 0 }}/5000
+          </mat-hint>
+        </mat-form-field>
+
+        <input
+          #fileInput
+          type="file"
+          hidden
+          multiple
+          (change)="onFileSelected($event)"
+          accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx"
+        />
+      </form>
+    </div>
+  }
+</div>

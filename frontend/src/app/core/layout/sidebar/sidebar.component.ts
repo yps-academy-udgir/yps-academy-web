@@ -4,12 +4,16 @@
  * Uses Angular Material navigation list
  * Follows Angular 20 patterns with signals
  */
-import { Component, inject, output, signal, computed } from '@angular/core';
+import { Component, inject, output, signal, computed, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
 import { RoleService } from '../../../shared/services/role.service';
+import { ClassroomService } from '../../../shared/services/classroom.service';
+import { ChatService } from '../../../shared/services/chat.service';
+import { Classroom } from '../../../features/classroom/models/classroom.model';
 
 interface MenuItem {
   label: string;
@@ -27,16 +31,24 @@ interface MenuItem {
     MatListModule,
     MatIconModule,
     MatDividerModule,
+    MatBadgeModule,
     RouterLink,
     RouterLinkActive,
   ],
   templateUrl: './sidebar.component.html',  
   styleUrls: ['./sidebar.component.scss'],
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   // Output event when navigation item is clicked
   navigationClick = output<void>();
   private roleService = inject(RoleService);
+  private classroomService = inject(ClassroomService);
+  private chatService = inject(ChatService);
+
+  // Chat room classroom list for role-based direct access
+  chatClassrooms = signal<Classroom[]>([]);
+  chatRoomsExpanded = signal<boolean>(true);
+  unreadCounts = this.chatService.unreadCountsMap;
 
   // Student portal — items visible only to students
   private readonly studentMenuItems: MenuItem[] = [
@@ -176,6 +188,36 @@ export class SidebarComponent {
   ]);
 
   constructor(private router: Router) {}
+
+  ngOnInit(): void {
+    if (this.roleService.isStudent() || this.roleService.isFaculty()) {
+      this.classroomService.getMyClassrooms().subscribe({
+        next: (response) => this.chatClassrooms.set(response.data),
+        error: () => { /* Non-critical; chat section won't show */ },
+      });
+      this.chatService.loadUnreadCounts();
+      return;
+    }
+
+    if (this.roleService.isAdmin()) {
+      this.classroomService.getAllClassrooms(1, 50).subscribe({
+        next: (response) => this.chatClassrooms.set(response.data),
+        error: () => { /* Non-critical; chat section won't show */ },
+      });
+    }
+  }
+
+  getUnreadCount(classroomId: string): number {
+    return this.unreadCounts().get(classroomId) ?? 0;
+  }
+
+  getClassroomLabel(classroom: Classroom): string {
+    return `${classroom.class} ${classroom.section}`;
+  }
+
+  toggleChatRooms(): void {
+    this.chatRoomsExpanded.set(!this.chatRoomsExpanded());
+  }
 
   /**
    * Toggle expansion of parent menu item
