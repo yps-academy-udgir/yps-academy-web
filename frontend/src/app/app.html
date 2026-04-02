@@ -1,5 +1,11 @@
 <!-- Main Application Layout -->
 <div class="app-container">
+  @if (canInstallApp()) {
+    <button type="button" class="app-install-cta" (click)="installApp()" aria-label="Install YPS Academy app">
+      Install App
+    </button>
+  }
+
   @if (isUpdateAvailable()) {
     <div class="app-update-banner" role="status" aria-live="polite">
       <span>New deployment available.</span>

@@ -79,6 +79,24 @@ button {
   width: 100%;
 }
 
+.app-install-cta {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1250;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #3f51b5 0%, #e91e63 100%);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.28);
+}
+
+.app-install-cta:hover {
+  filter: brightness(1.05);
+}
+
 .app-update-banner {
   position: sticky;
   top: 0;
