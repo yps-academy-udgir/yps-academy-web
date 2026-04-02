@@ -61,6 +61,7 @@ export class ClassroomChatComponent implements OnInit, OnDestroy {
   messageForm!: FormGroup;
   uploadedAttachments: any[] = [];
   sending = false;
+  refreshing = false;
 
   constructor(
     private fb: FormBuilder,
@@ -305,10 +306,27 @@ export class ClassroomChatComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Force refresh latest messages from API.
+   */
+  refreshMessages(): void {
+    if (this.refreshing || !this.classroomId) {
+      return;
+    }
+
+    this.refreshing = true;
+    this.chatService.refreshClassroomMessages(this.classroomId);
+
+    // `loadClassroomMessages` is signal-driven; clear local refresh state shortly after trigger.
+    setTimeout(() => {
+      this.refreshing = false;
+    }, 1000);
+  }
+
+  /**
    * Returns tooltip text listing names of users who read a message
    */
   getReadByTooltip(message: Message): string {
     if (!message.readBy || message.readBy.length === 0) return '';
     return 'Read by: ' + message.readBy.map((r) => r.userId).join(', ');
   }
-  }
+}

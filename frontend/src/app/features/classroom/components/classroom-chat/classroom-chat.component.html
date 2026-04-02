@@ -21,6 +21,19 @@
   <!-- Messages Container -->
   @if (!isClassroomLoading() && !getClassroomError()) {
     <div class="messages-wrapper">
+      <div class="messages-toolbar">
+        <button
+          mat-stroked-button
+          color="primary"
+          type="button"
+          (click)="refreshMessages()"
+          [disabled]="refreshing || isClassroomLoading()"
+        >
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+      </div>
+
       <div class="messages-container" #messagesContainer>
         @if (getClassroomMessages().length === 0) {
           <div class="empty-state">

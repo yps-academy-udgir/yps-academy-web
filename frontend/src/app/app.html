@@ -1,5 +1,15 @@
 <!-- Main Application Layout -->
 <div class="app-container">
+  @if (isUpdateAvailable()) {
+    <div class="app-update-banner" role="status" aria-live="polite">
+      <span>New deployment available.</span>
+      <div class="app-update-actions">
+        <button type="button" class="update-btn" (click)="applyAppUpdate()">Refresh app</button>
+        <button type="button" class="dismiss-btn" (click)="dismissAppUpdateBanner()">Later</button>
+      </div>
+    </div>
+  }
+
   <!-- Router Outlet for page content -->
   <main class="main-content">
     <router-outlet></router-outlet>

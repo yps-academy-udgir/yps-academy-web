@@ -5,7 +5,7 @@
  */
 
 import { Injectable, signal, effect, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { SocketService } from '../../core/services/socket.service';
@@ -41,15 +41,25 @@ export class ChatService {
   getClassroomMessages(
     classroomId: string,
     page: number = 1,
-    limit: number = 50
+    limit: number = 50,
+    forceRefresh: boolean = false
   ): Observable<PaginatedMessageResponse> {
     let params = new HttpParams();
     params = params.set('page', page.toString());
     params = params.set('limit', limit.toString());
 
+    let headers = new HttpHeaders();
+    if (forceRefresh) {
+      params = params.set('_t', Date.now().toString());
+      headers = headers
+        .set('Cache-Control', 'no-cache, no-store, must-revalidate')
+        .set('Pragma', 'no-cache')
+        .set('Expires', '0');
+    }
+
     return this.http.get<PaginatedMessageResponse>(
       `${this.API_URL}/${classroomId}/messages`,
-      { params }
+      { params, headers }
     );
   }
 
@@ -59,14 +69,15 @@ export class ChatService {
   loadClassroomMessages(
     classroomId: string,
     page: number = 1,
-    limit: number = 50
+    limit: number = 50,
+    forceRefresh: boolean = false
   ): void {
     // Set loading state
     const loadingMap = new Map(this.loadingByClassroom());
     loadingMap.set(classroomId, true);
     this.loadingByClassroom.set(loadingMap);
 
-    this.getClassroomMessages(classroomId, page, limit).subscribe({
+    this.getClassroomMessages(classroomId, page, limit, forceRefresh).subscribe({
       next: (response) => {
         // Update messages
         const map = new Map(this.messagesMap());
@@ -98,6 +109,14 @@ export class ChatService {
         this.loadingByClassroom.set(loMap);
       },
     });
+  }
+
+  /**
+   * Force refresh chat messages from API for current classroom.
+   */
+  refreshClassroomMessages(classroomId: string): void {
+    this.loadClassroomMessages(classroomId, 1, 50, true);
+    this.loadUnreadCounts();
   }
 
   /**

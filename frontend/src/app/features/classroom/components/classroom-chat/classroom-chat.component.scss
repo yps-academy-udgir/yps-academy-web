@@ -59,6 +59,12 @@
   min-height: 0;
 }
 
+.messages-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px 0;
+}
+
 .messages-container {
   flex: 1;
   overflow-y: auto;
