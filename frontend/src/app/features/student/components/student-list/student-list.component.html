@@ -91,32 +91,25 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let student" class="actions-cell">
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="viewStudent(student)"
-                  matTooltip="View Details"
-                >
-                  <mat-icon>visibility</mat-icon>
+                <button mat-icon-button [matMenuTriggerFor]="studentActionMenu" matTooltip="Actions">
+                  <mat-icon>more_vert</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  color="accent"
-                  (click)="editStudent(student)"
-                  matTooltip="Edit Student"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-                @if (roleService.isAdmin()) {
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteStudent(student)"
-                  matTooltip="Delete Student"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-                }
+                <mat-menu #studentActionMenu="matMenu">
+                  <button mat-menu-item (click)="viewStudent(student)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>View Details</span>
+                  </button>
+                  <button mat-menu-item (click)="editStudent(student)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  @if (roleService.isAdmin()) {
+                    <button mat-menu-item (click)="deleteStudent(student)">
+                      <mat-icon>delete</mat-icon>
+                      <span>Delete Student</span>
+                    </button>
+                  }
+                </mat-menu>
               </td>
             </ng-container>
 

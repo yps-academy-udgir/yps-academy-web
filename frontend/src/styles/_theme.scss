@@ -10,6 +10,14 @@
 // Include the common styles for Angular Material
 @include mat.core();
 
+// Global defaults (light mode) so gradients work even before ThemeService applies classes.
+:root {
+  --profile-header-gradient: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$accent-500} 100%);
+  --form-summary-gradient: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$primary-700} 100%);
+  --report-band-gradient: linear-gradient(90deg, #{vars.$primary-700} 0%, #{vars.$primary-400} 100%);
+  --marks-report-band-gradient: linear-gradient(90deg, #{vars.$primary-700} 0%, #{vars.$success-500} 100%);
+}
+
 // =====================================
 // Define Custom Palettes
 // =====================================
@@ -161,6 +169,10 @@ html, body {
   --accent-color: #{vars.$accent-500};
   --warn-color: #{vars.$warn-500};
   --success-color: #{vars.$success-500};
+  --profile-header-gradient: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$accent-500} 100%);
+  --form-summary-gradient: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$primary-700} 100%);
+  --report-band-gradient: linear-gradient(90deg, #{vars.$primary-700} 0%, #{vars.$primary-400} 100%);
+  --marks-report-band-gradient: linear-gradient(90deg, #{vars.$primary-700} 0%, #{vars.$success-500} 100%);
   
   // Error states
   --error-background: #{vars.$warn-50};
@@ -192,6 +204,10 @@ html, body {
   --accent-color: #{vars.$accent-300};
   --warn-color: #{vars.$warn-300};
   --success-color: #{vars.$success-300};
+  --profile-header-gradient: linear-gradient(135deg, #{vars.$primary-800} 0%, #{vars.$accent-700} 100%);
+  --form-summary-gradient: linear-gradient(135deg, #{vars.$primary-900} 0%, #{vars.$primary-700} 100%);
+  --report-band-gradient: linear-gradient(90deg, #{vars.$primary-900} 0%, #{vars.$primary-700} 100%);
+  --marks-report-band-gradient: linear-gradient(90deg, #{vars.$primary-900} 0%, #{vars.$success-700} 100%);
   
   // Error states
   --error-background: #5d1f1f;
