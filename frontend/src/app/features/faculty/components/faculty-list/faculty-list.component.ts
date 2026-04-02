@@ -70,6 +70,10 @@ export class FacultyListComponent implements OnInit {
 
   viewFaculty(faculty: Faculty): void { this.router.navigate(['/faculty', faculty._id]); }
 
+  viewPaymentReceipt(faculty: Faculty): void {
+    this.router.navigate(['/faculty', faculty._id, 'payment-receipt']);
+  }
+
   editFaculty(faculty: Faculty): void { this.router.navigate(['/faculty', faculty._id, 'edit']); }
 
   deleteFaculty(faculty: Faculty): void {

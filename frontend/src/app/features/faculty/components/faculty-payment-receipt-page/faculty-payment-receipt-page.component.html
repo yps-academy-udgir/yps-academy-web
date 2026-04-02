@@ -1,0 +1,24 @@
+<div class="page-shell">
+  <div class="top-actions">
+    <button mat-button type="button" (click)="onBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+  </div>
+
+  @if (loading()) {
+    <app-loading [message]="'Loading faculty payment receipt...'"></app-loading>
+  }
+
+  @if (error() && !loading()) {
+    <app-error-message
+      [title]="'Error Loading Faculty Payment Receipt'"
+      [message]="error()!"
+      (retry)="onRetry()"
+    ></app-error-message>
+  }
+
+  @if (receiptData() && !loading() && !error()) {
+    <app-faculty-payment-receipt [receipt]="receiptData()!"></app-faculty-payment-receipt>
+  }
+</div>

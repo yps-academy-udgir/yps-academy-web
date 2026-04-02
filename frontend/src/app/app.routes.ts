@@ -49,6 +49,15 @@ export const routes: Routes = [
         data: { title: 'My Profile' },
       },
       {
+        path: 'my-faculty-payment-receipt',
+        loadComponent: () =>
+          import('./features/faculty/components/faculty-payment-receipt-page/faculty-payment-receipt-page.component').then(
+            (m) => m.FacultyPaymentReceiptPageComponent
+          ),
+        canActivate: [roleGuard(UserRole.FACULTY)],
+        data: { title: 'My Payment Receipt' },
+      },
+      {
         path: 'my-fees',
         loadComponent: () =>
           import('./features/student/components/my-fees/my-fees.component').then(

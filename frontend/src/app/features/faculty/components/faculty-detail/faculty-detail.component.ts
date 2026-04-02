@@ -87,6 +87,12 @@ export class FacultyDetailComponent implements OnInit, OnDestroy {
     if (id) this.router.navigate(['/faculty', id, 'edit']);
   }
 
+  onViewPaymentReceipt(): void {
+    const id = this.faculty()?._id;
+    if (!id) return;
+    this.router.navigate(['/faculty', id, 'payment-receipt']);
+  }
+
   onDelete(): void {
     const f = this.faculty();
     if (!f?._id) return;
