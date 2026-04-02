@@ -1,4 +1,7 @@
 # Deploy to Development (FREE)
+# TEMPORARILY DISABLED:
+# Deploy jobs are paused because Vercel and Render auto-deploy from GitHub.
+# To re-enable this workflow, remove `if: ${{ false }}` from the jobs below.
 # ─ Frontend → Vercel preview deployment
 # ─ Backend  → Render (triggered via deploy hook)
 # ─ Database → MongoDB Atlas free M0 cluster (set up once manually)
@@ -16,6 +19,7 @@ on:
 
 jobs:
   deploy-frontend:
+    if: ${{ false }} # temporarily disabled: Vercel/Render auto-deploy is active
     name: Frontend → Vercel (preview)
     runs-on: ubuntu-latest
     steps:
@@ -45,6 +49,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
   deploy-backend:
+    if: ${{ false }} # temporarily disabled: Vercel/Render auto-deploy is active
     name: Backend → Render (dev service)
     needs: [deploy-frontend]
     runs-on: ubuntu-latest
