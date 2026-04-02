@@ -1,5 +1,8 @@
 ﻿# Sync main into develop and staging after every merge to main.
 # This keeps all three environments up-to-date automatically.
+# TEMPORARILY DISABLED:
+# This workflow created merge commits that made develop and staging appear ahead of main.
+# To re-enable it later, remove `if: ${{ false }}` from the jobs below.
 
 name: Sync main into develop and staging
 
@@ -13,6 +16,7 @@ permissions:
 
 jobs:
   sync-develop:
+    if: ${{ false }}
     name: Merge main into develop
     runs-on: ubuntu-latest
     steps:
@@ -50,6 +54,7 @@ jobs:
           git push origin develop
 
   sync-staging:
+    if: ${{ false }}
     name: Merge main into staging
     runs-on: ubuntu-latest
     needs: sync-develop
