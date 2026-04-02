@@ -43,8 +43,8 @@ export const createApp = (): Express => {
   // Serve uploaded images statically
   app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 
-  // Request logging middleware (development or enabled via LOG_REQUESTS)
-  if (process.env.NODE_ENV === 'development' || process.env.LOG_REQUESTS === 'true') {
+  // Request logging middleware (explicitly enabled via LOG_REQUESTS)
+  if (process.env.LOG_REQUESTS === 'true') {
     app.use(requestLogger as any);
   }
 

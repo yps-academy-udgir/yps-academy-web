@@ -21,21 +21,25 @@ export class LoggerService {
   }
 
   log(message: string, meta?: any): void {
+    if (!this.enabled) return;
     console.log(`[LOG] ${new Date().toISOString()}: ${message}`);
     this.send('info', message, meta);
   }
 
   error(message: string, meta?: any): void {
+    if (!this.enabled) return;
     console.error(`[ERROR] ${new Date().toISOString()}: ${message}`);
     this.send('error', message, meta);
   }
 
   warn(message: string, meta?: any): void {
+    if (!this.enabled) return;
     console.warn(`[WARN] ${new Date().toISOString()}: ${message}`);
     this.send('warn', message, meta);
   }
 
   info(message: string, meta?: any): void {
+    if (!this.enabled) return;
     console.info(`[INFO] ${new Date().toISOString()}: ${message}`);
     this.send('info', message, meta);
   }
