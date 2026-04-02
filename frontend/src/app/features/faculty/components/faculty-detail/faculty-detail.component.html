@@ -92,7 +92,8 @@
             </div>
           </mat-expansion-panel>
 
-          <!-- Salary Information -->
+          <!-- Salary Information: visible to admin or faculty viewing own profile -->
+          @if (roleService.isAdmin() || isOwnProfile()) {
           <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header>
               <mat-panel-title><mat-icon>payments</mat-icon> Salary Information</mat-panel-title>
@@ -144,6 +145,7 @@
               }
             </div>
           </mat-expansion-panel>
+          } <!-- end salary guard -->
 
         </mat-accordion>
 

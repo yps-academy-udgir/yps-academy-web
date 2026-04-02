@@ -21,6 +21,7 @@ import { ErrorMessageComponent } from '../../../../shared/components/error-messa
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Student, Class, FilterState } from '../../../../shared/models/student.model';
 import { FilterBarComponent } from '../../../../shared/components/filter-bar/filter-bar.component';
+import { RoleService } from '../../../../shared/services/role.service';
 
 
 @Component({
@@ -41,6 +42,7 @@ export class StudentListComponent implements OnInit {
   private studentService = inject(StudentService);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
+  roleService = inject(RoleService);
 
   // Signals for reactive state management
   searchText = signal<string>('');

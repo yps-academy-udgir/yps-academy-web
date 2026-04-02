@@ -43,6 +43,10 @@ export const facultyRepository = {
     return Faculty.findById(id);
   },
 
+  async findByUserId(userId: string) {
+    return Faculty.findOne({ userId }).lean();
+  },
+
   async findByEmail(email: string, excludeId?: string) {
     const query: FilterQuery<IFaculty> = { email: email.toLowerCase().trim() };
     if (excludeId) query._id = { $ne: excludeId };

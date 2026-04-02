@@ -95,6 +95,16 @@ export class FacultyService {
     );
   }
 
+  getMyProfile(): Observable<ApiResponse<Faculty>> {
+    this.loading.set(true);
+    this.error.set(null);
+    return this.http.get<ApiResponse<Faculty>>(`${this.API_URL}/me`).pipe(
+      tap((res) => { if (res.data) this.selectedFaculty.set(res.data); }),
+      catchError((err) => this.handleError(err)),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
   clearSelectedFaculty(): void {
     this.selectedFaculty.set(null);
   }
