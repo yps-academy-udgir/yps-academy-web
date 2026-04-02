@@ -26,7 +26,7 @@ export const authService = {
     const expiresIn = (process.env.JWT_EXPIRES_IN || '8h') as jwt.SignOptions['expiresIn'];
 
     const token = jwt.sign(
-      { _id: (user._id as unknown as string).toString(), userId: user.userId, role: user.role, isFirstLogin: user.isFirstLogin },
+      { _id: (user._id as unknown as string).toString(), userId: user.userId, role: user.role, name: user.name, isFirstLogin: user.isFirstLogin },
       secret,
       { expiresIn }
     );

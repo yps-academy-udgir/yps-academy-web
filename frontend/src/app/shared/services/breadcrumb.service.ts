@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { BreadcrumbItem } from '../models/breadcrumb.model';
+import { RoleService } from './role.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +10,7 @@ import { BreadcrumbItem } from '../models/breadcrumb.model';
 export class BreadcrumbService {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
+  private roleService = inject(RoleService);
 
   breadcrumbs = signal<BreadcrumbItem[]>([]);
 
@@ -25,11 +27,13 @@ export class BreadcrumbService {
     url: string = '',
     breadcrumbs: BreadcrumbItem[] = []
   ): BreadcrumbItem[] {
+    const homeUrl = this.getHomeUrl();
+
     // Add home/dashboard as first item if we're not already there
-    if (breadcrumbs.length === 0 && url !== '/dashboard') {
+    if (breadcrumbs.length === 0 && url !== homeUrl) {
       breadcrumbs.push({
         label: 'Home',
-        url: '/dashboard',
+        url: homeUrl,
         isClickable: true,
         icon: 'home',
       });
@@ -78,5 +82,17 @@ export class BreadcrumbService {
       }));
     }
     return crumbs;
+  }
+
+  private getHomeUrl(): string {
+    if (this.roleService.isStudent()) {
+      return '/my-profile';
+    }
+
+    if (this.roleService.isFaculty()) {
+      return '/my-faculty-profile';
+    }
+
+    return '/dashboard';
   }
 }

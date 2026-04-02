@@ -26,6 +26,10 @@
               <div class="student-info">
                 <h1 class="student-name">{{ faculty()!.firstName }} {{ faculty()!.lastName }}</h1>
                 <p class="student-email">
+                  <mat-icon>badge</mat-icon>
+                  User ID: {{ faculty()!.userId || '-' }}
+                </p>
+                <p class="student-email">
                   <mat-icon>email</mat-icon>
                   {{ faculty()!.email }}
                 </p>
@@ -90,6 +94,10 @@
               <div class="info-row">
                 <span class="info-label">Last Name:</span>
                 <span class="info-value">{{ faculty()!.lastName }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">User ID:</span>
+                <span class="info-value">{{ faculty()!.userId || '-' }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label">Email:</span>

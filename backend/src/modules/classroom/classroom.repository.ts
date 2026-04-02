@@ -1,5 +1,7 @@
 import { FilterQuery } from 'mongoose';
 import Classroom, { IClassroom } from '../../models/classroom.model';
+import { Student } from '../../models/student.model';
+import { Faculty } from '../../models/faculty.model';
 
 export interface ClassroomFilter {
   class?: string;
@@ -60,6 +62,25 @@ export const classroomRepository = {
       $expr: { $lt: [{ $size: '$enrolledStudents' }, '$capacity'] },
     })
       .sort({ academicYear: -1, section: 1, createdAt: 1 })
+      .lean();
+  },
+
+  async findByUser(userId: string, role: 'student' | 'faculty') {
+    const entity = role === 'student'
+      ? await Student.findOne({ userId }).select('_id').lean()
+      : await Faculty.findOne({ userId }).select('_id').lean();
+
+    if (!entity?._id) {
+      return [];
+    }
+
+    const query: FilterQuery<IClassroom> = role === 'student'
+      ? { enrolledStudents: entity._id }
+      : { 'facultyAssignments.facultyId': entity._id };
+
+    return Classroom.find(query)
+      .select('class section roomNumber academicYear capacity enrolledStudents')
+      .sort({ academicYear: -1, class: 1, section: 1 })
       .lean();
   },
 

@@ -124,6 +124,52 @@
   }
 }
 
+.sidebar-section {
+  padding: 0;
+
+  .sidebar-section-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 16px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .expand-icon {
+      margin-left: auto;
+      transition: transform 0.2s ease;
+    }
+
+    &.expanded .expand-icon {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.chat-rooms-list {
+  animation: slideDown 0.2s ease;
+}
+
+.unread-badge {
+  background: var(--mat-sys-primary, #6750a4) !important;
+  color: white !important;
+  border-radius: 10px !important;
+  font-size: 11px !important;
+  min-width: 20px !important;
+  text-align: center !important;
+}
+
 .sidebar-footer {
   margin-top: auto;
   padding-bottom: 16px;

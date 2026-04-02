@@ -7,6 +7,7 @@ export interface AuthPayload {
   _id: string;
   userId: string;
   role: UserRole;
+  name: string;
   isFirstLogin?: boolean;
 }
 
