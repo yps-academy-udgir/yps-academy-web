@@ -79,8 +79,7 @@ export class FacultyAssignmentComponent implements OnInit {
     this.classroomService.getClassroomById(this.classroomId()).subscribe({
       next: (res) => {
        this.classroom = res.data;
-       console.log(this.classroom);
-       
+
         this.loading.set(false);
        },
       error: () => {

@@ -85,7 +85,6 @@ export class HeaderComponent {
    */
   openNotifications(): void {
     // TODO: Implement notifications
-    console.log('Notifications clicked');
   }
 
   logout(): void {
