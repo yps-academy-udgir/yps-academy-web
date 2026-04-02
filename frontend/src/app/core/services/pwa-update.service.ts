@@ -8,6 +8,7 @@ export class PwaUpdateService {
   private readonly swUpdate = inject(SwUpdate);
 
   private initialized = false;
+  private periodicCheckTimer: ReturnType<typeof setInterval> | null = null;
   readonly updateAvailable = signal(false);
 
   initialize(): void {
@@ -23,14 +24,19 @@ export class PwaUpdateService {
       }
     });
 
-    // Check soon after startup, then periodically for new deploys.
-    setTimeout(() => {
-      this.swUpdate.checkForUpdate().catch(() => {});
-    }, 60000);
+    // Check immediately, then periodically for new deploys.
+    this.checkForUpdateSafe();
 
-    setInterval(() => {
-      this.swUpdate.checkForUpdate().catch(() => {});
-    }, 5 * 60 * 1000);
+    this.periodicCheckTimer = setInterval(() => {
+      this.checkForUpdateSafe();
+    }, 60 * 1000);
+
+    window.addEventListener('focus', () => this.checkForUpdateSafe());
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        this.checkForUpdateSafe();
+      }
+    });
   }
 
   applyUpdate(): void {
@@ -44,5 +50,9 @@ export class PwaUpdateService {
 
   private markUpdateAvailable(event: VersionReadyEvent): void {
     this.updateAvailable.set(true);
+  }
+
+  private checkForUpdateSafe(): void {
+    this.swUpdate.checkForUpdate().catch(() => {});
   }
 }
