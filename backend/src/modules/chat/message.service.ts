@@ -9,6 +9,8 @@ import { CreateMessageDto, MessageResponseDto, UnreadCountsDto } from './dto/mes
 import logger from '../../utils/logger';
 import { Student } from '../../models/student.model';
 import { Faculty } from '../../models/faculty.model';
+import { isValidObjectId } from 'mongoose';
+import { AuthUser } from '../../models/auth.model';
 
 export const messageService = {
   /**
@@ -194,23 +196,78 @@ async function validateClassroomMembership(
   userRole: 'student' | 'faculty'
 ): Promise<boolean> {
   const entityId = await resolveEntityId(userId, userRole);
-  if (!entityId) return false;
 
   if (userRole === 'student') {
-    return classroom.enrolledStudents?.some((student: any) => normalizeId(student) === entityId);
+    return classroom.enrolledStudents?.some((student: any) => {
+      const populated = typeof student === 'object' ? student : null;
+      const matchesEntityId = entityId ? normalizeId(student) === entityId : false;
+      const matchesRawId = normalizeId(student) === userId;
+      const matchesUserId = populated?.userId === userId;
+      const matchesRoll = populated?.rollNumber === userId;
+      return matchesEntityId || matchesRawId || matchesUserId || matchesRoll;
+    });
   } else if (userRole === 'faculty') {
-    return classroom.facultyAssignments?.some((assignment: any) => normalizeId(assignment.facultyId) === entityId);
+    return classroom.facultyAssignments?.some((assignment: any) => {
+      const faculty = assignment.facultyId;
+      const populated = typeof faculty === 'object' ? faculty : null;
+      const matchesEntityId = entityId ? normalizeId(faculty) === entityId : false;
+      const matchesRawId = normalizeId(faculty) === userId;
+      const matchesUserId = populated?.userId === userId;
+      const matchesRoll = populated?.rollNumber === userId;
+      return matchesEntityId || matchesRawId || matchesUserId || matchesRoll;
+    });
   }
   return false;
 }
 
 async function resolveEntityId(userId: string, userRole: 'student' | 'faculty'): Promise<string | null> {
+  const baseQuery = {
+    $or: [
+      { userId },
+      { rollNumber: userId },
+    ],
+  } as any;
+
+  if (isValidObjectId(userId)) {
+    baseQuery.$or.push({ _id: userId });
+  }
+
   if (userRole === 'student') {
-    const student = await Student.findOne({ userId }).select('_id').lean();
+    let student = await Student.findOne(baseQuery).select('_id').lean();
+    if (!student?._id) {
+      const authUser = await AuthUser.findOne({ userId, role: 'student' }).select('name').lean();
+      const name = authUser?.name?.trim();
+      if (name) {
+        const [firstName, ...rest] = name.split(/\s+/);
+        const lastName = rest.join(' ');
+        const fallbackNameQuery: any = {
+          firstName: new RegExp(`^${escapeRegex(firstName)}$`, 'i'),
+        };
+        if (lastName) {
+          fallbackNameQuery.lastName = new RegExp(`^${escapeRegex(lastName)}$`, 'i');
+        }
+        student = await Student.findOne(fallbackNameQuery).select('_id').lean();
+      }
+    }
     return student?._id?.toString() || null;
   }
 
-  const faculty = await Faculty.findOne({ userId }).select('_id').lean();
+  let faculty = await Faculty.findOne(baseQuery).select('_id').lean();
+  if (!faculty?._id) {
+    const authUser = await AuthUser.findOne({ userId, role: 'faculty' }).select('name').lean();
+    const name = authUser?.name?.trim();
+    if (name) {
+      const [firstName, ...rest] = name.split(/\s+/);
+      const lastName = rest.join(' ');
+      const fallbackNameQuery: any = {
+        firstName: new RegExp(`^${escapeRegex(firstName)}$`, 'i'),
+      };
+      if (lastName) {
+        fallbackNameQuery.lastName = new RegExp(`^${escapeRegex(lastName)}$`, 'i');
+      }
+      faculty = await Faculty.findOne(fallbackNameQuery).select('_id').lean();
+    }
+  }
   return faculty?._id?.toString() || null;
 }
 
@@ -220,6 +277,10 @@ function normalizeId(value: any): string {
   if (value._id) return value._id.toString();
   if (typeof value.toString === 'function') return value.toString();
   return '';
+}
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**

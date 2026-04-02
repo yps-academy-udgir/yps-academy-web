@@ -3,11 +3,12 @@
  * Handles all database operations for messages
  */
 
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, isValidObjectId } from 'mongoose';
 import Message, { IMessage } from '../../models/message.model';
 import Classroom, { IClassroom } from '../../models/classroom.model';
 import { Student } from '../../models/student.model';
 import { Faculty } from '../../models/faculty.model';
+import { AuthUser } from '../../models/auth.model';
 
 export interface MessageFilter {
   classroomId: string;
@@ -144,18 +145,50 @@ export const messageRepository = {
    */
   async getUserClassrooms(userId: string, role: 'student' | 'faculty'): Promise<string[]> {
     const query: FilterQuery<IClassroom> = {};
-    const entity = role === 'student'
-      ? await Student.findOne({ userId }).select('_id').lean()
-      : await Faculty.findOne({ userId }).select('_id').lean();
+    const baseQuery = {
+      $or: [
+        { userId },
+        { rollNumber: userId },
+      ],
+    } as any;
+
+    if (isValidObjectId(userId)) {
+      baseQuery.$or.push({ _id: userId });
+    }
+
+    let entity = role === 'student'
+      ? await Student.findOne(baseQuery).select('_id').lean()
+      : await Faculty.findOne(baseQuery).select('_id').lean();
 
     if (!entity?._id) {
-      return [];
+      const authUser = await AuthUser.findOne({ userId, role }).select('name').lean();
+      const name = authUser?.name?.trim();
+      if (name) {
+        const [firstName, ...rest] = name.split(/\s+/);
+        const lastName = rest.join(' ');
+        const fallbackNameQuery: any = {
+          firstName: new RegExp(`^${escapeRegex(firstName)}$`, 'i'),
+        };
+        if (lastName) {
+          fallbackNameQuery.lastName = new RegExp(`^${escapeRegex(lastName)}$`, 'i');
+        }
+
+        entity = role === 'student'
+          ? await Student.findOne(fallbackNameQuery).select('_id').lean()
+          : await Faculty.findOne(fallbackNameQuery).select('_id').lean();
+      }
     }
 
     if (role === 'student') {
-      query.enrolledStudents = entity._id;
+      query.$or = [
+        ...(entity?._id ? [{ enrolledStudents: entity._id }] : []),
+        { enrolledStudents: userId as any },
+      ];
     } else if (role === 'faculty') {
-      query['facultyAssignments.facultyId'] = entity._id;
+      query.$or = [
+        ...(entity?._id ? [{ 'facultyAssignments.facultyId': entity._id }] : []),
+        { 'facultyAssignments.facultyId': userId as any },
+      ];
     }
 
     const classrooms = await Classroom.find(query, { _id: 1 }).lean();
@@ -189,3 +222,7 @@ export const messageRepository = {
       .lean();
   },
 };
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
