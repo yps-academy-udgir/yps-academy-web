@@ -46,7 +46,7 @@ export class ChangePasswordComponent {
     this.authService.changePassword(currentPassword!, newPassword!).subscribe({
       next: () => {
         this.notify.success('Password changed successfully');
-        this.router.navigate(['/dashboard']);
+        this.navigateAfterAction();
       },
       error: (err) => {
         this.notify.error(err?.error?.message || 'Failed to change password');
@@ -56,11 +56,16 @@ export class ChangePasswordComponent {
   }
 
   cancel(): void {
+    this.navigateAfterAction();
+  }
+
+  private navigateAfterAction(): void {
     if (this.roleService.isStudent()) {
       this.router.navigate(['/my-profile']);
-      return;
+    } else if (this.roleService.isFaculty()) {
+      this.router.navigate(['/my-faculty-profile']);
+    } else {
+      this.router.navigate(['/dashboard']);
     }
-
-    this.router.navigate(['/dashboard']);
   }
 }
