@@ -26,7 +26,7 @@
 	print-color-adjust: exact;
 	-webkit-print-color-adjust: exact;
 }
-.report-band { height: 10px; background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%); }
+.report-band { height: 10px; background: var(--report-band-gradient, linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%)); }
 .export-header {
 	display: flex;
 	justify-content: space-between;

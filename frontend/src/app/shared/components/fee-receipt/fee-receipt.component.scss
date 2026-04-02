@@ -31,7 +31,7 @@
 
 .receipt-topband {
   height: 10px;
-  background: linear-gradient(90deg, v.$primary-700 0%, v.$primary-400 100%);
+  background: var(--report-band-gradient, linear-gradient(90deg, v.$primary-700 0%, v.$primary-400 100%));
 }
 
 .receipt-header {

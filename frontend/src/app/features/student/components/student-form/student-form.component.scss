@@ -135,7 +135,7 @@
 }
 
 .fee-summary-card {
-  background: linear-gradient(135deg, var(--primary-color, #1976d2) 0%, var(--primary-dark, #0d47a1) 100%);
+  background: var(--form-summary-gradient, linear-gradient(135deg, var(--primary-color, #1976d2) 0%, var(--primary-dark, #0d47a1) 100%));
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

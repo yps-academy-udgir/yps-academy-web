@@ -29,7 +29,7 @@
 
 .report-band {
   height: 10px;
-  background: linear-gradient(90deg, v.$primary-700 0%, v.$success-500 100%);
+  background: var(--marks-report-band-gradient, linear-gradient(90deg, v.$primary-700 0%, v.$success-500 100%));
 }
 
 .report-header {
