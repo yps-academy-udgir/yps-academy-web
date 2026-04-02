@@ -1,0 +1,72 @@
+.my-profile-container {
+  padding: var(--space-4);
+}
+
+.profile-header-card {
+  margin-bottom: var(--space-4);
+
+  mat-card-header {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.spacer { flex: 1; }
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.details-accordion { width: 100%; }
+
+.panel-content {
+  padding: var(--space-2) 0;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.info-label { color: var(--color-text-secondary); font-size: 0.875rem; }
+.info-value { font-weight: 500; }
+
+.fee-panel-content { padding: var(--space-2) 0; }
+
+.total-fee-row .total-amount { color: var(--color-primary); font-weight: 700; }
+.paid-fee-row .paid-amount  { color: var(--color-success); font-weight: 600; }
+.pending-amount.has-pending { color: var(--color-warn); font-weight: 600; }
+
+.section-divider { margin: var(--space-3) 0; }
+
+.subsection-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.payment-timeline { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.payment-record {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.payment-amount { font-weight: 600; color: var(--color-success); }
+.payment-date   { font-size: 0.8rem; color: var(--color-text-secondary); }
+.payment-remarks { font-size: 0.8rem; color: var(--color-text-secondary); }

@@ -1,0 +1,117 @@
+<div class="my-profile-container">
+
+  @if (loading()) {
+    <app-loading message="Loading your profile..." />
+  }
+
+  @if (error() && !loading()) {
+    <app-error-message [message]="error()!" (retry)="load()" />
+  }
+
+  @if (!loading() && faculty()) {
+    <!-- Header card -->
+    <mat-card class="profile-header-card">
+      <mat-card-header>
+        <mat-card-title>{{ faculty()!.firstName }} {{ faculty()!.lastName }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ faculty()!.department }} &bull; {{ faculty()!.speciality }}
+        </mat-card-subtitle>
+        <span class="spacer"></span>
+        <button mat-stroked-button (click)="onChangePassword()">
+          <mat-icon>lock</mat-icon>
+          Change Password
+        </button>
+      </mat-card-header>
+    </mat-card>
+
+    <!-- Details grid -->
+    <div class="details-grid">
+
+      <!-- Personal & Contact -->
+      <mat-accordion class="details-accordion" multi>
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title><mat-icon>person</mat-icon> Personal Information</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="panel-content">
+            <div class="info-row">
+              <span class="info-label">Employee ID:</span>
+              <span class="info-value">{{ faculty()!.userId }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email:</span>
+              <span class="info-value">
+                <a [href]="'mailto:' + faculty()!.email">{{ faculty()!.email }}</a>
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Contact:</span>
+              <span class="info-value">{{ faculty()!.contact }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Degree:</span>
+              <span class="info-value">{{ faculty()!.degree }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Experience:</span>
+              <span class="info-value">{{ faculty()!.yearsOfExperience }} years</span>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <!-- Salary -->
+      <mat-accordion class="details-accordion" multi>
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title><mat-icon>payments</mat-icon> My Salary</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="panel-content fee-panel-content">
+            <div class="fee-summary-section">
+              <div class="info-row total-fee-row">
+                <span class="info-label">Annual Salary:</span>
+                <span class="info-value total-amount">&#8377;{{ faculty()!.annualSalary | number:'1.2-2' }}</span>
+              </div>
+              <div class="info-row paid-fee-row">
+                <span class="info-label">Paid:</span>
+                <span class="info-value paid-amount">&#8377;{{ paidTotal() | number:'1.2-2' }}</span>
+              </div>
+              <div class="info-row pending-fee-row">
+                <span class="info-label">Remaining:</span>
+                <span class="info-value pending-amount" [class.has-pending]="remainingBalance() > 0">
+                  &#8377;{{ remainingBalance() | number:'1.2-2' }}
+                </span>
+              </div>
+            </div>
+
+            @if (faculty()!.salaryPayments?.length) {
+              <mat-divider class="section-divider"></mat-divider>
+              <h4 class="subsection-title">
+                <mat-icon>history</mat-icon>
+                Payment History
+              </h4>
+              <div class="payment-timeline">
+                @for (payment of faculty()!.salaryPayments; track $index) {
+                  <div class="payment-record">
+                    <div class="payment-icon"><mat-icon>check_circle</mat-icon></div>
+                    <div class="payment-info">
+                      <div class="payment-header">
+                        <span class="payment-amount">&#8377;{{ payment.amount | number:'1.2-2' }}</span>
+                        <span class="payment-date">{{ payment.date | date:'mediumDate' }}</span>
+                      </div>
+                      @if (payment.note) {
+                        <div class="payment-remarks">{{ payment.note }}</div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+    </div>
+  }
+
+</div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -35,6 +35,12 @@ export class FacultyDetailComponent implements OnInit, OnDestroy {
   faculty = signal<Faculty | null>(null);
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
+
+  /** True when the logged-in faculty is viewing their own profile */
+  isOwnProfile = computed(() => {
+    const loggedInUserId = this.authService.currentUser()?.userId;
+    return !!loggedInUserId && this.faculty()?.userId === loggedInUserId;
+  });
 
   private paramSub!: Subscription;
 

@@ -17,6 +17,12 @@ export const facultyService = {
     return facultyRepository.findById(id);
   },
 
+  async getMe(userId: string) {
+    const faculty = await facultyRepository.findByUserId(userId);
+    if (!faculty) throw Object.assign(new Error('Faculty profile not found'), { statusCode: 404 });
+    return faculty;
+  },
+
   async create(dto: CreateFacultyDto, imageFile?: Express.Multer.File) {
     const existing = await facultyRepository.findByEmail(dto.email);
     if (existing) throw serviceError('A faculty member with this email already exists', 400);

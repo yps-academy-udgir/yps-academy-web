@@ -8,6 +8,8 @@ import { RESULTS_ROUTES } from './features/results/results.routes';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { authGuard } from './core/guards/auth.guard';
 import { firstLoginGuard } from './core/guards/first-login.guard';
+import { roleGuard } from './core/guards/role.guard';
+import { UserRole } from './features/auth/models/auth.model';
 
 export const routes: Routes = [
   {
@@ -35,6 +37,15 @@ export const routes: Routes = [
           import('./features/student/components/my-profile/my-profile.component').then(
             (m) => m.MyProfileComponent
           ),
+        data: { title: 'My Profile' },
+      },
+      {
+        path: 'my-faculty-profile',
+        loadComponent: () =>
+          import('./features/faculty/components/my-faculty-profile/my-faculty-profile.component').then(
+            (m) => m.MyFacultyProfileComponent
+          ),
+        canActivate: [roleGuard(UserRole.FACULTY)],
         data: { title: 'My Profile' },
       },
       {

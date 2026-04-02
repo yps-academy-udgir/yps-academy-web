@@ -17,10 +17,28 @@ export const getAllFaculty = async (req: Request, res: Response): Promise<void> 
   }
 };
 
+export const getMe = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const faculty = await facultyService.getMe(req.user!.userId);
+    successResponse(res, faculty, 'Profile retrieved successfully');
+  } catch (error: any) {
+    if (error.statusCode) { errorResponse(res, error.message, error.statusCode); return; }
+    errorResponse(res, 'Failed to retrieve profile', 500, error.message);
+  }
+};
+
 export const getFacultyById = async (req: Request, res: Response): Promise<void> => {
   try {
     const faculty = await facultyService.getById(req.params['id']);
     if (!faculty) { errorResponse(res, 'Faculty member not found', 404); return; }
+
+    // Faculty role: strip salary/payment data unless viewing own profile
+    if (req.user?.role === 'faculty' && faculty.userId !== req.user.userId) {
+      const { annualSalary, salaryPayments, ...publicProfile } = faculty as any;
+      successResponse(res, publicProfile, 'Faculty member retrieved successfully');
+      return;
+    }
+
     successResponse(res, faculty, 'Faculty member retrieved successfully');
   } catch (error: any) {
     errorResponse(res, 'Failed to retrieve faculty member', 500, error.message);
