@@ -15,10 +15,11 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
-import { Student, ExamResult } from '../../../../shared/models/student.model';
+import { Student, ExamResult, StudentStatus } from '../../../../shared/models/student.model';
 import { ExamResultService } from '../../../../shared/services/exam-result.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { RoleService } from '../../../../shared/services/role.service';
+import { environment } from '../../../../../environments/environment';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -62,6 +63,11 @@ export class StudentDetailComponent implements OnInit {
     } else {
       this.router.navigate(['/students', 'management', 'list']);
     }
+  }
+
+  getImageUrl(path: string | undefined): string | null {
+    if (!path) return null;
+    return environment.apiUrl.replace('/api', '') + path;
   }
 
   /**
@@ -160,6 +166,56 @@ export class StudentDetailComponent implements OnInit {
 
   getMonthName(month: number): string {
     return MONTH_NAMES[month - 1] ?? '';
+  }
+
+  onMarkDropped(): void {
+    const student = this.student();
+    if (!student?._id) return;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Mark as Dropped',
+        message: `Mark ${student.firstName} ${student.lastName} as dropped? They will be excluded from attendance and marks entry.`,
+        confirmText: 'Mark Dropped',
+        cancelText: 'Cancel',
+        confirmColor: 'warn',
+      },
+    });
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed && student._id) {
+        this.studentService.updateStudentStatus(student._id, 'dropped').subscribe({
+          next: (res) => {
+            this.student.set(res.data!);
+            this.notificationService.success('Student marked as dropped');
+          },
+          error: () => this.notificationService.error('Failed to update status'),
+        });
+      }
+    });
+  }
+
+  onReinstate(): void {
+    const student = this.student();
+    if (!student?._id) return;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Reinstate Student',
+        message: `Reinstate ${student.firstName} ${student.lastName} as an active student?`,
+        confirmText: 'Reinstate',
+        cancelText: 'Cancel',
+        confirmColor: 'primary',
+      },
+    });
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed && student._id) {
+        this.studentService.updateStudentStatus(student._id, 'active').subscribe({
+          next: (res) => {
+            this.student.set(res.data!);
+            this.notificationService.success('Student reinstated successfully');
+          },
+          error: () => this.notificationService.error('Failed to update status'),
+        });
+      }
+    });
   }
 
   /**

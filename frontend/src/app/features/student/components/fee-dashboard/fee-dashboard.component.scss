@@ -8,15 +8,15 @@
 .total-card .amount { font-size: 24px; font-weight: 700; }
 .total-card .label { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
 .total-card.total mat-icon, .total-card.total .amount { color: #1976d2; }
-.total-card.collected mat-icon, .total-card.collected .amount { color: #388e3c; }
-.total-card.pending mat-icon, .total-card.pending .amount { color: #d32f2f; }
+.total-card.collected mat-icon, .total-card.collected .amount { color: var(--status-success-color); }
+.total-card.pending mat-icon, .total-card.pending .amount { color: var(--status-error-color); }
 .section-heading-row { margin-bottom: 16px; }
 .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-.fee-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid #f0f0f0; }
-.fee-row.green strong { color: #388e3c; }
-.fee-row.red strong { color: #d32f2f; }
-.progress-bar { height: 6px; background: #e0e0e0; border-radius: 3px; margin-top: 12px; overflow: hidden; }
-.progress-fill { height: 100%; background: #388e3c; border-radius: 3px; transition: width 0.4s ease; }
+.fee-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; border-bottom: 1px solid var(--border-subtle); }
+.fee-row.green strong { color: var(--status-success-color); }
+.fee-row.red strong { color: var(--status-error-color); }
+.progress-bar { height: 6px; background: var(--border-color); border-radius: 3px; margin-top: 12px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--status-success-color); border-radius: 3px; transition: width 0.4s ease; }
 
 @media (max-width: 768px) {
 	.fee-dashboard-container { padding: 16px; }

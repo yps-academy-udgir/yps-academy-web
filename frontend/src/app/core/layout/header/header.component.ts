@@ -4,7 +4,7 @@
  * Uses Angular Material toolbar
  * Follows Angular 20 patterns with signals
  */
-import { Component, output, inject, computed } from '@angular/core';
+import { Component, output, inject, computed, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,6 +15,8 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from '../../../features/auth/services/auth.service';
+import { AppNotificationService } from '../../../shared/services/app-notification.service';
+import { NotificationPanelComponent } from '../../../shared/components/notification-panel/notification-panel.component';
 
 @Component({
   selector: 'app-header',
@@ -27,6 +29,7 @@ import { AuthService } from '../../../features/auth/services/auth.service';
     MatMenuModule,
     MatBadgeModule,
     MatDividerModule,
+    NotificationPanelComponent,
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
@@ -39,6 +42,7 @@ export class HeaderComponent {
   private router = inject(Router);
   private themeService = inject(ThemeService);
   private authService = inject(AuthService);
+  protected notificationService = inject(AppNotificationService);
 
   protected currentUser = this.authService.currentUser;
 
@@ -84,7 +88,7 @@ export class HeaderComponent {
    * Open notifications (placeholder)
    */
   openNotifications(): void {
-    // TODO: Implement notifications
+    // Handled by matMenuTrigger in template
   }
 
   logout(): void {

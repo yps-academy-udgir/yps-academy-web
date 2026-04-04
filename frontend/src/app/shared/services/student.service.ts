@@ -109,11 +109,11 @@ export class StudentService {
    * @param student - Student data
    * @returns Observable of created student
    */
-  createStudent(student: Partial<Student>): Observable<ApiResponse<{ student: Student; userId: string; defaultPassword: string }>> {
+  createStudent(body: FormData): Observable<ApiResponse<{ student: Student; userId: string; defaultPassword: string }>> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.post<ApiResponse<{ student: Student; userId: string; defaultPassword: string }>>(this.API_URL, student).pipe(
+    return this.http.post<ApiResponse<{ student: Student; userId: string; defaultPassword: string }>>(this.API_URL, body).pipe(
       tap((response) => {
         if (response.data?.student) {
           this.students.update(students => [response.data!.student, ...students]);
@@ -131,11 +131,11 @@ export class StudentService {
    * @param student - Updated student data
    * @returns Observable of updated student
    */
-  updateStudent(id: string, student: Partial<Student>): Observable<ApiResponse<Student>> {
+  updateStudent(id: string, body: FormData): Observable<ApiResponse<Student>> {
     this.loading.set(true);
     this.error.set(null);
 
-    return this.http.put<ApiResponse<Student>>(`${this.API_URL}/${id}`, student).pipe(
+    return this.http.put<ApiResponse<Student>>(`${this.API_URL}/${id}`, body).pipe(
       tap((response) => {
         if (response.data) {
           // Update student in the list
@@ -147,6 +147,22 @@ export class StudentService {
       }),
       catchError((error) => this.handleError(error)),
       finalize(() => this.loading.set(false))
+    );
+  }
+
+  updateStudentStatus(id: string, status: 'active' | 'alumni' | 'dropped'): Observable<ApiResponse<Student>> {
+    return this.http.patch<ApiResponse<Student>>(`${this.API_URL}/${id}/status`, { status }).pipe(
+      tap((response) => {
+        if (response.data) {
+          this.students.update(students =>
+            students.map(s => s._id === id ? response.data! : s)
+          );
+          if (this.selectedStudent()?._id === id) {
+            this.selectedStudent.set(response.data);
+          }
+        }
+      }),
+      catchError((error) => this.handleError(error))
     );
   }
 

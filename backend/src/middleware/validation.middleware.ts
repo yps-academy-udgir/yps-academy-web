@@ -92,8 +92,8 @@ export const validateStudent = (req: Request, res: Response, next: NextFunction)
   // Validate academic details if provided
   if (academicDetails) {
     if (academicDetails.yearOfAdmission !== undefined) {
-      if (!Number.isInteger(academicDetails.yearOfAdmission) || !isValidYear(academicDetails.yearOfAdmission)) {
-        errors.push('Year of admission must be a valid year between 1900 and ' + (new Date().getFullYear() + 10));
+      if (typeof academicDetails.yearOfAdmission !== 'string' || !/^\d{4}-\d{4}$/.test(academicDetails.yearOfAdmission)) {
+        errors.push('Year of admission must be in format YYYY-YYYY (example: 2026-2027)');
       }
     }
     if (academicDetails.class !== undefined) {

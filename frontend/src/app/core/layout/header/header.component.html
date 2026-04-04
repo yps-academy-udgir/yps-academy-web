@@ -55,12 +55,19 @@
       mat-icon-button
       aria-label="Notifications"
       matTooltip="Notifications"
-      (click)="openNotifications()"
+      [matMenuTriggerFor]="notifMenu"
       class="desktop-only-action"
     >
-      <mat-icon matBadge="3" matBadgeColor="warn" matBadgeSize="small">
-        notifications
-      </mat-icon>
+      @if (notificationService.unreadCount() > 0) {
+        <mat-icon
+          [matBadge]="notificationService.unreadCount() > 99 ? '99+' : notificationService.unreadCount()"
+          matBadgeColor="warn"
+          matBadgeSize="small">
+          notifications
+        </mat-icon>
+      } @else {
+        <mat-icon>notifications_none</mat-icon>
+      }
     </button>
 
     <!-- User Menu -->
@@ -86,7 +93,11 @@
     <span>{{ themeTooltip() }}</span>
   </button>
   <button mat-menu-item class="mobile-only-menu-item" (click)="openNotifications()">
-    <mat-icon matBadge="3" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+    @if (notificationService.unreadCount() > 0) {
+      <mat-icon [matBadge]="notificationService.unreadCount()" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+    } @else {
+      <mat-icon>notifications_none</mat-icon>
+    }
     <span>Notifications</span>
   </button>
   <mat-divider class="mobile-only-menu-item"></mat-divider>
@@ -111,4 +122,11 @@
     <mat-icon>exit_to_app</mat-icon>
     <span>Logout</span>
   </button>
+</mat-menu>
+
+<!-- Notifications menu -->
+<mat-menu #notifMenu="matMenu" class="notif-menu-panel" xPosition="before">
+  <div (click)="$event.stopPropagation()">
+    <app-notification-panel></app-notification-panel>
+  </div>
 </mat-menu>

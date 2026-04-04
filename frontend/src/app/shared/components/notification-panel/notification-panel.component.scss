@@ -1,0 +1,128 @@
+@use '../../../../styles/variables' as *;
+
+.notif-panel {
+  width: 360px;
+  max-height: 520px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm $spacing-md;
+
+  .notif-title {
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
+    color: var(--mat-sys-on-surface);
+  }
+
+  .notif-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.notif-loading,
+.notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-xxl $spacing-lg;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: $font-size-sm;
+
+  mat-icon { font-size: 40px; width: 40px; height: 40px; opacity: 0.4; }
+}
+
+.notif-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+
+  &:hover { background: var(--mat-sys-surface-variant); }
+
+  // Unread: accent left border + tinted background
+  &.unread {
+    background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+    border-left: 3px solid var(--mat-sys-primary);
+    padding-left: calc(#{$spacing-md} - 3px); // compensate for border
+  }
+
+  // Read: de-emphasise the whole row
+  &:not(.unread) {
+    opacity: 0.7;
+    border-left: 3px solid transparent;
+    padding-left: calc(#{$spacing-md} - 3px);
+  }
+}
+
+.notif-icon-wrap {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+  &.type-info           { background: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent);   color: var(--mat-sys-primary); }
+  &.type-warning        { background: color-mix(in srgb, var(--mat-sys-error) 15%, transparent);     color: var(--mat-sys-error); }
+  &.type-announcement   { background: color-mix(in srgb, var(--mat-sys-tertiary) 15%, transparent);  color: var(--mat-sys-tertiary); }
+  &.type-fee_due        { background: color-mix(in srgb, var(--mat-sys-secondary) 15%, transparent); color: var(--mat-sys-secondary); }
+}
+
+.notif-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-item-title {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: var(--mat-sys-on-surface);
+  margin-bottom: 2px;
+
+  .unread & { font-weight: $font-weight-bold; }
+}
+
+.notif-item-msg {
+  font-size: $font-size-xs;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notif-item-time {
+  font-size: $font-size-xs;
+  color: var(--mat-sys-outline);
+  margin-top: 4px;
+}
+
+.unread-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mat-sys-primary);
+  margin-top: 6px;
+}

@@ -51,10 +51,10 @@ export class FacultyService {
     );
   }
 
-  createFaculty(faculty: Partial<Faculty>): Observable<ApiResponse<{ faculty: Faculty; userId: string; defaultPassword: string }>> {
+  createFaculty(body: FormData): Observable<ApiResponse<{ faculty: Faculty; userId: string; defaultPassword: string }>> {
     this.loading.set(true);
     this.error.set(null);
-    return this.http.post<ApiResponse<{ faculty: Faculty; userId: string; defaultPassword: string }>>(this.API_URL, faculty).pipe(
+    return this.http.post<ApiResponse<{ faculty: Faculty; userId: string; defaultPassword: string }>>(this.API_URL, body).pipe(
       tap((res) => {
         if (res.data?.faculty) {
           this.faculty.update((list) => [res.data!.faculty, ...list]);
@@ -66,10 +66,10 @@ export class FacultyService {
     );
   }
 
-  updateFaculty(id: string, data: Partial<Faculty>): Observable<ApiResponse<Faculty>> {
+  updateFaculty(id: string, body: FormData): Observable<ApiResponse<Faculty>> {
     this.loading.set(true);
     this.error.set(null);
-    return this.http.put<ApiResponse<Faculty>>(`${this.API_URL}/${id}`, data).pipe(
+    return this.http.put<ApiResponse<Faculty>>(`${this.API_URL}/${id}`, body).pipe(
       tap((res) => {
         if (res.data) {
           this.faculty.update((list) => list.map((f) => (f._id === id ? res.data! : f)));

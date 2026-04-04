@@ -1,9 +1,12 @@
 <!-- Main Application Layout -->
 <div class="app-container">
   @if (canInstallApp()) {
-    <button type="button" class="app-install-cta" (click)="installApp()" aria-label="Install YPS Academy app">
-      Install App
-    </button>
+    <div class="app-install-cta">
+      <button type="button" class="install-btn" (click)="installApp()" aria-label="Install YPS Academy app">
+        Install App
+      </button>
+      <button type="button" class="install-close" (click)="dismissInstall()" aria-label="Dismiss install prompt">&#x2715;</button>
+    </div>
   }
 
   @if (isUpdateAvailable()) {

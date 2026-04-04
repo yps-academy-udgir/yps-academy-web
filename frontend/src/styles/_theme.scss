@@ -223,6 +223,16 @@ html, body {
   --error-background: #{vars.$warn-50};
   --error-color: #{vars.$warn-700};
   --error-text: #{vars.$warn-900};
+
+  // Semantic status colors (for status badges, fee amounts, etc.)
+  --status-success-color: #{vars.$success-800};
+  --status-success-bg: #{vars.$success-50};
+  --status-warning-color: #f57f17;
+  --status-warning-bg: #fff9c4;
+  --status-error-color: #{vars.$warn-800};
+  --status-error-bg: #{vars.$warn-50};
+  --status-info-color: #1565c0;
+  --status-info-bg: rgba(33, 150, 243, 0.15);
 }
 
 // Dark theme class
@@ -285,4 +295,14 @@ html, body {
   --error-background: #5d1f1f;
   --error-color: #{vars.$warn-400};
   --error-text: #{vars.$warn-200};
+
+  // Semantic status colors (for status badges, fee amounts, etc.)
+  --status-success-color: #{vars.$success-300};
+  --status-success-bg: rgba(46, 125, 50, 0.22);
+  --status-warning-color: #ffd54f;
+  --status-warning-bg: rgba(178, 106, 0, 0.2);
+  --status-error-color: #{vars.$warn-200};
+  --status-error-bg: rgba(176, 0, 32, 0.2);
+  --status-info-color: #90caf9;
+  --status-info-bg: rgba(33, 150, 243, 0.2);
 }

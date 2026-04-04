@@ -1,93 +1,42 @@
 /**
  * Fee Calculator Utility
- * Handles fee calculations based on class, subjects, and self-study mode
+ * Dynamic: fees come from SubjectConfig (per-subject), not hardcoded class structure.
  */
 
-import { Class } from '../models/student.model';
-
-/**
- * Fee structure per class (per subject)
- * Hardcoded as per requirements
- */
-export const FEE_STRUCTURE: Record<Class, number> = {
-  [Class.FIFTH]: 5000,
-  [Class.SIXTH]: 5500,
-  [Class.SEVENTH]: 6000,
-  [Class.EIGHTH]: 6500,
-  [Class.NINTH]: 7000,
-  [Class.TENTH]: 7500,
-};
-
-/**
- * Self-study mode additional fee
- */
-export const SELF_STUDY_FEE = 8000;
-
-/**
- * Calculate fee breakdown
- */
 export interface FeeCalculationResult {
   baseFeePerSubject: number;
   numberOfSubjects: number;
   subjectsFee: number;
   selfStudyFee: number;
+  discount: number;
   totalFees: number;
 }
 
-/**
- * Calculate total fees based on class, subjects, and self-study mode
- */
 export function calculateFees(
-  studentClass: Class | string | undefined,
   subjects: string[] | undefined,
-  selfStudyMode: boolean = false
+  selfStudyMode: boolean = false,
+  subjectFeeMap: Record<string, number> = {},
+  selfStudyFee: number = 0,
+  discount: number = 0
 ): FeeCalculationResult {
-  // Default values
-  const result: FeeCalculationResult = {
-    baseFeePerSubject: 0,
-    numberOfSubjects: 0,
-    subjectsFee: 0,
-    selfStudyFee: 0,
-    totalFees: 0,
-  };
+  const zero: FeeCalculationResult = { baseFeePerSubject: 0, numberOfSubjects: 0, subjectsFee: 0, selfStudyFee: 0, discount: 0, totalFees: 0 };
 
-  // If no class or no subjects, return 0
-  if (!studentClass || !subjects || subjects.length === 0) {
-    return result;
-  }
+  if (!subjects?.length) return zero;
 
-  // Get base fee per subject for the class
-  const baseFeePerSubject = FEE_STRUCTURE[studentClass as Class] || 0;
+  const subjectsFee = subjects.reduce((sum, name) => sum + (subjectFeeMap[name] ?? 0), 0);
   const numberOfSubjects = subjects.length;
+  const baseFeePerSubject = numberOfSubjects > 0 ? Math.round(subjectsFee / numberOfSubjects) : 0;
+  const selfStudyFeeAmount = selfStudyMode ? selfStudyFee : 0;
+  const discountAmount = Math.max(0, discount);
+  const totalFees = Math.max(0, subjectsFee + selfStudyFeeAmount - discountAmount);
 
-  // Calculate subjects fee
-  const subjectsFee = baseFeePerSubject * numberOfSubjects;
-
-  // Calculate self-study fee
-  const selfStudyFee = selfStudyMode ? SELF_STUDY_FEE : 0;
-
-  // Calculate total
-  const totalFees = subjectsFee + selfStudyFee;
-
-  return {
-    baseFeePerSubject,
-    numberOfSubjects,
-    subjectsFee,
-    selfStudyFee,
-    totalFees,
-  };
+  return { baseFeePerSubject, numberOfSubjects, subjectsFee, selfStudyFee: selfStudyFeeAmount, discount: discountAmount, totalFees };
 }
 
-/**
- * Calculate pending fees
- */
 export function calculatePendingFees(totalFees: number, paidAmount: number): number {
   return Math.max(0, totalFees - paidAmount);
 }
 
-/**
- * Calculate total paid amount from payment history
- */
 export function calculateTotalPaid(payments: Array<{ amount: number }>): number {
   return payments.reduce((sum, payment) => sum + payment.amount, 0);
 }

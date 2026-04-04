@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   getAllStudents, getStudentById, createStudent, updateStudent,
   deleteStudent, getStudentStats, addPayment, getFeesSummary, getFeeDefaulters, getMe,
+  updateStudentStatus,
 } from './student.controller';
 import { validateObjectId } from '../../middleware/validation.middleware';
 import { verifyToken, requireRoles } from '../../middleware/auth.middleware';
@@ -28,6 +29,7 @@ router.put('/:id', validateObjectId, requireRoles('admin', 'faculty'), upload.si
 // Admin only
 router.delete('/:id', validateObjectId, requireRoles('admin'), deleteStudent);
 router.post('/:id/payments', validateObjectId, requireRoles('admin'), addPayment);
+router.patch('/:id/status', validateObjectId, requireRoles('admin'), updateStudentStatus);
 
 export default router;
 

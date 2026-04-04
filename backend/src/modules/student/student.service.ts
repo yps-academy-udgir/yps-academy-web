@@ -1,12 +1,13 @@
 import { studentRepository, StudentFilter, PaginationOptions } from './student.repository';
 import { classroomRepository } from '../classroom/classroom.repository';
 import { classroomService } from '../classroom/classroom.service';
+import { subjectConfigService } from '../subject-config/subject-config.service';
 import { calculateFeeDetails } from '../../utils/fee-calculator.util';
 import { createAuthUser, deleteAuthUser } from '../../utils/auth-user.util';
 import { generateStudentRollNumber } from '../../utils/generate-roll-number.util';
 import { generateUserId } from '../../utils/generate-user-id.util';
 import type { CreateStudentDto, UpdateStudentDto, AddPaymentDto } from './dto/student.dto';
-import type { IAcademicDetails, IFeeDetails } from '../../models/student.model';
+import type { IAcademicDetails, IFeeDetails, StudentStatus } from '../../models/student.model';
 
 function serviceError(message: string, statusCode: number): Error {
   return Object.assign(new Error(message), { statusCode });
@@ -17,6 +18,12 @@ export const studentService = {
     return studentRepository.findAll(filter, pagination);
   },
 
+  async updateStatus(id: string, status: StudentStatus) {
+    const student = await studentRepository.findById(id);
+    if (!student) throw serviceError('Student not found', 404);
+    return studentRepository.updateStatus(id, status);
+  },
+
   async getById(id: string) {
     return studentRepository.findById(id);
   },
@@ -25,9 +32,16 @@ export const studentService = {
     const existing = await studentRepository.findByEmail(dto.email);
     if (existing) throw serviceError('Student with this email already exists', 400);
 
+    const subjectFeeMap = await subjectConfigService.getActiveFeeMap(dto.academicDetails?.class ?? '');
+    const { selfStudyFee } = await subjectConfigService.get();
+    const discount = (dto.feeDetails as any)?.discount ?? 0;
+
     const feeDetails = calculateFeeDetails(
       dto.academicDetails as IAcademicDetails | undefined,
-      dto.feeDetails as Partial<IFeeDetails> | undefined
+      dto.feeDetails as Partial<IFeeDetails> | undefined,
+      subjectFeeMap,
+      selfStudyFee,
+      discount
     );
 
     const imagePath = imageFile ? `/uploads/${imageFile.filename}` : undefined;
@@ -47,22 +61,41 @@ export const studentService = {
     let assignedClassroomId: string | null = null;
 
     if (classValue) {
-      const classroom = await classroomRepository.findFirstAvailableByClass(classValue);
-      if (!classroom?._id) {
-        await studentRepository.delete((student._id as unknown as string).toString());
-        throw serviceError(
-          `No classroom with available seats found for class ${classValue}. Please create or free a classroom first.`,
-          400
-        );
+      const studentId = (student._id as unknown as string).toString();
+
+      if (dto.classroomId) {
+        // Client specified an explicit classroom — validate it
+        const classroom = await classroomRepository.findByIdDoc(dto.classroomId);
+        if (!classroom) {
+          await studentRepository.delete(studentId);
+          throw serviceError('Specified classroom not found', 404);
+        }
+        if (classroom.class !== classValue) {
+          await studentRepository.delete(studentId);
+          throw serviceError(`Specified classroom is not for class ${classValue}`, 400);
+        }
+        if (classroom.enrolledStudents.length >= classroom.capacity) {
+          await studentRepository.delete(studentId);
+          throw serviceError('Specified classroom has no available seats', 400);
+        }
+        assignedClassroomId = dto.classroomId;
+      } else {
+        // Auto-assign to first available classroom for this class
+        const classroom = await classroomRepository.findFirstAvailableByClass(classValue);
+        if (!classroom?._id) {
+          await studentRepository.delete(studentId);
+          throw serviceError(
+            `No classroom with available seats found for class ${classValue}. Please create or free a classroom first.`,
+            400
+          );
+        }
+        assignedClassroomId = (classroom._id as unknown as string).toString();
       }
 
       try {
-        assignedClassroomId = (classroom._id as unknown as string).toString();
-        await classroomService.enrollStudent(assignedClassroomId, {
-          studentId: (student._id as unknown as string).toString(),
-        });
+        await classroomService.enrollStudent(assignedClassroomId, { studentId });
       } catch (error) {
-        await studentRepository.delete((student._id as unknown as string).toString());
+        await studentRepository.delete(studentId);
         throw error;
       }
     }
@@ -88,10 +121,18 @@ export const studentService = {
       if (emailInUse) throw serviceError('Email already in use by another student', 400);
     }
 
+    const subjectFeeMap = await subjectConfigService.getActiveFeeMap(
+      (dto.academicDetails?.class ?? (existing.academicDetails as IAcademicDetails | undefined)?.class ?? '') as string
+    );
+    const { selfStudyFee } = await subjectConfigService.get();
+    const discount = (dto.feeDetails as any)?.discount ?? (existing.feeDetails as any)?.feeBreakdown?.discount ?? 0;
     const updatedAcademicDetails = (dto.academicDetails ?? existing.academicDetails) as IAcademicDetails | undefined;
     const feeDetails = calculateFeeDetails(
       updatedAcademicDetails,
-      (dto.feeDetails ?? existing.feeDetails) as Partial<IFeeDetails> | undefined
+      (dto.feeDetails ?? existing.feeDetails) as Partial<IFeeDetails> | undefined,
+      subjectFeeMap,
+      selfStudyFee,
+      discount
     );
 
     const imagePath = imageFile ? `/uploads/${imageFile.filename}` : existing.image;

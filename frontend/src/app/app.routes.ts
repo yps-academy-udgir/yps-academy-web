@@ -5,6 +5,8 @@ import { STUDENT_ROUTES } from './features/student/student.routes';
 import { FACULTY_ROUTES } from './features/faculty/faculty.routes';
 import { CLASSROOM_ROUTES } from './features/classroom/classroom.routes';
 import { RESULTS_ROUTES } from './features/results/results.routes';
+import { SETTINGS_ROUTES } from './features/settings/settings.routes';
+import { NOTIFICATION_ROUTES } from './features/notifications/notifications.routes';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { authGuard } from './core/guards/auth.guard';
 import { firstLoginGuard } from './core/guards/first-login.guard';
@@ -93,6 +95,14 @@ export const routes: Routes = [
       {
         path: 'results',
         children: RESULTS_ROUTES,
+      },
+      {
+        path: 'settings',
+        children: SETTINGS_ROUTES,
+      },
+      {
+        path: 'notifications',
+        children: NOTIFICATION_ROUTES,
       },
     ],
   },

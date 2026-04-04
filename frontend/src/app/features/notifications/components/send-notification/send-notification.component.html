@@ -1,0 +1,81 @@
+<section class="send-notif-page">
+  <div class="page-header">
+    <div class="header-title">
+      <mat-icon>campaign</mat-icon>
+      <span>Send Notification</span>
+    </div>
+    <p class="header-subtitle">Broadcast a message to selected roles. Recipients see it in their notification bell and (if subscribed) as a browser push.</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="send()" class="notif-form">
+
+    <!-- Type -->
+    <div class="form-section">
+      <label class="section-label">Notification Type</label>
+      <mat-radio-group formControlName="type" class="type-radio-group">
+        @for (opt of typeOptions; track opt.value) {
+          <mat-radio-button [value]="opt.value" class="type-radio">
+            <span class="type-radio-label">
+              <mat-icon>{{ opt.icon }}</mat-icon>
+              {{ opt.label }}
+            </span>
+          </mat-radio-button>
+        }
+      </mat-radio-group>
+    </div>
+
+    <!-- Recipients -->
+    <div class="form-section">
+      <label class="section-label">Send To</label>
+      <div class="role-checks">
+        @for (role of allRoles; track role) {
+          <mat-checkbox
+            [checked]="isRoleSelected(role)"
+            (change)="toggleRole(role)">
+            <span class="role-check-label">
+              <mat-icon>{{ role === 'student' ? 'school' : role === 'faculty' ? 'person_pin' : 'admin_panel_settings' }}</mat-icon>
+              {{ role | titlecase }}
+            </span>
+          </mat-checkbox>
+        }
+      </div>
+      @if (form.value.targetRoles?.length === 0) {
+        <mat-hint class="role-error">Select at least one recipient role</mat-hint>
+      }
+    </div>
+
+    <!-- Title -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="e.g. Exam Schedule Update" autocomplete="off" />
+      <mat-hint align="end">{{ form.value.title?.length ?? 0 }}/120</mat-hint>
+      @if (form.get('title')?.hasError('required') && form.get('title')?.touched) {
+        <mat-error>Title is required</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Message -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Message</mat-label>
+      <textarea matInput formControlName="message" rows="4"
+        placeholder="Write your notification message here..."></textarea>
+      <mat-hint align="end">{{ form.value.message?.length ?? 0 }}/1000</mat-hint>
+      @if (form.get('message')?.hasError('required') && form.get('message')?.touched) {
+        <mat-error>Message is required</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Action -->
+    <div class="form-actions">
+      <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+        } @else {
+          <mat-icon>send</mat-icon>
+        }
+        Send Notification
+      </button>
+    </div>
+
+  </form>
+</section>

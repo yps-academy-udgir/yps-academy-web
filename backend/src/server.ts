@@ -50,8 +50,10 @@ const startServer = async (): Promise<void> => {
     // Setup Socket.io event handlers
     initializeSocketHandlers(io);
 
-    // Make io available to the app for future use
+    // Make io available to the app; wire to notification controller
     (app as any).io = io;
+    const { setIo } = await import('./modules/notification/notification.controller');
+    setIo(io);
 
     // Start listening
     httpServer.listen(PORT, () => {

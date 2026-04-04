@@ -14,9 +14,16 @@
 }
 
 .report-wrapper {
+  // Force light theme — reports must always print/display on white
+  --surface-card: #ffffff;
+  --surface-page: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  color-scheme: light;
+
   max-width: 920px;
   margin: 0 auto;
-  background: var(--surface-card, #fff);
+  background: #ffffff;
   border: 1px solid v.$gray-300;
   border-radius: v.$border-radius-lg;
   overflow: hidden;

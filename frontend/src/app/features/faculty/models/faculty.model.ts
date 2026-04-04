@@ -43,6 +43,7 @@ export interface Faculty {
   pastExperience: PastExperience[];
   annualSalary: number;
   salaryPayments: SalaryPayment[];
+  image?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

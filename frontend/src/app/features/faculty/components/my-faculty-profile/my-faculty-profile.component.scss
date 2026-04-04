@@ -56,12 +56,19 @@
   background: rgba(255, 255, 255, 0.25);
   flex-shrink: 0;
   border: 3px solid rgba(255, 255, 255, 0.5);
+  overflow: hidden;
 
   mat-icon {
     font-size: 80px;
     width: 80px;
     height: 80px;
     color: #fff;
+  }
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   @media (max-width: 768px) {
@@ -216,13 +223,13 @@
   color: var(--primary-color, #1976d2);
 }
 
-.paid-fee-row .paid-amount { font-weight: 600; color: #2e7d32; }
+.paid-fee-row .paid-amount { font-weight: 600; color: var(--status-success-color); }
 
 .pending-fee-row .pending-amount {
   font-weight: 600;
   color: var(--text-secondary, rgba(0, 0, 0, 0.6));
 
-  &.has-pending { color: #c62828; }
+  &.has-pending { color: var(--status-error-color); }
 }
 
 .section-divider { margin: 16px 0; }
@@ -233,7 +240,7 @@
 
 .payment-record { display: flex; gap: 12px; align-items: flex-start; }
 
-.payment-icon mat-icon { color: #2e7d32; font-size: 22px; width: 22px; height: 22px; margin-top: 2px; }
+.payment-icon mat-icon { color: var(--status-success-color); font-size: 22px; width: 22px; height: 22px; margin-top: 2px; }
 
 .payment-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
 
@@ -245,7 +252,7 @@
   flex-wrap: wrap;
 }
 
-.payment-amount { font-weight: 600; color: #2e7d32; font-size: 1rem; }
+.payment-amount { font-weight: 600; color: var(--status-success-color); font-size: 1rem; }
 
 .payment-date { font-size: 0.85rem; color: var(--text-secondary, rgba(0, 0, 0, 0.6)); }
 

@@ -82,17 +82,44 @@ button {
   right: 16px;
   bottom: 16px;
   z-index: 1250;
-  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 0;
   border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-on-brand);
   background: var(--color-brand-gradient);
   box-shadow: 0 10px 24px var(--shadow-color);
-}
 
-.app-install-cta:hover {
-  filter: brightness(1.05);
+  .install-btn {
+    padding: 10px 12px 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover { filter: brightness(1.08); }
+  }
+
+  .install-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
+    border-radius: 50%;
+    font-size: 13px;
+    line-height: 1;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.25);
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+
+    &:hover { background: rgba(0, 0, 0, 0.45); }
+  }
 }
 
 .app-update-banner {

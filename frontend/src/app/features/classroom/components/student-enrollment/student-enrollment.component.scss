@@ -1,8 +1,8 @@
 .page-container { padding: 24px; }
-.state { display: flex; justify-content: center; padding: 24px; color: #757575; }
+.state { display: flex; justify-content: center; padding: 24px; color: var(--text-secondary); }
 .header-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
 .header-row h3, .header-row p { margin: 0; }
 .student-list { display: flex; flex-direction: column; gap: 10px; }
-.student-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; }
-.meta { margin-left: 10px; color: #6b7280; font-size: 12px; }
+.student-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; }
+.meta { margin-left: 10px; color: var(--text-secondary); font-size: 12px; }
 .actions { display: flex; justify-content: flex-end; margin-top: 16px; }

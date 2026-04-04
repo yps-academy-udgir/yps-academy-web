@@ -1,0 +1,115 @@
+﻿<section class="subject-config-page">
+  <div class="page-header">
+    <div class="header-title">
+      <mat-icon>menu_book</mat-icon>
+      <span>Subject &amp; Fee Configuration</span>
+    </div>
+    <p class="header-subtitle">Configure subjects and fees per class. Changes apply to new student enrollments immediately.</p>
+  </div>
+
+  @if (subjectConfigService.loading()) {
+    <div class="loading-wrap">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()" class="config-form">
+
+      <!-- Per-class accordion -->
+      <mat-accordion formArrayName="classSubjects" class="class-accordion" multi>
+        @for (classGroup of classSubjectsArray.controls; track $index; let ci = $index) {
+          <mat-expansion-panel [formGroupName]="ci" class="class-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title class="class-panel-title">
+                <mat-icon>class</mat-icon>
+                Class {{ classGroup.get("className")?.value }}
+              </mat-panel-title>
+              <mat-panel-description>
+                {{ subjectsArrayForClass(ci).length }} subject(s)
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <!-- Subjects table for this class -->
+            <div class="subjects-header subjects-grid">
+              <span>Subject Name</span>
+              <span>Fee (&#8377;)</span>
+              <span>Active</span>
+              <span></span>
+            </div>
+
+            <div formArrayName="subjects" class="subjects-list">
+              @for (row of subjectsArrayForClass(ci).controls; track $index; let si = $index) {
+                <div [formGroupName]="si" class="subjects-grid subject-row">
+                  <mat-form-field appearance="outline" class="field-name">
+                    <mat-label>Subject Name</mat-label>
+                    <input matInput formControlName="name" placeholder="e.g. Mathematics" />
+                    @if (row.get("name")?.hasError("required") && row.get("name")?.touched) {
+                      <mat-error>Name is required</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="field-fee">
+                    <mat-label>Fee (&#8377;)</mat-label>
+                    <input matInput type="number" formControlName="fee" placeholder="0" min="0" />
+                    @if (row.get("fee")?.hasError("min") && row.get("fee")?.touched) {
+                      <mat-error>Must be &#8805; 0</mat-error>
+                    }
+                  </mat-form-field>
+
+                  <mat-slide-toggle formControlName="isActive" color="primary" class="active-toggle"></mat-slide-toggle>
+
+                  <button mat-icon-button type="button" color="warn"
+                    (click)="removeSubject(ci, si)"
+                    matTooltip="Remove subject">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+              }
+
+              @if (subjectsArrayForClass(ci).length === 0) {
+                <p class="no-subjects-hint">No subjects configured for this class.</p>
+              }
+            </div>
+
+            <button mat-stroked-button type="button" color="primary"
+              (click)="addSubject(ci)" class="add-btn">
+              <mat-icon>add</mat-icon> Add Subject
+            </button>
+
+          </mat-expansion-panel>
+        }
+      </mat-accordion>
+
+      <!-- Self-study fee -->
+      <mat-card class="config-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>self_improvement</mat-icon>
+          <mat-card-title>Self-Study Mode Fee</mat-card-title>
+          <mat-card-subtitle>Additional fee charged when a student is in self-study mode (applies to all classes).</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="self-study-field">
+            <mat-label>Self-Study Fee (&#8377;)</mat-label>
+            <input matInput type="number" formControlName="selfStudyFee" placeholder="0" min="0" />
+            <mat-icon matPrefix>currency_rupee</mat-icon>
+            @if (form.get("selfStudyFee")?.hasError("min")) {
+              <mat-error>Must be &#8805; 0</mat-error>
+            }
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="saving() || form.invalid">
+          @if (saving()) {
+            <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+          } @else {
+            <mat-icon>save</mat-icon>
+          }
+          Save Configuration
+        </button>
+      </div>
+
+    </form>
+  }
+</section>
