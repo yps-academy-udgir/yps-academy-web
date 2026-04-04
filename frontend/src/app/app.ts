@@ -33,11 +33,17 @@ export class App {
     this.pwaUpdateService.dismissUpdateBanner();
   }
 
+  protected installDismissed = signal(false);
+
   protected canInstallApp(): boolean {
-    return this.pwaInstallService.canInstall() && !this.pwaInstallService.isStandalone();
+    return this.pwaInstallService.canInstall() && !this.pwaInstallService.isStandalone() && !this.installDismissed();
   }
 
   protected installApp(): void {
     this.pwaInstallService.promptInstall();
+  }
+
+  protected dismissInstall(): void {
+    this.installDismissed.set(true);
   }
 }
