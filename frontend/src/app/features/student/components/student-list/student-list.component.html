@@ -16,6 +16,7 @@
     <app-filter-bar
       [classOptions]="classOptions"
       [yearOptions]="yearOptions()"
+      [statusOptions]="statusOptions"
       (filterChange)="onFilterChange($event)"
     ></app-filter-bar>
 
@@ -65,6 +66,16 @@
               </td>
             </ng-container>
 
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let student">
+                <span class="status-badge status-{{ student.status ?? 'active' }}">
+                  {{ (student.status ?? 'active') | titlecase }}
+                </span>
+              </td>
+            </ng-container>
+
             <!-- Email Column -->
             <ng-container matColumnDef="email">
               <th mat-header-cell *matHeaderCellDef>Email</th>
@@ -99,11 +110,36 @@
                     <mat-icon>visibility</mat-icon>
                     <span>View Details</span>
                   </button>
+                  <button mat-menu-item (click)="enterMarks(student)">
+                    <mat-icon>edit_note</mat-icon>
+                    <span>Enter Marks</span>
+                  </button>
+                  <button mat-menu-item (click)="viewFeeReceipt(student)">
+                    <mat-icon>receipt_long</mat-icon>
+                    <span>View Fee Receipt</span>
+                  </button>
                   <button mat-menu-item (click)="editStudent(student)">
                     <mat-icon>edit</mat-icon>
                     <span>Edit</span>
                   </button>
                   @if (roleService.isAdmin()) {
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="resetPassword(student)">
+                      <mat-icon>lock_reset</mat-icon>
+                      <span>Reset Password</span>
+                    </button>
+                    @if ((student.status ?? 'active') === 'active') {
+                      <button mat-menu-item (click)="markDropped(student)">
+                        <mat-icon>person_remove</mat-icon>
+                        <span>Mark as Dropped</span>
+                      </button>
+                    }
+                    @if ((student.status ?? 'active') === 'dropped') {
+                      <button mat-menu-item (click)="reinstateStudent(student)">
+                        <mat-icon>person_add</mat-icon>
+                        <span>Reinstate Student</span>
+                      </button>
+                    }
                     <button mat-menu-item (click)="deleteStudent(student)">
                       <mat-icon>delete</mat-icon>
                       <span>Delete Student</span>

@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import { studentService } from './student.service';
 import { successResponse, errorResponse, paginatedResponse } from '../../utils/response.util';
 import { createStudentSchema, updateStudentSchema, addPaymentSchema } from './dto/student.dto';
+import { StudentStatus } from '../../models/student.model';
+
+const VALID_STATUSES: string[] = [StudentStatus.ACTIVE, StudentStatus.ALUMNI, StudentStatus.DROPPED];
 
 export const getMe = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -17,8 +20,11 @@ export const getAllStudents = async (req: Request, res: Response): Promise<void>
   try {
     const page = parseInt(req.query['page'] as string) || 1;
     const limit = parseInt(req.query['limit'] as string) || 10;
+    // Pass status filter; 'all' means no status restriction; defaults to 'active' in repository
+    const statusQuery = req.query['status'] as string | undefined;
+    const statusFilter = statusQuery === 'all' ? undefined : (statusQuery ?? 'active');
     const { students, total } = await studentService.getAll(
-      { gender: req.query['gender'] as string, search: req.query['search'] as string },
+      { gender: req.query['gender'] as string, search: req.query['search'] as string, status: statusFilter },
       { page, limit }
     );
     paginatedResponse(res, students, { total, page, limit, pages: Math.ceil(total / limit) }, 'Students retrieved successfully');
@@ -72,6 +78,21 @@ export const updateStudent = async (req: Request, res: Response): Promise<void> 
       return;
     }
     errorResponse(res, 'Failed to update student', 500, error.message);
+  }
+};
+
+export const updateStudentStatus = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { status } = req.body;
+    if (!status || !VALID_STATUSES.includes(status)) {
+      errorResponse(res, `Status must be one of: ${VALID_STATUSES.join(', ')}`, 400);
+      return;
+    }
+    const updated = await studentService.updateStatus(req.params['id'], status as StudentStatus);
+    successResponse(res, updated, 'Student status updated');
+  } catch (error: any) {
+    if (error.statusCode) { errorResponse(res, error.message, error.statusCode); return; }
+    errorResponse(res, 'Failed to update student status', 500, error.message);
   }
 };
 

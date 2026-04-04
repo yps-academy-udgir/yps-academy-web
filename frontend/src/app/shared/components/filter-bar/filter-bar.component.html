@@ -49,6 +49,25 @@
         }
       </mat-form-field>
 
+      <!-- Status filter -->
+      @if (statusOptions().length > 0) {
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Status</mat-label>
+          <mat-icon matPrefix>person_outline</mat-icon>
+          <mat-select [value]="selectedStatus()" (selectionChange)="selectedStatus.set($event.value)">
+            <mat-option value="">All Statuses</mat-option>
+            @for (opt of statusOptions(); track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+          @if (selectedStatus()) {
+            <button mat-icon-button matSuffix (click)="clearStatus()" aria-label="Clear status filter">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      }
+
     </div>
 
     <!-- Active filter chips -->
@@ -65,6 +84,13 @@
           <mat-chip (removed)="clearYear()" [removable]="true" color="primary" highlighted>
             <mat-icon matChipAvatar>event</mat-icon>
             Admission: {{ selectedYear() }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        }
+        @if (selectedStatus()) {
+          <mat-chip (removed)="clearStatus()" [removable]="true" color="accent" highlighted>
+            <mat-icon matChipAvatar>person_outline</mat-icon>
+            Status: {{ selectedStatus() | titlecase }}
             <mat-icon matChipRemove>cancel</mat-icon>
           </mat-chip>
         }

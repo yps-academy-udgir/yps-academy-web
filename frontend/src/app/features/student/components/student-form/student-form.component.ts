@@ -121,9 +121,12 @@ export class StudentFormComponent implements OnInit {
     return this.subjectConfigService.getSubjectsForClass(cls);
   }
 
-  // Current year for year of admission
+  // App starts 2026 — no historical entries; grows by 1 each year automatically
   currentYear = new Date().getFullYear();
-  yearRange = Array.from({ length: 20 }, (_, i) => this.formatAcademicSession(this.currentYear - i));
+  yearRange = Array.from(
+    { length: Math.max(1, this.currentYear - 2025) },
+    (_, i) => this.formatAcademicSession(2026 + i)
+  );
   
   ngOnInit(): void {
     this.initializeForm();
@@ -190,8 +193,7 @@ export class StudentFormComponent implements OnInit {
   }
 
   private formatAcademicSession(startYear: number): string {
-    const endYearShort = String((startYear + 1) % 100).padStart(2, '0');
-    return `${startYear}-${endYearShort}`;
+    return `${startYear}-${startYear + 1}`;
   }
 
   /**

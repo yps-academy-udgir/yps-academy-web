@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const academicDetailsSchema = z.object({
-  yearOfAdmission: z.string().regex(/^\d{4}-\d{2}$/, 'Year of admission must be in format YYYY-YY (example: 2026-27)'),
+  yearOfAdmission: z.string().regex(/^\d{4}-\d{4}$/, 'Year of admission must be in format YYYY-YYYY (example: 2026-2027)'),
   class: z.enum(['5th', '6th', '7th', '8th', '9th', '10th']),
   subjects: z.array(z.string()).max(10).optional(),
   selfStudyMode: z.boolean().optional(),

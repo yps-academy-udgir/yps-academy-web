@@ -7,7 +7,7 @@ import { createAuthUser, deleteAuthUser } from '../../utils/auth-user.util';
 import { generateStudentRollNumber } from '../../utils/generate-roll-number.util';
 import { generateUserId } from '../../utils/generate-user-id.util';
 import type { CreateStudentDto, UpdateStudentDto, AddPaymentDto } from './dto/student.dto';
-import type { IAcademicDetails, IFeeDetails } from '../../models/student.model';
+import type { IAcademicDetails, IFeeDetails, StudentStatus } from '../../models/student.model';
 
 function serviceError(message: string, statusCode: number): Error {
   return Object.assign(new Error(message), { statusCode });
@@ -16,6 +16,12 @@ function serviceError(message: string, statusCode: number): Error {
 export const studentService = {
   async getAll(filter: StudentFilter, pagination: PaginationOptions) {
     return studentRepository.findAll(filter, pagination);
+  },
+
+  async updateStatus(id: string, status: StudentStatus) {
+    const student = await studentRepository.findById(id);
+    if (!student) throw serviceError('Student not found', 404);
+    return studentRepository.updateStatus(id, status);
   },
 
   async getById(id: string) {

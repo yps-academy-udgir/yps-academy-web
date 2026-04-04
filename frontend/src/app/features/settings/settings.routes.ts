@@ -10,4 +10,11 @@ export const SETTINGS_ROUTES: Routes = [
     canActivate: [roleGuard(UserRole.ADMIN)],
     data: { title: 'Subject & Fee Config' },
   },
+  {
+    path: 'promote-year',
+    loadComponent: () =>
+      import('./promote-year/promote-year.component').then((m) => m.PromoteYearComponent),
+    canActivate: [roleGuard(UserRole.ADMIN)],
+    data: { title: 'Academic Year Promotion' },
+  },
 ];

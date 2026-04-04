@@ -27,6 +27,9 @@
               <div class="student-info">
                 <h1 class="student-name">
                   {{ student()!.firstName }} {{ student()!.lastName }}
+                  <span class="status-badge status-{{ student()!.status ?? 'active' }}">
+                    {{ (student()!.status ?? 'active') | titlecase }}
+                  </span>
                 </h1>
                 @if (student()!.rollNumber) {
                   <p class="student-email">
@@ -75,6 +78,18 @@
                     <mat-icon>lock_reset</mat-icon>
                     <span>Reset Password</span>
                   </button>
+                  @if ((student()!.status ?? 'active') === 'active') {
+                    <button mat-menu-item (click)="onMarkDropped()">
+                      <mat-icon>person_remove</mat-icon>
+                      <span>Mark as Dropped</span>
+                    </button>
+                  }
+                  @if ((student()!.status ?? 'active') === 'dropped') {
+                    <button mat-menu-item (click)="onReinstate()">
+                      <mat-icon>person_add</mat-icon>
+                      <span>Reinstate Student</span>
+                    </button>
+                  }
                   <button mat-menu-item (click)="onDelete()">
                     <mat-icon>delete</mat-icon>
                     <span>Delete</span>

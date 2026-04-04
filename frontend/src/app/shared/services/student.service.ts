@@ -150,6 +150,22 @@ export class StudentService {
     );
   }
 
+  updateStudentStatus(id: string, status: 'active' | 'alumni' | 'dropped'): Observable<ApiResponse<Student>> {
+    return this.http.patch<ApiResponse<Student>>(`${this.API_URL}/${id}/status`, { status }).pipe(
+      tap((response) => {
+        if (response.data) {
+          this.students.update(students =>
+            students.map(s => s._id === id ? response.data! : s)
+          );
+          if (this.selectedStudent()?._id === id) {
+            this.selectedStudent.set(response.data);
+          }
+        }
+      }),
+      catchError((error) => this.handleError(error))
+    );
+  }
+
   /**
    * Delete student by ID
    * @param id - Student document ID

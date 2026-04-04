@@ -205,6 +205,11 @@ export class SidebarComponent implements OnInit {
           route: '/settings/subjects',
         },
         {
+          label: 'Promote Academic Year',
+          icon: 'upgrade',
+          route: '/settings/promote-year',
+        },
+        {
           label: 'Send Notification',
           icon: 'campaign',
           route: '/notifications/send',

@@ -26,6 +26,15 @@ export enum Subject {
 }
 
 /**
+ * Student lifecycle status
+ */
+export enum StudentStatus {
+  ACTIVE  = 'active',
+  ALUMNI  = 'alumni',
+  DROPPED = 'dropped',
+}
+
+/**
  * Academic Details Interface
  */
 export interface AcademicDetails {
@@ -33,6 +42,18 @@ export interface AcademicDetails {
   class?: Class;
   subjects?: string[];
   selfStudyMode?: boolean;
+}
+
+/**
+ * Academic History Entry — one record per past academic year
+ */
+export interface AcademicHistoryEntry {
+  academicYear: string;
+  class: Class;
+  classroomId?: string;
+  classroomName?: string;
+  subjects: string[];
+  promotedAt: Date;
 }
 
 /**
@@ -76,7 +97,9 @@ export interface Student {
   email: string;
   contact: string;
   gender: 'male' | 'female';
+  status?: StudentStatus;
   academicDetails?: AcademicDetails;
+  academicHistory?: AcademicHistoryEntry[];
   feeDetails?: FeeDetails;
   createdAt?: Date;
   updatedAt?: Date;
@@ -86,6 +109,7 @@ export interface FilterState {
   search: string;
   selectedClass: string;
   selectedYear: string;
+  selectedStatus: string;
 }
 
 /**

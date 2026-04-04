@@ -19,9 +19,11 @@ import { LoadingComponent } from '../../../../shared/components/loading/loading.
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { Student, Class, FilterState } from '../../../../shared/models/student.model';
+import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
+import { Student, Class, FilterState, StudentStatus } from '../../../../shared/models/student.model';
 import { FilterBarComponent } from '../../../../shared/components/filter-bar/filter-bar.component';
 import { RoleService } from '../../../../shared/services/role.service';
+import { AuthService } from '../../../auth/services/auth.service';
 
 
 @Component({
@@ -41,18 +43,25 @@ export class StudentListComponent implements OnInit {
   private router = inject(Router);
   private studentService = inject(StudentService);
   private notificationService = inject(NotificationService);
+  private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   roleService = inject(RoleService);
 
   // Signals for reactive state management
-  searchText = signal<string>('');
-  selectedClass = signal<string>('');
-  selectedYear = signal<string>('');
-  currentPage = signal<number>(0);
-  pageSize = signal<number>(10);
+  searchText     = signal<string>('');
+  selectedClass  = signal<string>('');
+  selectedYear   = signal<string>('');
+  selectedStatus = signal<string>('');
+  currentPage    = signal<number>(0);
+  pageSize       = signal<number>(10);
 
   // Filter option lists
-  classOptions = Object.values(Class).map((value) => ({ value, label: `Class ${value}` }));
+  classOptions  = Object.values(Class).map((value) => ({ value, label: `Class ${value}` }));
+  statusOptions = [
+    { value: StudentStatus.ACTIVE,  label: 'Active' },
+    { value: StudentStatus.ALUMNI,  label: 'Alumni' },
+    { value: StudentStatus.DROPPED, label: 'Dropped' },
+  ];
 
   yearOptions = computed(() => {
     const years = new Set(
@@ -93,7 +102,12 @@ export class StudentListComponent implements OnInit {
         !yearFilter ||
         String(student.academicDetails?.yearOfAdmission) === yearFilter;
 
-      return matchesSearch && matchesClass && matchesYear;
+      const statusFilter = this.selectedStatus();
+      const matchesStatus =
+        !statusFilter ||
+        (student.status ?? StudentStatus.ACTIVE) === statusFilter;
+
+      return matchesSearch && matchesClass && matchesYear && matchesStatus;
     });
   });
 
@@ -103,6 +117,7 @@ export class StudentListComponent implements OnInit {
   displayedColumns: string[] = [
     'rollNumber',
     'name',
+    'status',
     'email',
     'contact',
     'gender',
@@ -129,8 +144,11 @@ export class StudentListComponent implements OnInit {
    * Load students from service
    */
   loadStudents(): void {
+    // Pass 'all' to get every status when a specific status is selected on frontend,
+    // so client-side filtering works; backend defaults to active-only otherwise.
+    const statusParam = this.selectedStatus() || 'all';
     this.studentService
-      .getAllStudents(this.currentPage() + 1, this.pageSize())
+      .getAllStudents(this.currentPage() + 1, this.pageSize(), undefined, statusParam)
       .subscribe();
   }
 
@@ -200,6 +218,7 @@ export class StudentListComponent implements OnInit {
     this.searchText.set(state.search);
     this.selectedClass.set(state.selectedClass);
     this.selectedYear.set(state.selectedYear);
+    this.selectedStatus.set(state.selectedStatus ?? '');
   }
 
   /**
@@ -209,6 +228,7 @@ export class StudentListComponent implements OnInit {
     this.searchText.set('');
     this.selectedClass.set('');
     this.selectedYear.set('');
+    this.selectedStatus.set('');
   }
 
   /**
@@ -223,5 +243,86 @@ export class StudentListComponent implements OnInit {
    */
   getFullName(student: Student): string {
     return `${student.firstName} ${student.lastName}`;
+  }
+
+  enterMarks(student: Student): void {
+    if (student._id) {
+      this.router.navigate(['/students', student._id, 'marks']);
+    }
+  }
+
+  viewFeeReceipt(student: Student): void {
+    if (student._id) {
+      this.router.navigate(['/students', 'fees', student._id, 'receipt']);
+    }
+  }
+
+  resetPassword(student: Student): void {
+    if (!student.userId) {
+      this.notificationService.error('No login account found for this student.');
+      return;
+    }
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Reset Password',
+        message: `Reset the password for ${student.firstName} ${student.lastName}? They will be prompted to change it on next login.`,
+        confirmText: 'Reset',
+        cancelText: 'Cancel',
+      },
+    });
+    ref.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.authService.resetPassword(student.userId!, 'student').subscribe({
+        next: (result) => {
+          this.dialog.open(CredentialsDialogComponent, {
+            data: { name: `${student.firstName} ${student.lastName}`, userId: result.userId, defaultPassword: result.defaultPassword, role: 'student' },
+            disableClose: true,
+          });
+        },
+        error: () => this.notificationService.error('Failed to reset password.'),
+      });
+    });
+  }
+
+  markDropped(student: Student): void {
+    if (!student._id) return;
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Mark as Dropped',
+        message: `Mark ${student.firstName} ${student.lastName} as dropped? They will be excluded from attendance and marks entry.`,
+        confirmText: 'Mark Dropped',
+        cancelText: 'Cancel',
+        confirmColor: 'warn',
+      },
+    });
+    ref.afterClosed().subscribe((confirmed) => {
+      if (confirmed && student._id) {
+        this.studentService.updateStudentStatus(student._id, 'dropped').subscribe({
+          next: () => this.notificationService.success('Student marked as dropped'),
+          error: () => this.notificationService.error('Failed to update status'),
+        });
+      }
+    });
+  }
+
+  reinstateStudent(student: Student): void {
+    if (!student._id) return;
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Reinstate Student',
+        message: `Reinstate ${student.firstName} ${student.lastName} as an active student?`,
+        confirmText: 'Reinstate',
+        cancelText: 'Cancel',
+        confirmColor: 'primary',
+      },
+    });
+    ref.afterClosed().subscribe((confirmed) => {
+      if (confirmed && student._id) {
+        this.studentService.updateStudentStatus(student._id, 'active').subscribe({
+          next: () => this.notificationService.success('Student reinstated successfully'),
+          error: () => this.notificationService.error('Failed to update status'),
+        });
+      }
+    });
   }
 }

@@ -8,6 +8,7 @@ import authRoutes from '../modules/auth/auth.routes';
 import chatRoutes from '../modules/chat/chat.routes';
 import subjectConfigRoutes from '../modules/subject-config/subject-config.routes';
 import notificationRoutes from '../modules/notification/notification.routes';
+import academicYearRoutes from '../modules/academic-year/academic-year.routes';
 
 const router = Router();
 
@@ -32,5 +33,6 @@ router.use('/messages', chatRoutes);    // Message-level operations
 router.use('/attendance', attendanceRoutes);
 router.use('/subject-config', subjectConfigRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/academic-year', academicYearRoutes);
 
 export default router;

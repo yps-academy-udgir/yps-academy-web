@@ -89,10 +89,29 @@
   margin: 0;
   line-height: 1.2;
   color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 
   @media (max-width: 768px) {
     font-size: 1.8rem;
   }
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+  vertical-align: middle;
+
+  &.status-active  { background: rgba(76, 175, 80, 0.2);  color: #a5d6a7; }
+  &.status-alumni  { background: rgba(33, 150, 243, 0.2); color: #90caf9; }
+  &.status-dropped { background: rgba(244, 67, 54, 0.2);  color: #ef9a9a; }
 }
 
 .student-email {

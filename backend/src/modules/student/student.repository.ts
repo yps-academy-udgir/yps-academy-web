@@ -4,6 +4,7 @@ import { Student, IStudent } from '../../models/student.model';
 export interface StudentFilter {
   gender?: string;
   search?: string;
+  status?: string;
 }
 
 export interface PaginationOptions {
@@ -14,6 +15,9 @@ export interface PaginationOptions {
 export const studentRepository = {
   async findAll(filter: StudentFilter, { page, limit }: PaginationOptions) {
     const query: FilterQuery<IStudent> = {};
+
+    // Default to active-only unless caller explicitly passes a different status
+    query.status = filter.status ?? 'active';
 
     if (filter.gender) query.gender = filter.gender as any;
 
@@ -55,6 +59,10 @@ export const studentRepository = {
 
   async update(id: string, data: Record<string, unknown>) {
     return Student.findByIdAndUpdate(id, data, { new: true, runValidators: true }).lean();
+  },
+
+  async updateStatus(id: string, status: string) {
+    return Student.findByIdAndUpdate(id, { status }, { new: true, runValidators: true }).lean();
   },
 
   async delete(id: string) {
