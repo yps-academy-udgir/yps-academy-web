@@ -1,0 +1,113 @@
+@use '../../../../styles/variables' as *;
+
+.subject-config-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.page-header {
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: $spacing-xs;
+
+    mat-icon { color: var(--mat-sys-primary); font-size: 28px; width: 28px; height: 28px; }
+  }
+
+  .header-subtitle {
+    font-size: $font-size-sm;
+    color: var(--mat-sys-on-surface-variant);
+    margin: 0;
+  }
+}
+
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  padding: $spacing-xxl;
+}
+
+.config-card {
+  border-radius: $border-radius-lg !important;
+  box-shadow: $shadow-sm !important;
+}
+
+// ── Subjects grid layout ──────────────────────────────
+.subjects-grid {
+  display: grid;
+  grid-template-columns: 1fr 160px 80px 44px;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.subjects-header {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 0 $spacing-xs $spacing-xs;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  margin-bottom: $spacing-xs;
+}
+
+.subjects-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.subject-row {
+  padding: $spacing-xxs 0;
+}
+
+.field-name { width: 100%; }
+.field-fee  { width: 100%; }
+
+.active-toggle {
+  justify-self: center;
+}
+
+.add-btn {
+  margin-top: $spacing-sm;
+}
+
+// ── Self-study ─────────────────────────────────────────
+.self-study-field {
+  max-width: 260px;
+}
+
+// ── Form actions ───────────────────────────────────────
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: 0 $spacing-lg;
+    height: 44px;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.btn-spinner {
+  display: inline-block;
+}
+
+@media (max-width: $breakpoint-sm) {
+  .subject-config-page { padding: $spacing-sm; }
+
+  .subjects-grid {
+    grid-template-columns: 1fr 120px 56px 36px;
+    gap: $spacing-xs;
+  }
+}

@@ -16,7 +16,9 @@ const feeDetailsSchema = z.object({
     numberOfSubjects: z.number().optional(),
     subjectsFee: z.number().optional(),
     selfStudyFee: z.number().optional(),
+    discount: z.number().min(0).optional(),
   }).optional(),
+  discount: z.number().min(0).optional(),
   paymentHistory: z.array(z.object({
     amount: z.number().min(0),
     paymentDate: z.union([z.string(), z.date()]).optional(),
@@ -31,6 +33,7 @@ export const createStudentSchema = z.object({
   email: z.string().trim().email('Valid email is required'),
   contact: z.string().trim().regex(/^\+?[\d\s-]{10,15}$/, 'Valid contact number is required (10-15 digits)'),
   gender: z.enum(['male', 'female'], { error: 'Gender must be male or female' }),
+  classroomId: z.string().optional(),
   academicDetails: academicDetailsSchema,
   feeDetails: feeDetailsSchema,
 });

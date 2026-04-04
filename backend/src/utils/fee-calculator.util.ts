@@ -1,104 +1,55 @@
 /**
  * Fee Calculator Utility
- * Handles fee calculations based on class, subjects, and self-study mode
- * Backend implementation
+ * Handles fee calculations based on subjects and self-study mode.
+ * Fees are looked up from SubjectConfig (dynamic) instead of a hardcoded structure.
  */
 
-import { Class, IFeeBreakdown, IFeeDetails, IAcademicDetails } from '../models/student.model';
+import { IFeeBreakdown, IFeeDetails, IAcademicDetails } from '../models/student.model';
 
-/**
- * Fee structure per class (per subject)
- * Hardcoded as per requirements
- */
-export const FEE_STRUCTURE: Record<Class, number> = {
-  [Class.FIFTH]: 5000,
-  [Class.SIXTH]: 5500,
-  [Class.SEVENTH]: 6000,
-  [Class.EIGHTH]: 6500,
-  [Class.NINTH]: 7000,
-  [Class.TENTH]: 7500,
-};
-
-/**
- * Self-study mode additional fee
- */
-export const SELF_STUDY_FEE = 8000;
-
-/**
- * Calculate total fees based on academic details
- */
 export function calculateFees(
-  academicDetails?: IAcademicDetails
+  academicDetails: IAcademicDetails | undefined,
+  subjectFeeMap: Record<string, number>,
+  selfStudyFee: number,
+  discount: number = 0
 ): IFeeBreakdown {
-  // Default values
-  const result: IFeeBreakdown = {
-    baseFeePerSubject: 0,
-    numberOfSubjects: 0,
-    subjectsFee: 0,
-    selfStudyFee: 0,
-  };
+  const zero: IFeeBreakdown = { baseFeePerSubject: 0, numberOfSubjects: 0, subjectsFee: 0, selfStudyFee: 0, discount: 0 };
 
-  // If no academic details or no subjects, return 0
-  if (!academicDetails || !academicDetails.subjects || academicDetails.subjects.length === 0) {
-    return result;
-  }
+  if (!academicDetails?.subjects?.length) return zero;
 
-  const studentClass = academicDetails.class;
   const subjects = academicDetails.subjects;
   const selfStudyMode = academicDetails.selfStudyMode || false;
 
-  // Get base fee per subject for the class
-  const baseFeePerSubject = studentClass ? FEE_STRUCTURE[studentClass] || 0 : 0;
+  // Sum per-subject fees; unknown subjects default to 0
+  const subjectsFee = subjects.reduce((sum, name) => sum + (subjectFeeMap[name] ?? 0), 0);
   const numberOfSubjects = subjects.length;
-
-  // Calculate subjects fee
-  const subjectsFee = baseFeePerSubject * numberOfSubjects;
-
-  // Calculate self-study fee
-  const selfStudyFee = selfStudyMode ? SELF_STUDY_FEE : 0;
+  // baseFeePerSubject: average (kept for UI display)
+  const baseFeePerSubject = numberOfSubjects > 0 ? Math.round(subjectsFee / numberOfSubjects) : 0;
 
   return {
     baseFeePerSubject,
     numberOfSubjects,
     subjectsFee,
-    selfStudyFee,
+    selfStudyFee: selfStudyMode ? selfStudyFee : 0,
+    discount: Math.max(0, discount),
   };
 }
 
-/**
- * Calculate total paid amount from payment history
- */
 export function calculateTotalPaid(payments: Array<{ amount: number }>): number {
-  return payments.reduce((sum, payment) => sum + payment.amount, 0);
+  return payments.reduce((sum, p) => sum + p.amount, 0);
 }
 
-/**
- * Calculate complete fee details
- */
 export function calculateFeeDetails(
-  academicDetails?: IAcademicDetails,
-  existingFeeDetails?: Partial<IFeeDetails>
+  academicDetails: IAcademicDetails | undefined,
+  existingFeeDetails: Partial<IFeeDetails> | undefined,
+  subjectFeeMap: Record<string, number>,
+  selfStudyFee: number,
+  discount: number = 0
 ): IFeeDetails {
-  // Calculate fee breakdown
-  const feeBreakdown = calculateFees(academicDetails);
-  
-  // Calculate total fees
-  const totalFees = feeBreakdown.subjectsFee + feeBreakdown.selfStudyFee;
-
-  // Get payment history (preserve existing or create new)
+  const feeBreakdown = calculateFees(academicDetails, subjectFeeMap, selfStudyFee, discount);
+  const totalFees = Math.max(0, feeBreakdown.subjectsFee + feeBreakdown.selfStudyFee - feeBreakdown.discount);
   const paymentHistory = existingFeeDetails?.paymentHistory || [];
-
-  // Calculate paid amount
   const paidAmount = calculateTotalPaid(paymentHistory);
-
-  // Calculate pending fees
   const pendingFees = Math.max(0, totalFees - paidAmount);
 
-  return {
-    totalFees,
-    paidAmount,
-    pendingFees,
-    feeBreakdown,
-    paymentHistory,
-  };
+  return { totalFees, paidAmount, pendingFees, feeBreakdown, paymentHistory };
 }

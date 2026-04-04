@@ -34,6 +34,25 @@ export class ChatService {
 
     // Setup Socket.io event listeners
     this.setupSocketListeners();
+
+    // Re-authenticate the socket whenever the logged-in user changes.
+    // This covers: login after being logged out, switching accounts without
+    // a full page refresh, and logout (user becomes null → disconnect).
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user) {
+        // New user — drop the old socket (wrong auth token) and reconnect.
+        this.socketService.reconnect();
+        this.setupSocketListeners();
+      } else {
+        // Logged out — clear all message state and disconnect cleanly.
+        this.messagesMap.set(new Map());
+        this.loadingByClassroom.set(new Map());
+        this.errorByClassroom.set(new Map());
+        this.unreadCountsMap.set(new Map());
+        this.socketService.disconnect();
+      }
+    });
   }
 
   /**
@@ -273,6 +292,18 @@ export class ChatService {
     this.socketService.onSocketError((error: any) => {
       console.error('[Chat Service] Socket error:', error);
     });
+  }
+
+  /**
+   * Clear all in-memory chat state and disconnect the socket.
+   * Called on logout so a subsequent login starts with a clean slate.
+   */
+  clearState(): void {
+    this.messagesMap.set(new Map());
+    this.loadingByClassroom.set(new Map());
+    this.errorByClassroom.set(new Map());
+    this.unreadCountsMap.set(new Map());
+    this.socketService.disconnect();
   }
 
   /**

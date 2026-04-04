@@ -17,7 +17,7 @@ export enum Class {
 }
 
 /**
- * Available subjects
+ * Available subjects — kept for backward compat; live list comes from SubjectConfig API
  */
 export enum Subject {
   MATHEMATICS = 'Mathematics',
@@ -53,6 +53,7 @@ export interface FeeBreakdown {
   numberOfSubjects: number;
   subjectsFee: number;
   selfStudyFee: number;
+  discount: number;
 }
 
 /**

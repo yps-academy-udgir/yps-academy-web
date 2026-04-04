@@ -1,3 +1,5 @@
+@use '../../../../../styles/variables' as *;
+
 .student-form-container {
   max-width: 900px;
   margin: 0 auto;
@@ -290,6 +292,64 @@
   color: var(--warning-color, #ff9800) !important;
 }
 
+.fee-row--discount {
+  border-top: 1px dashed var(--mat-sys-outline-variant);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.fee-value--discount {
+  color: var(--success-color, #4caf50) !important;
+  font-weight: 600;
+}
+
+.subject-fee-hint {
+  font-size: 0.85em;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.no-subjects-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: color-mix(in srgb, var(--mat-sys-error) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-error) 30%, transparent);
+  border-radius: $border-radius-md;
+  margin-bottom: $spacing-sm;
+
+  > mat-icon {
+    color: var(--mat-sys-error);
+    flex-shrink: 0;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    margin-top: 2px;
+  }
+
+  .warning-body {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  .warning-text {
+    font-size: $font-size-sm;
+    color: var(--mat-sys-on-surface);
+  }
+
+  .warning-sub {
+    font-size: $font-size-sm;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .configure-btn {
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+}
+
 .add-payment-btn {
   margin-top: 16px;
   
@@ -335,6 +395,45 @@
     font-size: 24px;
     width: 24px;
     height: 24px;
+  }
+}
+
+// Classroom assignment hint blocks
+.classroom-assignment-row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-xs;
+}
+
+.classroom-hint-block {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-md;
+  font-size: $font-size-sm;
+  width: 100%;
+
+  .hint-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &.success-block {
+    background: rgba($success-500, 0.1);
+    border-left: 3px solid $success-500;
+    color: $success-800;
+    .hint-icon { color: $success-500; }
+  }
+
+  &.warning-block {
+    background: rgba($warn-400, 0.1);
+    border-left: 3px solid $warn-400;
+    color: $warn-700;
+    .hint-icon { color: $warn-400; }
   }
 }
 

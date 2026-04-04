@@ -5,6 +5,11 @@
   box-shadow: 0 2px 4px var(--shadow-color);
 }
 
+// Remove default menu padding so notification panel fills the menu cleanly
+::ng-deep .notif-menu-panel .mat-mdc-menu-content {
+  padding: 0 !important;
+}
+
 .app-branding {
   display: flex;
   align-items: center;

@@ -22,6 +22,7 @@ interface MenuItem {
   badge?: number;
   children?: MenuItem[];
   expanded?: boolean;
+  adminOnly?: boolean;
 }
 
 @Component({
@@ -66,13 +67,15 @@ export class SidebarComponent implements OnInit {
   // Computed: returns role-appropriate menu
   visibleMenuItems = computed(() => {
     if (this.roleService.isStudent()) return this.studentMenuItems;
+    const items = this.menuItems();
+    const filtered = this.roleService.isAdmin() ? items : items.filter((i) => !i.adminOnly);
     if (this.roleService.isFaculty()) {
       return [
         { label: 'My Profile', icon: 'person', route: '/my-faculty-profile' },
-        ...this.menuItems(),
+        ...filtered,
       ];
     }
-    return this.menuItems();
+    return filtered;
   });
 
   // Menu items using signals with hierarchical structure
@@ -187,6 +190,24 @@ export class SidebarComponent implements OnInit {
           label: 'Enter Results',
           icon: 'edit_note',
           route: '/results/enter',
+        },
+      ],
+    },
+    {
+      label: 'Settings',
+      icon: 'settings',
+      expanded: false,
+      adminOnly: true,
+      children: [
+        {
+          label: 'Subject & Fee Config',
+          icon: 'menu_book',
+          route: '/settings/subjects',
+        },
+        {
+          label: 'Send Notification',
+          icon: 'campaign',
+          route: '/notifications/send',
         },
       ],
     },

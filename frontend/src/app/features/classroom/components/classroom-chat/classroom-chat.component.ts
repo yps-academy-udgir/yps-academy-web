@@ -13,6 +13,8 @@ import {
   ElementRef,
   ChangeDetectionStrategy,
   effect,
+  computed,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -63,6 +65,21 @@ export class ClassroomChatComponent implements OnInit, OnDestroy {
   sending = false;
   refreshing = false;
 
+  /** Messages for the current classroom, each enriched with `isMine`.
+   *  Recomputed reactively whenever messagesMap or currentUser changes,
+   *  so bubble alignment is always correct after a login switch. */
+  readonly enrichedMessages = computed(() => {
+    const uid = this.authService.currentUser()?._id
+      || this.authService.currentUser()?.userId
+      || '';
+    return (this.chatService.messagesMap().get(this.classroomId) ?? []).map(msg => ({
+      ...msg,
+      isMine: msg.senderId === uid,
+    }));
+  });
+
+  private readonly _prevUserId = signal<string | null>(null);
+
   constructor(
     private fb: FormBuilder,
     private chatService: ChatService,
@@ -72,8 +89,25 @@ export class ClassroomChatComponent implements OnInit, OnDestroy {
     // Auto-scroll to bottom when messages update
     effect(
       () => {
-        this.messages(); // Trigger when messages change
+        this.enrichedMessages(); // Trigger when messages change
         setTimeout(() => this.scrollToBottom(), 0);
+      },
+      { allowSignalWrites: true }
+    );
+
+    // Reload messages when the logged-in user changes (e.g. after login switch).
+    // This ensures isSentByCurrentUser re-evaluates for all existing messages.
+    effect(
+      () => {
+        const user = this.authService.currentUser();
+        const uid = user?._id || user?.userId || null;
+        const prev = this._prevUserId();
+        if (uid !== prev) {
+          this._prevUserId.set(uid);
+          if (uid && this.classroomId) {
+            this.chatService.loadClassroomMessages(this.classroomId, 1, 50, true);
+          }
+        }
       },
       { allowSignalWrites: true }
     );
@@ -130,10 +164,10 @@ export class ClassroomChatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get messages for current classroom
+   * Get messages for current classroom (enriched with isMine)
    */
-  getClassroomMessages(): Message[] {
-    return this.messages().get(this.classroomId) || [];
+  getClassroomMessages() {
+    return this.enrichedMessages();
   }
 
   /**
@@ -271,31 +305,17 @@ export class ClassroomChatComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Check if current user sent message
+   * Check if current user sent message — delegates to pre-computed isMine flag.
    */
-  isSentByCurrentUser(message: Message): boolean {
-    return message.senderId === this.currentUserId;
+  isSentByCurrentUser(message: { isMine?: boolean; senderId: string }): boolean {
+    return message.isMine ?? (message.senderId === this.currentUserId);
   }
 
   /**
-   * Format time
+   * Format time as HH:MM for display inside message bubble
    */
   formatTime(date: Date | string): string {
-    const d = new Date(date);
-    const now = new Date();
-    const diffMs = now.getTime() - d.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-
-    if (diffMins < 1) {
-      return 'Just now';
-    } else if (diffMins < 60) {
-      return `${diffMins}m ago`;
-    } else if (diffMins < 1440) {
-      const hours = Math.floor(diffMins / 60);
-      return `${hours}h ago`;
-    } else {
-      return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
+    return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
   /**
@@ -340,5 +360,56 @@ export class ClassroomChatComponent implements OnInit, OnDestroy {
   getReadByTooltip(message: Message): string {
     if (!message.readBy || message.readBy.length === 0) return '';
     return 'Read by: ' + message.readBy.map((r) => r.userId).join(', ');
+  }
+
+  /** Returns 1–2 uppercase initials from a full name */
+  getInitials(name: string): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  private readonly avatarColors = [
+    '#128C7E', '#6B3FA0', '#E84393', '#E05C2C', '#1E88E5', '#43A047',
+  ];
+
+  /** Deterministic avatar background colour based on sender name */
+  getAvatarColor(name: string): string {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return this.avatarColors[Math.abs(hash) % this.avatarColors.length];
+  }
+
+  /** True when this message is the first of a new calendar day */
+  shouldShowDateSeparator(message: Message, index: number): boolean {
+    if (index === 0) return true;
+    const prev = this.getClassroomMessages()[index - 1];
+    return (
+      new Date(prev.createdAt).toDateString() !==
+      new Date(message.createdAt).toDateString()
+    );
+  }
+
+  /** Human-friendly label for the date separator */
+  formatDateSeparator(date: Date | string): string {
+    const d = new Date(date);
+    const now = new Date();
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (d.toDateString() === now.toDateString()) return 'Today';
+    if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  /** Send on Enter; allow Shift+Enter for newline */
+  onEnterKey(event: Event): void {
+    const keyEvent = event as KeyboardEvent;
+    if (!keyEvent.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
+    }
   }
 }

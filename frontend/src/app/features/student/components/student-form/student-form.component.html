@@ -141,17 +141,53 @@
               </mat-form-field>
             </div>
 
-            @if (studentForm.get('academicDetails.class')?.value) {
-              <div class="form-row">
-                @if (hasAvailableClassroom(studentForm.get('academicDetails.class')?.value)) {
-                  <p class="classroom-hint success">Student will be auto-assigned to an available classroom for the selected class.</p>
-                } @else {
-                  <p class="classroom-hint warning">No classroom available for this class. Add a classroom first, then create the student.</p>
-                  <button mat-stroked-button type="button" color="primary" (click)="addClassroom()">
+            @if (studentForm.get('academicDetails.class')?.value && !isEditMode()) {
+              <div class="form-row classroom-assignment-row">
+
+                @if (availableClassrooms().length === 0) {
+                  <!-- No rooms at all for this class -->
+                  <div class="classroom-hint-block warning-block">
+                    <mat-icon class="hint-icon">warning</mat-icon>
+                    <span>No classroom available for this class. Add a classroom first, then create the student.</span>
+                  </div>
+                  <button mat-stroked-button type="button" color="warn" (click)="addClassroom()">
                     <mat-icon>add</mat-icon>
                     Add Classroom
                   </button>
+
+                } @else if (availableClassrooms().length === 1) {
+                  <!-- Exactly one room — auto-assign -->
+                  <div class="classroom-hint-block success-block">
+                    <mat-icon class="hint-icon">check_circle</mat-icon>
+                    <span>
+                      Student will be auto-assigned to
+                      <strong>{{ availableClassrooms()[0].class }} — Section {{ availableClassrooms()[0].section }}</strong>
+                      ({{ availableClassrooms()[0].enrolledStudents.length }}/{{ availableClassrooms()[0].capacity }} seats used).
+                    </span>
+                  </div>
+
+                } @else {
+                  <!-- Multiple rooms — let admin choose -->
+                  <mat-form-field appearance="outline" class="form-field full-width">
+                    <mat-label>Select Classroom</mat-label>
+                    <mat-select formControlName="classroomId">
+                      <mat-option [value]="null">Auto-assign (first available)</mat-option>
+                      @for (room of availableClassrooms(); track room._id) {
+                        <mat-option [value]="room._id">
+                          {{ room.class }} — Section {{ room.section }}
+                          &nbsp;·&nbsp;
+                          {{ room.enrolledStudents.length }}/{{ room.capacity }} seats used
+                          @if (room.enrolledStudents.length >= room.capacity) {
+                            &nbsp;(Full)
+                          }
+                        </mat-option>
+                      }
+                    </mat-select>
+                    <mat-icon matPrefix>meeting_room</mat-icon>
+                    <mat-hint>Leave on "Auto-assign" to let the system pick the first available room.</mat-hint>
+                  </mat-form-field>
                 }
+
               </div>
             }
 
@@ -159,14 +195,41 @@
               <mat-form-field appearance="outline" class="form-field full-width">
                 <mat-label>Subjects</mat-label>
                 <mat-select formControlName="subjects" multiple>
-                  @for (subject of availableSubjects; track subject) {
-                    <mat-option [value]="subject">{{ subject }}</mat-option>
+                  @for (subject of availableSubjects; track subject.name) {
+                    <mat-option [value]="subject.name">
+                      {{ subject.name }}
+                      <span class="subject-fee-hint">&nbsp;&mdash; ₹{{ subject.fee | number }}</span>
+                    </mat-option>
+                  }
+                  @if (!selectedClass()) {
+                    <mat-option disabled>Select a class first</mat-option>
                   }
                 </mat-select>
                 <mat-icon matPrefix>book</mat-icon>
-                <mat-hint>Select one or more subjects (Math, Science, English)</mat-hint>
+                @if (selectedClass()) {
+                  <mat-hint>Subjects for {{ selectedClass() }} &mdash; fee per subject shown</mat-hint>
+                } @else {
+                  <mat-hint>Select a class above to see available subjects</mat-hint>
+                }
               </mat-form-field>
             </div>
+
+            @if (selectedClass() && availableSubjects.length === 0) {
+              <div class="no-subjects-warning">
+                <mat-icon>warning_amber</mat-icon>
+                <div class="warning-body">
+                  <span class="warning-text">No subjects configured for class <strong>{{ selectedClass() }}</strong>.</span>
+                  @if (isAdmin()) {
+                    <button mat-flat-button type="button" routerLink="/settings/subjects" class="configure-btn">
+                      <mat-icon>tune</mat-icon>
+                      Configure Subjects
+                    </button>
+                  } @else {
+                    <span class="warning-sub">Please ask your administrator to configure subjects for this class.</span>
+                  }
+                </div>
+              </div>
+            }
 
             <div class="form-row">
               <mat-checkbox formControlName="selfStudyMode" class="form-checkbox">
@@ -191,6 +254,16 @@
           </mat-expansion-panel-header>
 
           <div class="panel-content" formGroupName="feeDetails">
+            <!-- Discount Input -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Discount (₹)</mat-label>
+                <input matInput type="number" formControlName="discount" placeholder="0" min="0" />
+                <mat-icon matPrefix>local_offer</mat-icon>
+                <mat-hint>Optional flat discount deducted from total fees</mat-hint>
+              </mat-form-field>
+            </div>
+
             <!-- Fee Summary Display -->
             <div class="fee-summary">
               <div class="fee-summary-card">
@@ -221,14 +294,6 @@
               </mat-expansion-panel-header>
               <div class="fee-breakdown-content">
                 <div class="fee-row">
-                  <span class="fee-label">Base Fee per Subject:</span>
-                  <span class="fee-value">₹{{ studentForm.get('feeDetails.feeBreakdown.baseFeePerSubject')?.value | number:'1.2-2' }}</span>
-                </div>
-                <div class="fee-row">
-                  <span class="fee-label">Number of Subjects:</span>
-                  <span class="fee-value">{{ studentForm.get('feeDetails.feeBreakdown.numberOfSubjects')?.value }}</span>
-                </div>
-                <div class="fee-row">
                   <span class="fee-label">Subjects Fee:</span>
                   <span class="fee-value">₹{{ studentForm.get('feeDetails.feeBreakdown.subjectsFee')?.value | number:'1.2-2' }}</span>
                 </div>
@@ -236,6 +301,12 @@
                   <div class="fee-row">
                     <span class="fee-label">Self-Study Mode Fee:</span>
                     <span class="fee-value">₹{{ studentForm.get('feeDetails.feeBreakdown.selfStudyFee')?.value | number:'1.2-2' }}</span>
+                  </div>
+                }
+                @if (studentForm.get('feeDetails.feeBreakdown.discount')?.value > 0) {
+                  <div class="fee-row fee-row--discount">
+                    <span class="fee-label">Discount:</span>
+                    <span class="fee-value fee-value--discount">&minus; ₹{{ studentForm.get('feeDetails.feeBreakdown.discount')?.value | number:'1.2-2' }}</span>
                   </div>
                 }
               </div>

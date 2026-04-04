@@ -51,6 +51,7 @@ export interface IFeeBreakdown {
   numberOfSubjects: number;
   subjectsFee: number;
   selfStudyFee: number;
+  discount: number;
 }
 
 // Fee Details Interface
@@ -157,6 +158,12 @@ const FeeBreakdownSchema = new Schema({
     type: Number,
     required: false,
     default: 0,
+  },
+  discount: {
+    type: Number,
+    required: false,
+    default: 0,
+    min: [0, 'Discount cannot be negative'],
   },
 }, { _id: false });
 

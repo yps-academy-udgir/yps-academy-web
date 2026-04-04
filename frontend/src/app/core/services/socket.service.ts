@@ -64,9 +64,22 @@ export class SocketService {
    */
   disconnect(): void {
     if (this.socket) {
+      this.socket.removeAllListeners();
       this.socket.disconnect();
+      this.socket = null;
       this.connected.set(false);
     }
+  }
+
+  /**
+   * Disconnect any existing connection and reconnect with the current token.
+   * Called after a login/logout to ensure the socket is authenticated as the
+   * new user. Previously-joined rooms are re-joined automatically via the
+   * connect() → 'connect' handler.
+   */
+  reconnect(): void {
+    this.disconnect();
+    this.connect();
   }
 
   /**
@@ -158,6 +171,14 @@ export class SocketService {
   onSocketError(callback: (error: any) => void): void {
     if (!this.socket) return;
     this.socket.on('error', callback);
+  }
+
+  /**
+   * Subscribe to incoming in-app notifications pushed by the server
+   */
+  onNotification(callback: (notification: any) => void): void {
+    if (!this.socket) return;
+    this.socket.on('notification:new', callback);
   }
 
   /**
