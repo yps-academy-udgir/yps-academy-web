@@ -113,6 +113,12 @@ export class StudentListComponent implements OnInit {
 
   hasStudents = computed(() => this.filteredStudents().length > 0);
 
+  // Slice of filteredStudents for the current page (client-side paging)
+  pagedStudents = computed(() => {
+    const start = this.currentPage() * this.pageSize();
+    return this.filteredStudents().slice(start, start + this.pageSize());
+  });
+
   // Table columns to display
   displayedColumns: string[] = [
     'rollNumber',
@@ -144,11 +150,10 @@ export class StudentListComponent implements OnInit {
    * Load students from service
    */
   loadStudents(): void {
-    // Pass 'all' to get every status when a specific status is selected on frontend,
-    // so client-side filtering works; backend defaults to active-only otherwise.
-    const statusParam = this.selectedStatus() || 'all';
+    // Fetch all students at once so client-side filtering + pagination are consistent.
+    // status='all' bypasses the backend active-only default.
     this.studentService
-      .getAllStudents(this.currentPage() + 1, this.pageSize(), undefined, statusParam)
+      .getAllStudents(1, 10000, undefined, 'all')
       .subscribe();
   }
 
@@ -219,6 +224,7 @@ export class StudentListComponent implements OnInit {
     this.selectedClass.set(state.selectedClass);
     this.selectedYear.set(state.selectedYear);
     this.selectedStatus.set(state.selectedStatus ?? '');
+    this.currentPage.set(0); // reset to first page on any filter change
   }
 
   /**
