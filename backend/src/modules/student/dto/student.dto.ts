@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 const academicDetailsSchema = z.object({
-  yearOfAdmission: z.number().int().min(1900).max(new Date().getFullYear() + 10).optional(),
-  class: z.enum(['5th', '6th', '7th', '8th', '9th', '10th']).optional(),
+  yearOfAdmission: z.string().regex(/^\d{4}-\d{2}$/, 'Year of admission must be in format YYYY-YY (example: 2026-27)'),
+  class: z.enum(['5th', '6th', '7th', '8th', '9th', '10th']),
   subjects: z.array(z.string()).max(10).optional(),
   selfStudyMode: z.boolean().optional(),
-}).optional();
+});
 
 const feeDetailsSchema = z.object({
   totalFees: z.number().min(0).optional(),

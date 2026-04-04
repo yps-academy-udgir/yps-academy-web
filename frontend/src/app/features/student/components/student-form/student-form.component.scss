@@ -269,13 +269,10 @@
   }
 }
 
-.section-title {
+.section-heading-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-primary);
   margin-bottom: 16px;
 
   mat-icon {

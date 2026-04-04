@@ -1,9 +1,9 @@
 ﻿@use '../../../../../styles/variables' as v;
 
 .achievements-section {
-  background: var(--background-tertiary);
+  background: var(--surface-overlay);
   padding: v.$spacing-xxxl v.$spacing-lg;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .achievements-grid {
@@ -17,13 +17,14 @@
   text-align: center;
   padding: v.$spacing-xl v.$spacing-md;
   border-radius: v.$border-radius-lg;
-  background: var(--background-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
   transition: transform v.$transition-normal, box-shadow v.$transition-normal;
   
   &:hover { 
     transform: translateY(-4px); 
     box-shadow: v.$shadow-lg;
+    border-color: var(--border-brand);
   }
 }
 
@@ -35,7 +36,7 @@
 .achievement-value { 
   font-size: clamp(v.$font-size-xxl, 4vw, 40px); 
   font-weight: v.$font-weight-bold; 
-  color: var(--primary-color);
+  // Color handled by .gradient-text-animated utility class applied in template
   display: block;
   margin-bottom: v.$spacing-xxs;
 }

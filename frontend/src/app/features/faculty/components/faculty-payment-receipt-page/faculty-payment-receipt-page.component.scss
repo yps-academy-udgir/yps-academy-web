@@ -8,3 +8,14 @@
   display: flex;
   justify-content: flex-start;
 }
+
+@media (max-width: 768px) {
+  .top-actions {
+    width: 100%;
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

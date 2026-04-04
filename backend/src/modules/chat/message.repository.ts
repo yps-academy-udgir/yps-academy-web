@@ -179,16 +179,14 @@ export const messageRepository = {
       }
     }
 
+    if (!entity?._id) {
+      return [];
+    }
+
     if (role === 'student') {
-      query.$or = [
-        ...(entity?._id ? [{ enrolledStudents: entity._id }] : []),
-        { enrolledStudents: userId as any },
-      ];
+      query.enrolledStudents = entity._id;
     } else if (role === 'faculty') {
-      query.$or = [
-        ...(entity?._id ? [{ 'facultyAssignments.facultyId': entity._id }] : []),
-        { 'facultyAssignments.facultyId': userId as any },
-      ];
+      query['facultyAssignments.facultyId'] = entity._id;
     }
 
     const classrooms = await Classroom.find(query, { _id: 1 }).lean();

@@ -18,9 +18,10 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    background-color: var(--background-secondary);
+    background-color: var(--surface-card);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 2px 4px var(--shadow-color);
   }
 
   .header-title {
@@ -32,14 +33,12 @@
       font-size: 32px;
       width: 32px;
       height: 32px;
-      color: var(--primary-color);
+      color: var(--color-brand-primary);
     }
 
     h1 {
       margin: 0;
-      font-size: 28px;
-      font-weight: 500;
-      color: var(--text-primary);
+      // Visual sizing handled by .tertiary-heading class applied in template
     }
   }
 }

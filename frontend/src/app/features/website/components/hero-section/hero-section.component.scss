@@ -1,4 +1,5 @@
 ﻿@use '../../../../../styles/variables' as v;
+@use '../../../../../styles/motion-effects' as motion;
 
 .hero-section {
   min-height: 100vh;
@@ -22,25 +23,23 @@
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0;
-  transition: opacity 1.5s ease-in-out;
+  transition: opacity 2s ease-in-out;
 
-  &.active {
-    opacity: 1;
-  }
+  &.active { opacity: 1; }
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, var(--primary-color) 0%, rgba(0,0,0,0.4) 50%, var(--accent-color) 100%);
-    opacity: 0.85;
+    background: var(--color-brand-gradient-hero);
+    opacity: 0.42;
   }
 }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.06);
   z-index: 1;
 }
 
@@ -48,7 +47,7 @@
   position: relative;
   z-index: 2;
   text-align: center;
-  color: #fff;
+  color: var(--text-on-dark);
   padding: v.$spacing-xxxl v.$spacing-lg;
   max-width: 800px;
 }
@@ -59,7 +58,7 @@
   gap: v.$spacing-xxs;
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.3);
-  color: #fff;
+  color: var(--text-on-dark);
   padding: v.$spacing-xxs v.$spacing-md;
   border-radius: v.$border-radius-xl;
   font-size: v.$font-size-sm;
@@ -74,19 +73,65 @@
 }
 
 .hero-title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--text-on-dark);
   font-weight: v.$font-weight-bold;
   line-height: v.$line-height-tight;
   margin: 0 0 v.$spacing-lg;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.35);
 
-  .highlight { color: rgba(255,255,255,0.95); text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+  // Wrapper collapses to the text's natural width so the animated inner span
+  // uses width:100% = text width (not parent block width = cursor goes far fix).
+  .hero-title-wrapper {
+    display: inline-block;
+  }
+
+  // First line: typing reveal animation
+  .hero-title-line {
+    color: var(--text-on-dark);
+    @include motion.text-typing(17, 1.4s, 2s, 0.2s);
+  }
+
+  .highlight {
+    position: relative;
+    display: inline-block;
+    padding: 0.06em 0.22em;
+    border-radius: 0.28em;
+    text-shadow: 0 0 40px rgba(255, 212, 90, 0.6), 0 0 80px rgba(255, 139, 90, 0.3);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0.12em -0.14em;
+      border-radius: inherit;
+      z-index: -1;
+    }
+  }
+}
+
+.light-theme .hero-section .hero-title .highlight {
+  background-image: linear-gradient(120deg, #ff6b5a 0%, #ff9f5a 44%, #ffd45a 100%);
+
+  &::before {
+    background: rgba(255, 245, 232, 0.34);
+    box-shadow: 0 8px 20px rgba(64, 22, 12, 0.16);
+  }
+}
+
+.dark-theme .hero-section .hero-title .highlight {
+  background-image: linear-gradient(120deg, #ffe39a 0%, #ffd270 48%, #ffb98b 100%);
+
+  &::before {
+    background: rgba(24, 15, 12, 0.5);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.38);
+  }
 }
 
 .hero-subtitle {
-  font-size: clamp(v.$font-size-md, 2vw, v.$font-size-xl);
-  opacity: 0.9;
+  color: rgba(255, 247, 242, 0.88);
   line-height: v.$line-height-relaxed;
   margin: 0 0 v.$spacing-xl;
+  // Word-by-word reveal: each <span> inside slides up with stagger
+  @include motion.text-word-reveal(1.8s, 0.1s, 0.5s);
 }
 
 .hero-actions {
@@ -98,20 +143,28 @@
 }
 
 .btn-primary {
-  --mdc-filled-button-container-color: white;
-  --mdc-filled-button-label-text-color: var(--primary-color);
+  // Gradient-flow: gradient pans left→right on hover
+  --mdc-filled-button-container-color: transparent;
+  --mdc-filled-button-label-text-color: #2a1200;
+  background: var(--color-brand-gradient) !important;
+  background-size: 200% 200% !important;
+  background-position: left center !important;
   border-radius: v.$border-radius-xl !important;
   font-size: v.$font-size-md !important;
   font-weight: v.$font-weight-bold !important;
   padding: v.$spacing-sm v.$spacing-xl !important;
-  transition: transform v.$transition-fast, box-shadow v.$transition-fast;
+  transition: transform v.$transition-fast, box-shadow v.$transition-fast, background-position 0.5s ease !important;
 
-  &:hover { transform: translateY(-3px); box-shadow: v.$shadow-lg; }
+  &:hover { 
+    transform: translateY(-3px); 
+    box-shadow: v.$shadow-lg;
+    background-position: right center !important;
+  }
 }
 
 .btn-outline {
   --mdc-outlined-button-outline-color: rgba(255,255,255,0.7);
-  --mdc-outlined-button-label-text-color: #fff;
+  --mdc-outlined-button-label-text-color: var(--text-on-dark);
   border-radius: v.$border-radius-xl !important;
   font-size: v.$font-size-md !important;
   font-weight: v.$font-weight-bold !important;
@@ -134,8 +187,20 @@
 
 .stat {
   text-align: center;
-  span { display: block; font-size: v.$font-size-xxl; font-weight: v.$font-weight-bold; color: rgba(255,255,255,0.95); }
-  small { opacity: 0.8; font-size: v.$font-size-sm; }
+  span { 
+    display: block; 
+    font-size: v.$font-size-xxl; 
+    font-weight: v.$font-weight-bold;
+    // Animated gradient numbers — visible over dark overlay via background-clip: text
+    background: linear-gradient(135deg, #fff9f0, var(--color-brand-highlight), var(--color-brand-secondary), #fff9f0);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: ws-gradient-shift 6s ease infinite;
+  }
+  small { opacity: 0.8; font-size: v.$font-size-sm; color: var(--text-on-dark); }
 }
 
 .stat-divider {
@@ -175,9 +240,14 @@
   }
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes ws-gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-.fade-in { animation: fadeInUp 0.8s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide { transition: none; }
+  .btn-primary, .btn-outline, .dot { transition: none; }
+  .stat span { animation: none; background-size: 100% 100%; }
+}

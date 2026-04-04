@@ -254,22 +254,6 @@
   gap: 8px;
 }
 
-.subsection-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-secondary, rgba(0, 0, 0, 0.6));
-  margin: 4px 0 8px;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
-}
-
 .payment-timeline {
   display: flex;
   flex-direction: column;

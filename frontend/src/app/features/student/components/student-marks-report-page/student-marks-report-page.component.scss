@@ -18,5 +18,29 @@
 
 .page-header p {
   margin: 4px 0 0;
-  color: var(--text-secondary, #616161);
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .student-report-page {
+    gap: 16px;
+  }
+
+  .page-header {
+    align-items: stretch;
+    gap: 12px;
+
+    > div {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .page-header p {
+    font-size: var(--font-size-sm);
+  }
 }

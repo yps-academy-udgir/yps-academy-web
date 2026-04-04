@@ -16,7 +16,7 @@
 .report-wrapper {
   max-width: 920px;
   margin: 0 auto;
-  background: #fff;
+  background: var(--surface-card, #fff);
   border: 1px solid v.$gray-300;
   border-radius: v.$border-radius-lg;
   overflow: hidden;
@@ -57,7 +57,7 @@
 .table-card {
   border: 1px solid v.$gray-300;
   border-radius: v.$border-radius-md;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 
 .report-meta-card {
@@ -78,7 +78,7 @@
   gap: v.$spacing-md;
   font-size: v.$font-size-sm;
   padding: v.$spacing-xxs 0;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .info-card,
@@ -91,7 +91,7 @@
 .info-card,
 .table-card {
   padding: v.$spacing-lg;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 
 .section-eyebrow,
@@ -130,13 +130,13 @@
   padding: v.$spacing-lg;
   border-radius: v.$border-radius-md;
   border: 1px solid v.$gray-300;
-  background: #fff;
-  color: #111827;
+  background: var(--surface-card, #fff);
+  color: var(--text-primary, #111827);
 }
 
 .summary-card strong {
   font-size: v.$font-size-xl;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .summary-card.primary { background: v.$primary-50; border-color: v.$primary-200; }
@@ -157,17 +157,17 @@
   border-bottom: 1px solid v.$gray-300;
   text-align: left;
   font-size: v.$font-size-sm;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .marks-table th {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--surface-page, #f3f4f6);
+  color: var(--text-primary, #111827);
   font-weight: v.$font-weight-bold;
 }
 
 .marks-table tfoot td {
-  background: #f9fafb;
+  background: var(--surface-page, #f9fafb);
   font-weight: v.$font-weight-bold;
 }
 
@@ -185,7 +185,7 @@
 
 .footer-note {
   font-size: v.$font-size-sm;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .footer-note p {
@@ -196,7 +196,7 @@
   min-width: 240px;
   text-align: center;
   font-size: v.$font-size-sm;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .signature-line {

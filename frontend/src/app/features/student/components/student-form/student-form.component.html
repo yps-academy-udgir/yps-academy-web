@@ -120,6 +120,10 @@
                   }
                 </mat-select>
                 <mat-icon matPrefix>calendar_today</mat-icon>
+                <mat-hint>Use academic session format like 2026-27</mat-hint>
+                @if (studentForm.get('academicDetails.yearOfAdmission')?.invalid && studentForm.get('academicDetails.yearOfAdmission')?.touched) {
+                  <mat-error>Year of admission is required</mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="form-field">
@@ -131,8 +135,25 @@
                   }
                 </mat-select>
                 <mat-icon matPrefix>school</mat-icon>
+                @if (studentForm.get('academicDetails.class')?.invalid && studentForm.get('academicDetails.class')?.touched) {
+                  <mat-error>Class is required for classroom auto-assignment</mat-error>
+                }
               </mat-form-field>
             </div>
+
+            @if (studentForm.get('academicDetails.class')?.value) {
+              <div class="form-row">
+                @if (hasAvailableClassroom(studentForm.get('academicDetails.class')?.value)) {
+                  <p class="classroom-hint success">Student will be auto-assigned to an available classroom for the selected class.</p>
+                } @else {
+                  <p class="classroom-hint warning">No classroom available for this class. Add a classroom first, then create the student.</p>
+                  <button mat-stroked-button type="button" color="primary" (click)="addClassroom()">
+                    <mat-icon>add</mat-icon>
+                    Add Classroom
+                  </button>
+                }
+              </div>
+            }
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="form-field full-width">
@@ -222,7 +243,7 @@
 
             <!-- Payment Section -->
             <div class="payment-section">
-              <h3 class="section-title">
+              <h3 class="section-heading-row tertiary-heading">
                 <mat-icon>payment</mat-icon>
                 {{ isEditMode() ? 'Add Payment' : 'Initial Payment (Optional)' }}
               </h3>

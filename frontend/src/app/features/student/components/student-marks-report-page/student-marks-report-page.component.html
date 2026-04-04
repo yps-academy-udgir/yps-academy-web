@@ -1,7 +1,7 @@
 <div class="student-report-page">
   <div class="page-header">
     <div>
-      <h2>Student Marks Report</h2>
+      <h2 class="tertiary-heading">Student Marks Report</h2>
       @if (student() && result()) {
         <p>{{ student()!.firstName }} {{ student()!.lastName }} · Roll No: {{ student()!.rollNumber || '-' }} · {{ result()!.examType }} · {{ result()!.year }}</p>
       }

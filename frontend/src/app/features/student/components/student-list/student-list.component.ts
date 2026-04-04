@@ -58,11 +58,11 @@ export class StudentListComponent implements OnInit {
     const years = new Set(
       this.students()
         .map((s) => s.academicDetails?.yearOfAdmission)
-        .filter((y): y is number => y !== undefined)
+        .filter((y): y is string => typeof y === 'string' && y.trim().length > 0)
     );
     return Array.from(years)
-      .sort((a, b) => b - a)
-      .map((y) => ({ value: String(y), label: String(y) }));
+      .sort((a, b) => b.localeCompare(a))
+      .map((y) => ({ value: y, label: y }));
   });
 
   // Access service signals

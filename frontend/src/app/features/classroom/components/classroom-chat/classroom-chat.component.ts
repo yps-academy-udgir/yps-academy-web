@@ -164,17 +164,29 @@ export class ClassroomChatComponent implements OnInit, OnDestroy {
     }
 
     this.sending = true;
+    const result = this.chatService.sendMessage(this.classroomId, messageText, this.uploadedAttachments);
 
-    // Send via Socket.io (or REST fallback)
-    try {
-      this.chatService.sendMessage(this.classroomId, messageText, this.uploadedAttachments);
+    if (result === null) {
+      // Sent via Socket.io — server will broadcast message:new back
       this.messageForm.reset();
       this.uploadedAttachments = [];
-      this.notificationService.success('Message sent');
-    } catch (error: any) {
-      this.notificationService.error(error?.message || 'Failed to send message');
-    } finally {
       this.sending = false;
+    } else {
+      // REST fallback
+      result.subscribe({
+        next: () => {
+          this.messageForm.reset();
+          this.uploadedAttachments = [];
+          // Reload so the new message appears
+          this.chatService.refreshClassroomMessages(this.classroomId);
+        },
+        error: (error: any) => {
+          this.notificationService.error(error?.error?.message || 'Failed to send message');
+        },
+        complete: () => {
+          this.sending = false;
+        },
+      });
     }
   }
 

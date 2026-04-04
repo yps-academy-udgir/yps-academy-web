@@ -1,6 +1,6 @@
 ﻿<div class="fee-dashboard-container">
   <div class="page-header">
-    <h2>Fee Management</h2>
+    <h2 class="tertiary-heading">Fee Management</h2>
     <button mat-raised-button color="warn" (click)="goToDefaulters()">
       <mat-icon>warning</mat-icon> View Defaulters
     </button>
@@ -38,9 +38,9 @@
       </div>
     }
 
-    <h3 class="section-title">Class-wise Breakdown</h3>
+    <h3 class="section-heading-row tertiary-heading">Class-wise Breakdown</h3>
     @if (!hasClassData()) {
-      <p class="section-title">No class fee data available.</p>
+      <p class="body-text-sm">No class fee data available.</p>
     } @else {
       <div class="class-grid">
         @for (row of classRows(); track row.class) {

@@ -22,6 +22,7 @@ export const createFacultySchema = z.object({
   degree: z.string().trim().min(2, 'Degree / qualification is required'),
   yearsOfExperience: z.number().min(0, 'Years of experience must be a non-negative number'),
   annualSalary: z.number().min(1, 'Annual salary must be greater than 0'),
+  classroomId: z.string().trim().min(1, 'Classroom is required'),
   pastExperience: z.array(pastExperienceSchema).optional().default([]),
   salaryPayments: z.array(salaryPaymentSchema).optional().default([]),
 });

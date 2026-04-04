@@ -1,7 +1,7 @@
 <div class="fee-receipt-page">
   <div class="page-header">
     <div>
-      <h2>Student Fee Receipt</h2>
+      <h2 class="tertiary-heading">Student Fee Receipt</h2>
       @if (student()) {
         <p>{{ student()!.firstName }} {{ student()!.lastName }} · Roll No: {{ student()!.rollNumber || '-' }} · {{ student()!.email }}</p>
       }

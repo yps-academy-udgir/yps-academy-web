@@ -2,14 +2,14 @@
   <div class="ws-container">
     <div class="ws-section-header light">
       <span class="ws-label">Our Track Record</span>
-      <h2>Achievements &amp; Milestones</h2>
-      <p>Numbers that reflect our commitment to excellence</p>
+      <h2 class="secondary-heading gradient-text">Achievements &amp; Milestones</h2>
+      <p class="ws-reveal-text"><span>Numbers that reflect</span><span>our commitment to excellence</span></p>
     </div>
     <div class="achievements-grid">
       @for (item of achievements; track item.label) {
         <div class="achievement-card">
           <div class="achievement-icon">{{ item.icon }}</div>
-          <div class="achievement-value">{{ item.value }}</div>
+          <div class="achievement-value gradient-text-animated">{{ item.value }}</div>
           <div class="achievement-label">{{ item.label }}</div>
         </div>
       }

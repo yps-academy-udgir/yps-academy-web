@@ -4,7 +4,7 @@
  * Handles REST API calls and Socket.io event subscriptions
  */
 
-import { Injectable, signal, effect, inject } from '@angular/core';
+import { Injectable, signal, effect, inject, NgZone } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -26,6 +26,7 @@ export class ChatService {
   private http = inject(HttpClient);
   private socketService = inject(SocketService);
   private authService = inject(AuthService);
+  private ngZone = inject(NgZone);
 
   constructor() {
     // Initialize Socket.io connection when service is created
@@ -81,7 +82,7 @@ export class ChatService {
       next: (response) => {
         // Update messages
         const map = new Map(this.messagesMap());
-        map.set(classroomId, response.messages);
+        map.set(classroomId, response.data);
         this.messagesMap.set(map);
 
         // Clear error
@@ -120,20 +121,26 @@ export class ChatService {
   }
 
   /**
-   * Send a message (via Socket.io)
-   * Optimistically update UI
+   * Send a message — Socket.io when connected, REST fallback otherwise.
+   * Returns an Observable that completes when REST is used, or null for socket.
    */
   sendMessage(
     classroomId: string,
     messageText: string,
     attachments?: any[]
-  ): void {
+  ): Observable<{ data: Message }> | null {
     if (!messageText.trim()) {
-      return;
+      return null;
     }
 
-    // Emit via Socket.io
-    this.socketService.sendMessage(classroomId, messageText, attachments);
+    if (this.socketService.connected()) {
+      // Preferred: emit via Socket.io (server will broadcast back via message:new)
+      this.socketService.sendMessage(classroomId, messageText, attachments);
+      return null;
+    }
+
+    // Fallback: REST API
+    return this.sendMessageRest(classroomId, messageText, attachments);
   }
 
   /**
@@ -204,57 +211,62 @@ export class ChatService {
   private setupSocketListeners(): void {
     // Listen for new messages
     this.socketService.onMessageReceived((message: Message) => {
-      const classroomId = message.classroomId;
-      const map = new Map(this.messagesMap());
-      const messages = map.get(classroomId) || [];
+      // Run inside Angular zone so OnPush components re-render
+      this.ngZone.run(() => {
+        const classroomId = message.classroomId;
+        const map = new Map(this.messagesMap());
+        const messages = map.get(classroomId) || [];
 
-      // Check if message already exists (avoid duplicates from REST + Socket)
-      if (!messages.some((m) => m._id === message._id)) {
-        messages.push(message);
-      }
+        // Check if message already exists (avoid duplicates from REST + Socket)
+        if (!messages.some((m) => m._id === message._id)) {
+          messages.push(message);
+        }
 
-      map.set(classroomId, messages);
-      this.messagesMap.set(map);
+        map.set(classroomId, messages);
+        this.messagesMap.set(map);
 
-      // Update unread count if sender is not current user
-      const currentUserId = this.authService.currentUser()?._id || this.authService.currentUser()?.userId;
-      const senderIsCurrentUser = message.senderId === currentUserId;
+        // Update unread count if sender is not current user
+        const currentUserId = this.authService.currentUser()?._id || this.authService.currentUser()?.userId;
+        const senderIsCurrentUser = message.senderId === currentUserId;
 
-      if (!senderIsCurrentUser) {
-        const unreadMap = new Map(this.unreadCountsMap());
-        const currentCount = unreadMap.get(classroomId) || 0;
-        unreadMap.set(classroomId, currentCount + 1);
-        this.unreadCountsMap.set(unreadMap);
-      }
+        if (!senderIsCurrentUser) {
+          const unreadMap = new Map(this.unreadCountsMap());
+          const currentCount = unreadMap.get(classroomId) || 0;
+          unreadMap.set(classroomId, currentCount + 1);
+          this.unreadCountsMap.set(unreadMap);
+        }
+      });
     });
 
     // Listen for read receipts
     this.socketService.onMessageRead((data: any) => {
-      const { messageId, classroomId, userId } = data;
-      const map = new Map(this.messagesMap());
-      const messages = map.get(classroomId) || [];
+      this.ngZone.run(() => {
+        const { messageId, classroomId, userId } = data;
+        const map = new Map(this.messagesMap());
+        const messages = map.get(classroomId) || [];
 
-      const message = messages.find((m) => m._id === messageId);
-      if (message) {
-        // Add to readBy if not already there
-        if (!message.readBy.some((r) => r.userId === userId)) {
-          message.readBy.push({ userId, readAt: new Date() });
+        const message = messages.find((m) => m._id === messageId);
+        if (message) {
+          // Add to readBy if not already there
+          if (!message.readBy.some((r) => r.userId === userId)) {
+            message.readBy.push({ userId, readAt: new Date() });
+          }
         }
-      }
 
-      map.set(classroomId, messages);
-      this.messagesMap.set(map);
+        map.set(classroomId, messages);
+        this.messagesMap.set(map);
 
-      // Decrement unread count if user is current user
-      const currentUserId = this.authService.currentUser()?._id || this.authService.currentUser()?.userId;
-      if (userId === currentUserId) {
-        const unreadMap = new Map(this.unreadCountsMap());
-        const currentCount = unreadMap.get(classroomId) || 0;
-        if (currentCount > 0) {
-          unreadMap.set(classroomId, currentCount - 1);
+        // Decrement unread count if user is current user
+        const currentUserId = this.authService.currentUser()?._id || this.authService.currentUser()?.userId;
+        if (userId === currentUserId) {
+          const unreadMap = new Map(this.unreadCountsMap());
+          const currentCount = unreadMap.get(classroomId) || 0;
+          if (currentCount > 0) {
+            unreadMap.set(classroomId, currentCount - 1);
+          }
+          this.unreadCountsMap.set(unreadMap);
         }
-        this.unreadCountsMap.set(unreadMap);
-      }
+      });
     });
 
     // Listen for errors

@@ -10,7 +10,7 @@
 
   <!-- App Logo/Branding -->
   <div class="app-branding" (click)="goToDashboard()">
-    <mat-icon class="brand-icon">school</mat-icon>
+    <img src="icons/icon-yps.svg" alt="YPS Academy" class="brand-logo" width="32" height="32" />
     <span class="brand-text">YPS Academy</span>
   </div>
 
@@ -23,10 +23,10 @@
       mat-stroked-button
       (click)="goToWebsite()"
       matTooltip="Visit public website"
-      class="website-btn"
+      class="website-btn desktop-only-action"
     >
       <mat-icon>language</mat-icon>
-      Website
+      <span class="website-label">Website</span>
     </button>
 
     <!-- Search (placeholder) -->
@@ -45,6 +45,7 @@
       (click)="toggleTheme()"
       [attr.aria-label]="themeTooltip()"
       [matTooltip]="themeTooltip()"
+      class="desktop-only-action"
     >
       <mat-icon>{{ themeIcon() }}</mat-icon>
     </button>
@@ -55,6 +56,7 @@
       aria-label="Notifications"
       matTooltip="Notifications"
       (click)="openNotifications()"
+      class="desktop-only-action"
     >
       <mat-icon matBadge="3" matBadgeColor="warn" matBadgeSize="small">
         notifications
@@ -75,6 +77,20 @@
 
 <!-- User Menu -->
 <mat-menu #userMenu="matMenu">
+  <button mat-menu-item class="mobile-only-menu-item" (click)="goToWebsite()">
+    <mat-icon>language</mat-icon>
+    <span>Website</span>
+  </button>
+  <button mat-menu-item class="mobile-only-menu-item" (click)="toggleTheme()">
+    <mat-icon>{{ themeIcon() }}</mat-icon>
+    <span>{{ themeTooltip() }}</span>
+  </button>
+  <button mat-menu-item class="mobile-only-menu-item" (click)="openNotifications()">
+    <mat-icon matBadge="3" matBadgeColor="warn" matBadgeSize="small">notifications</mat-icon>
+    <span>Notifications</span>
+  </button>
+  <mat-divider class="mobile-only-menu-item"></mat-divider>
+
   @if (currentUser()) {
     <div class="user-menu-header" mat-menu-item disabled>
       <mat-icon>account_circle</mat-icon>

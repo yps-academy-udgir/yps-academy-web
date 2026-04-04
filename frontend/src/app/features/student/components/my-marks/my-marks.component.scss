@@ -9,3 +9,35 @@
 .pct-mid  { background: var(--color-warning, #ff9800); color: #fff; }
 .pct-low  { background: var(--color-error,   #f44336); color: #fff; }
 .empty-state { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px; color: var(--text-secondary); mat-icon { font-size: 48px; width: 48px; height: 48px; } }
+
+@media (max-width: 768px) {
+	.my-marks-page { padding: 12px; }
+
+	.page-header {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 12px;
+
+		button {
+			width: 100%;
+			justify-content: center;
+		}
+	}
+
+	.page-header p {
+		margin: 4px 0 0;
+		color: var(--text-secondary);
+		font-size: var(--font-size-sm);
+	}
+
+	.results-grid { grid-template-columns: 1fr; }
+
+	.result-card mat-card-actions {
+		button {
+			width: 100%;
+			justify-content: center;
+		}
+	}
+
+	.empty-state { padding: 28px 16px; }
+}

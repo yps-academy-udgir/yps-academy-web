@@ -12,12 +12,12 @@
 
 .sidenav {
   width: 260px;
-  background-color: var(--background-secondary);
-  border-right: 1px solid var(--border-color);
+  background-color: var(--surface-section);
+  border-right: 1px solid var(--border-subtle);
 }
 
 .main-content {
-  background-color: var(--background-primary);
+  background-color: var(--surface-page);
   overflow: auto;
 }
 

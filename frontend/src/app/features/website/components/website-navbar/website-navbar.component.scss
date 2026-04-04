@@ -1,4 +1,5 @@
 ﻿@use '../../../../../styles/variables' as v;
+@use '../../../../../styles/motion-effects' as effects;
 
 .ws-header {
   position: fixed;
@@ -17,6 +18,13 @@
     border-bottom: 1px solid var(--border-color);
     backdrop-filter: none;
   }
+
+  &.menu-open {
+    background: var(--surface-section, #fff9f5);
+    border-bottom: 1px solid var(--border-subtle, #f3e5de);
+    box-shadow: v.$shadow-md;
+    backdrop-filter: none;
+  }
 }
 
 .ws-nav-container {
@@ -33,33 +41,43 @@
   display: flex;
   align-items: center;
   gap: v.$spacing-xs;
-  color: #fff;
+  color: var(--text-on-dark);
   font-size: v.$font-size-xl;
   cursor: default;
   transition: color v.$transition-fast;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
-  .logo-icon {
-    font-size: 28px !important;
-    width: 28px;
-    height: 28px;
-    transition: color v.$transition-fast;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  .logo-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+    transition: filter v.$transition-fast, transform v.$transition-fast;
+
+    @media (max-width: v.$breakpoint-sm) {
+      width: 30px;
+      height: 30px;
+    }
   }
 
   .logo-text strong { 
-    color: var(--accent-color);
+    color: var(--color-brand-highlight);
     transition: color v.$transition-fast;
   }
 
-  .ws-header.scrolled & {
+  .ws-header:is(.scrolled, .menu-open) & {
     color: var(--text-primary);
     text-shadow: none;
-    
-    .logo-icon {
-      color: var(--primary-color);
+
+    .logo-img {
       filter: none;
     }
+  }
+
+  &:hover .logo-img {
+    transform: scale(1.08);
   }
 }
 
@@ -72,98 +90,117 @@
     display: none;
     position: fixed;
     inset: 70px 0 0 0;
-    background: var(--background-secondary);
+    background: var(--surface-section, #fff9f5);
+    border-top: 1px solid var(--border-subtle, #f3e5de);
+    box-shadow: 0 14px 34px rgba(42, 25, 21, 0.14);
     flex-direction: column;
+    align-items: stretch;
     justify-content: flex-start;
     padding: v.$spacing-xl v.$spacing-lg;
     gap: v.$spacing-lg;
-    z-index: v.$z-fixed;
+    min-height: calc(100dvh - 70px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: v.$z-modal;
 
     &.open { display: flex; }
   }
 }
 
 .ws-nav-link {
-  --mdc-text-button-label-text-color: rgba(255,255,255,0.9);
+  --ws-nav-wipe-fill: rgba(255, 255, 255, 0.13);
+  --mdc-text-button-label-text-color: var(--text-on-dark);
+  // Suppress Material state-layer so our custom fill animation is the sole hover effect
+  --mat-text-button-state-layer-color: transparent;
+  --mdc-text-button-hover-state-layer-opacity: 0;
   text-decoration: none !important;
   font-size: v.$font-size-sm !important;
   font-weight: v.$font-weight-medium !important;
   letter-spacing: 0.3px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  transition: all v.$transition-fast;
+  @include effects.hover-wipe(var(--ws-nav-wipe-fill), v.$border-radius-md, 0.3s);
 
-  &:hover {
-    --mdc-text-button-label-text-color: var(--accent-color);
+  &:is(:hover, :focus-visible, :active) {
+    --mdc-text-button-label-text-color: var(--color-brand-highlight);
   }
 
-  .ws-header.scrolled & {
+  .ws-header:is(.scrolled, .menu-open) & {
+    --ws-nav-wipe-fill: var(--surface-overlay);
     --mdc-text-button-label-text-color: var(--text-primary);
     text-shadow: none;
-    &:hover {
-      --mdc-text-button-label-text-color: var(--primary-color);
+
+    &:is(:hover, :focus-visible, :active) {
+      --mdc-text-button-label-text-color: var(--color-brand-primary);
     }
   }
 
   @media (max-width: v.$breakpoint-md) {
-    --mdc-text-button-label-text-color: var(--text-primary);
-    text-shadow: none;
-    &:hover {
-      --mdc-text-button-label-text-color: var(--primary-color);
-    }
+    width: 100%;
+    justify-content: center;
   }
 }
 
 .btn-admission {
-  --mdc-filled-button-container-color: var(--accent-color);
-  --mdc-filled-button-label-text-color: white;
-  --mdc-elevated-button-container-color: var(--accent-color);
+  // Override MDC filled button to use brand gradient via background-image
+  --mdc-filled-button-container-color: transparent;
+  --mdc-filled-button-label-text-color: var(--text-on-brand);
+  --mdc-elevated-button-container-color: transparent;
+  color: var(--text-on-brand) !important;
+  background: var(--color-brand-gradient) !important;
+  background-size: 200% 200% !important;
   border-radius: v.$border-radius-xl !important;
   font-weight: v.$font-weight-bold !important;
   font-size: v.$font-size-sm !important;
-  transition: transform v.$transition-fast, box-shadow v.$transition-fast, filter v.$transition-fast;
+  transition: transform v.$transition-fast, box-shadow v.$transition-fast, filter v.$transition-fast, background-position v.$transition-normal !important;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 
   &:hover { 
     transform: translateY(-2px); 
     box-shadow: v.$shadow-md;
+    background-position: right center !important;
   }
 
-  .ws-header.scrolled & {
+  .ws-header:is(.scrolled, .menu-open) & {
+    filter: none;
+  }
+
+  @media (max-width: v.$breakpoint-md) {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+    margin: 0 auto;
     filter: none;
   }
 }
 
 .btn-back-admin {
-  --mdc-outlined-button-outline-color: rgba(255,255,255,0.3);
+  --mdc-outlined-button-outline-color: transparent;
   --mdc-outlined-button-label-text-color: rgba(255,255,255,0.7);
   font-size: v.$font-size-xs !important;
   border-radius: v.$border-radius-md !important;
   transition: all v.$transition-fast;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
 
-  &:hover {
+  &:is(:hover, :focus-visible, :active) {
     --mdc-outlined-button-label-text-color: #fff;
-    background: rgba(255,255,255,0.1) !important;
+    transform: translateY(-1px);
   }
 
-  .ws-header.scrolled & {
-    --mdc-outlined-button-outline-color: var(--border-color);
+  .ws-header:is(.scrolled, .menu-open) & {
+    --mdc-outlined-button-outline-color: transparent;
     --mdc-outlined-button-label-text-color: var(--text-secondary);
     filter: none;
-    &:hover {
+    &:is(:hover, :focus-visible, :active) {
       --mdc-outlined-button-label-text-color: var(--text-primary);
-      background: var(--background-hover) !important;
+      transform: translateY(-1px);
     }
   }
 
   @media (max-width: v.$breakpoint-md) {
-    --mdc-outlined-button-outline-color: var(--border-color);
-    --mdc-outlined-button-label-text-color: var(--text-secondary);
-    filter: none;
-    &:hover {
-      --mdc-outlined-button-label-text-color: var(--text-primary);
-      background: var(--background-hover) !important;
-    }
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+    margin: 0 auto;
   }
 }
 
@@ -172,9 +209,13 @@
   color: rgba(255,255,255,0.9) !important;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
 
-  .ws-header.scrolled & {
+  .ws-header:is(.scrolled, .menu-open) & {
     color: var(--text-primary) !important;
     filter: none;
+  }
+
+  @media (max-width: v.$breakpoint-md) {
+    align-self: center;
   }
 }
 
@@ -184,7 +225,7 @@
   transition: color v.$transition-fast, filter v.$transition-fast;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
 
-  .ws-header.scrolled & {
+  .ws-header:is(.scrolled, .menu-open) & {
     color: var(--text-primary) !important;
     filter: none;
   }

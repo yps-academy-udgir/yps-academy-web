@@ -8,29 +8,53 @@
 // Color Palette
 // =====================================
 
-// Primary Colors
-$primary-50: #e8eaf6;
-$primary-100: #c5cae9;
-$primary-200: #9fa8da;
-$primary-300: #7986cb;
-$primary-400: #5c6bc0;
-$primary-500: #3f51b5;
-$primary-600: #3949ab;
-$primary-700: #303f9f;
-$primary-800: #283593;
-$primary-900: #1a237e;
+// Primary Colors (Warm Coral Scale)
+$primary-50: #fff1ee;
+$primary-100: #ffd8d2;
+$primary-200: #ffb7ad;
+$primary-300: #ff9788;
+$primary-400: #ff7a6b;
+$primary-500: #ff5a5a;
+$primary-600: #ef4d4f;
+$primary-700: #d84246;
+$primary-800: #b9373c;
+$primary-900: #8f282f;
 
-// Accent Colors
-$accent-50: #fce4ec;
-$accent-100: #f8bbd0;
-$accent-200: #f48fb1;
-$accent-300: #f06292;
-$accent-400: #ec407a;
-$accent-500: #e91e63;
-$accent-600: #d81b60;
-$accent-700: #c2185b;
-$accent-800: #ad1457;
-$accent-900: #880e4f;
+// Accent Colors (Warm Orange Scale)
+$accent-50: #fff5ed;
+$accent-100: #ffe4d3;
+$accent-200: #ffd0b4;
+$accent-300: #ffbc94;
+$accent-400: #ffab75;
+$accent-500: #ff8b5a;
+$accent-600: #ef7d4f;
+$accent-700: #d86841;
+$accent-800: #b85635;
+$accent-900: #8f3f26;
+
+// Tertiary Brand Scale (Apricot/Gold)
+$tertiary-50: #fff8e9;
+$tertiary-100: #ffefcb;
+$tertiary-200: #ffe2a0;
+$tertiary-300: #ffd675;
+$tertiary-400: #ffca5f;
+$tertiary-500: #ffa95a;
+$tertiary-600: #ff9a54;
+$tertiary-700: #e9834a;
+$tertiary-800: #c96f3e;
+$tertiary-900: #9e552f;
+
+// Highlight Brand Scale
+$highlight-50: #fffdeb;
+$highlight-100: #fff8c6;
+$highlight-200: #ffef93;
+$highlight-300: #ffe564;
+$highlight-400: #ffdc5a;
+$highlight-500: #ffd45a;
+$highlight-600: #efc04f;
+$highlight-700: #d8a642;
+$highlight-800: #b88935;
+$highlight-900: #8f6626;
 
 // Warn/Error Colors
 $warn-50: #ffebee;
@@ -100,9 +124,11 @@ $shadow-xl: 0 15px 25px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.05);
 // =====================================
 // Typography
 // =====================================
-$font-family-base: Roboto, "Helvetica Neue", sans-serif;
-$font-family-monospace: 'Courier New', monospace;
+$font-family-display: 'Sora', 'Segoe UI', sans-serif;
+$font-family-base: 'Manrope', 'Segoe UI', sans-serif;
+$font-family-monospace: 'JetBrains Mono', 'Courier New', monospace;
 
+$font-size-xxs: 11px;
 $font-size-xs: 12px;
 $font-size-sm: 14px;
 $font-size-md: 16px;
@@ -110,10 +136,14 @@ $font-size-lg: 18px;
 $font-size-xl: 20px;
 $font-size-xxl: 24px;
 $font-size-xxxl: 32px;
+$font-size-4xl: 40px;
+$font-size-5xl: 48px;
+$font-size-6xl: 64px;
 
 $font-weight-light: 300;
 $font-weight-normal: 400;
 $font-weight-medium: 500;
+$font-weight-semibold: 600;
 $font-weight-bold: 700;
 
 $line-height-tight: 1.2;
@@ -177,6 +207,32 @@ $footer-height: 48px;
   --transition-fast: #{$transition-fast};
   --transition-normal: #{$transition-normal};
   --transition-slow: #{$transition-slow};
+
+  // Typography
+  --font-family-display: #{$font-family-display};
+  --font-family-body: #{$font-family-base};
+  --font-family-mono: #{$font-family-monospace};
+  --font-size-xxs: #{$font-size-xxs};
+  --font-size-xs: #{$font-size-xs};
+  --font-size-sm: #{$font-size-sm};
+  --font-size-md: #{$font-size-md};
+  --font-size-lg: #{$font-size-lg};
+  --font-size-xl: #{$font-size-xl};
+  --font-size-xxl: #{$font-size-xxl};
+  --font-size-xxxl: #{$font-size-xxxl};
+  --font-size-4xl: #{$font-size-4xl};
+  --font-size-5xl: #{$font-size-5xl};
+  --font-size-6xl: #{$font-size-6xl};
+  --line-height-tight: #{$line-height-tight};
+  --line-height-normal: #{$line-height-normal};
+  --line-height-relaxed: #{$line-height-relaxed};
+
+  // Responsive token helpers
+  --bp-sm: #{$breakpoint-sm};
+  --bp-md: #{$breakpoint-md};
+  --bp-lg: #{$breakpoint-lg};
+  --font-size-mobile-scale: 0.9;
+  --space-mobile-scale: 0.85;
 
   // Layout
   --sidebar-width: #{$sidebar-width};

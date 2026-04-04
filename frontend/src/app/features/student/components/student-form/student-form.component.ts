@@ -12,9 +12,11 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { SharedMaterialModule } from '../../../../shared/shared-material.module';
 import { StudentService } from '../../../../shared/services/student.service';
+import { ClassroomService } from '../../../../shared/services/classroom.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { Student, Gender, Class, Subject, Payment } from '../../../../shared/models/student.model';
+import { Classroom } from '../../../classroom/models/classroom.model';
 import { calculateFees, calculatePendingFees, calculateTotalPaid } from '../../../../shared/utils/fee-calculator.util';
 import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
 
@@ -36,6 +38,7 @@ export class StudentFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private studentService = inject(StudentService);
+  private classroomService = inject(ClassroomService);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
 
@@ -43,6 +46,8 @@ export class StudentFormComponent implements OnInit {
   studentId = signal<string | null>(null);
   loading = signal<boolean>(false);
   submitting = signal<boolean>(false);
+  classrooms = signal<Classroom[]>([]);
+  classroomsLoading = signal<boolean>(false);
 
   // Computed signals
   isEditMode = computed(() => this.studentId() !== null);
@@ -101,12 +106,28 @@ export class StudentFormComponent implements OnInit {
 
   // Current year for year of admission
   currentYear = new Date().getFullYear();
-  yearRange = Array.from({ length: 20 }, (_, i) => this.currentYear - i + 1);
+  yearRange = Array.from({ length: 20 }, (_, i) => this.formatAcademicSession(this.currentYear - i));
   
   ngOnInit(): void {
     this.initializeForm();
+    this.loadClassrooms();
     this.checkEditMode();
     this.setupFeeCalculation();
+  }
+
+  private loadClassrooms(): void {
+    this.classroomsLoading.set(true);
+    this.classroomService.getAllClassrooms(1, 200).subscribe({
+      next: (response) => {
+        this.classrooms.set(response.data);
+      },
+      error: () => {
+        this.classrooms.set([]);
+      },
+      complete: () => {
+        this.classroomsLoading.set(false);
+      },
+    });
   }
 
   /**
@@ -120,8 +141,8 @@ export class StudentFormComponent implements OnInit {
       contact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s-]{10,15}$/)]],
       gender: ['', Validators.required],
       academicDetails: this.fb.group({
-        yearOfAdmission: [''],
-        class: [''],
+        yearOfAdmission: ['', Validators.required],
+        class: ['', Validators.required],
         subjects: [[]],
         selfStudyMode: [false],
       }),
@@ -141,6 +162,11 @@ export class StudentFormComponent implements OnInit {
         paymentRemarks: [''],
       }),
     });
+  }
+
+  private formatAcademicSession(startYear: number): string {
+    const endYearShort = String((startYear + 1) % 100).padStart(2, '0');
+    return `${startYear}-${endYearShort}`;
   }
 
   /**
@@ -307,6 +333,14 @@ export class StudentFormComponent implements OnInit {
       return;
     }
 
+    if (!this.isEditMode()) {
+      const selectedClass = this.studentForm.get('academicDetails.class')?.value as string | null;
+      if (selectedClass && !this.hasAvailableClassroom(selectedClass)) {
+        this.notificationService.warning(`No classroom is available for class ${selectedClass}. Please add a classroom first.`);
+        return;
+      }
+    }
+
     this.submitting.set(true);
     const formValue = this.prepareFormData();
 
@@ -388,8 +422,8 @@ export class StudentFormComponent implements OnInit {
           this.router.navigate(['/students', 'management', 'list']);
         }
       },
-      error: () => {
-        this.notificationService.error('Failed to create student');
+      error: (error: Error) => {
+        this.notificationService.error(error.message || 'Failed to create student');
         this.submitting.set(false);
       },
     });
@@ -408,11 +442,23 @@ export class StudentFormComponent implements OnInit {
         this.submitting.set(false);
         this.router.navigate(['/students', 'management', 'list']);
       },
-      error: (error) => {
-        this.notificationService.error('Failed to update student');
+      error: (error: Error) => {
+        this.notificationService.error(error.message || 'Failed to update student');
         this.submitting.set(false);
       },
     });
+  }
+
+  hasAvailableClassroom(classValue: string | null | undefined): boolean {
+    if (!classValue) {
+      return false;
+    }
+
+    return this.classrooms().some((classroom) => classroom.class === classValue);
+  }
+
+  addClassroom(): void {
+    this.router.navigate(['/classrooms/management/add']);
   }
 
   /**

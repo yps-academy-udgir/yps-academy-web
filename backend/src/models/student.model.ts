@@ -31,7 +31,7 @@ export enum Subject {
 
 // Academic Details Interface
 export interface IAcademicDetails {
-  yearOfAdmission: number;
+  yearOfAdmission: string;
   class: Class;
   subjects: string[]; // Array to allow predefined + custom subjects
   selfStudyMode: boolean;
@@ -81,10 +81,9 @@ export interface IStudent extends Document {
 // Academic Details Schema
 const AcademicDetailsSchema = new Schema({
   yearOfAdmission: {
-    type: Number,
+    type: String,
     required: false,
-    min: [1900, 'Year of admission must be after 1900'],
-    max: [new Date().getFullYear() + 10, 'Year of admission cannot be too far in the future'],
+    match: [/^\d{4}-\d{2}$/, 'Year of admission must be in format YYYY-YY (example: 2026-27)'],
   },
   class: {
     type: String,
