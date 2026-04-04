@@ -1,16 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="YPS Academy">
   <defs>
     <linearGradient id="ypsGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3f51b5" />
-      <stop offset="100%" stop-color="#e91e63" />
+      <stop offset="0%"   stop-color="#FF5A5A" />
+      <stop offset="34%"  stop-color="#FF8B5A" />
+      <stop offset="68%"  stop-color="#FFA95A" />
+      <stop offset="100%" stop-color="#FFD45A" />
     </linearGradient>
     <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.18" />
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#3d1a10" flood-opacity="0.22" />
     </filter>
   </defs>
 
   <rect width="512" height="512" rx="96" fill="url(#ypsGradient)" />
-  <rect x="36" y="36" width="440" height="440" rx="82" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.45)" stroke-width="5" />
+  <rect x="36" y="36" width="440" height="440" rx="82" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.50)" stroke-width="5" />
 
   <g filter="url(#softShadow)">
     <text

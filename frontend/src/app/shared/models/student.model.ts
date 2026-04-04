@@ -29,7 +29,7 @@ export enum Subject {
  * Academic Details Interface
  */
 export interface AcademicDetails {
-  yearOfAdmission?: number;
+  yearOfAdmission?: string;
   class?: Class;
   subjects?: string[];
   selfStudyMode?: boolean;

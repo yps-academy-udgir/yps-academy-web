@@ -101,19 +101,13 @@ export const classroomRepository = {
       }
     }
 
+    if (!entity?._id) {
+      return [];
+    }
+
     const query: FilterQuery<IClassroom> = role === 'student'
-      ? {
-          $or: [
-            ...(entity?._id ? [{ enrolledStudents: entity._id }] : []),
-            { enrolledStudents: userId as any },
-          ],
-        }
-      : {
-          $or: [
-            ...(entity?._id ? [{ 'facultyAssignments.facultyId': entity._id }] : []),
-            { 'facultyAssignments.facultyId': userId as any },
-          ],
-        };
+      ? { enrolledStudents: entity._id }
+      : { 'facultyAssignments.facultyId': entity._id };
 
     return Classroom.find(query)
       .select('class section roomNumber academicYear capacity enrolledStudents')

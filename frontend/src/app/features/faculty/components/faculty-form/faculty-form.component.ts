@@ -5,9 +5,11 @@ import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { SharedMaterialModule } from '../../../../shared/shared-material.module';
 import { FacultyService } from '../../../../shared/services/faculty.service';
+import { ClassroomService } from '../../../../shared/services/classroom.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
 import { Department, Speciality } from '../../models/faculty.model';
+import { Classroom } from '../../../classroom/models/classroom.model';
 
 @Component({
   selector: 'app-faculty-form',
@@ -22,6 +24,7 @@ export class FacultyFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private facultyService = inject(FacultyService);
+  private classroomService = inject(ClassroomService);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
 
@@ -31,6 +34,8 @@ export class FacultyFormComponent implements OnInit {
   isEditMode = signal(false);
   editId = signal<string | null>(null);
   formLoading = signal(false);
+  classrooms = signal<Classroom[]>([]);
+  classroomLoading = signal(false);
 
   facultyForm = this.fb.group({
     firstName: ['', [Validators.required, Validators.minLength(2)]],
@@ -41,6 +46,7 @@ export class FacultyFormComponent implements OnInit {
     speciality: ['', Validators.required],
     degree: ['', Validators.required],
     yearsOfExperience: [null as number | null, [Validators.required, Validators.min(0)]],
+    classroomId: [''],
     pastExperience: this.fb.array([]),
     annualSalary: [null as number | null, [Validators.required, Validators.min(1)]],
     salaryPayments: this.fb.array([]),
@@ -59,12 +65,44 @@ export class FacultyFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadClassrooms();
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEditMode.set(true);
       this.editId.set(id);
       this.loadFacultyForEdit(id);
+    } else {
+      this.facultyForm.get('classroomId')?.setValidators([Validators.required]);
+      this.facultyForm.get('classroomId')?.updateValueAndValidity();
     }
+  }
+
+  private loadClassrooms(): void {
+    this.classroomLoading.set(true);
+    this.classroomService.getAllClassrooms(1, 200).subscribe({
+      next: (response) => {
+        this.classrooms.set(response.data);
+      },
+      error: () => {
+        this.notificationService.error('Failed to load classrooms. Please add a classroom first.');
+      },
+      complete: () => {
+        this.classroomLoading.set(false);
+      },
+    });
+  }
+
+  hasAvailableClassrooms(): boolean {
+    return this.classrooms().length > 0;
+  }
+
+  getClassroomLabel(classroom: Classroom): string {
+    return `${classroom.class} ${classroom.section} - Room ${classroom.roomNumber}`;
+  }
+
+  addClassroom(): void {
+    this.router.navigate(['/classrooms/management/add']);
   }
 
   private loadFacultyForEdit(id: string): void {
@@ -196,9 +234,21 @@ export class FacultyFormComponent implements OnInit {
           this.notificationService.success('Faculty member updated successfully.');
           this.router.navigate(['/faculty', id]);
         },
-        error: () => this.notificationService.error('Failed to update faculty member. Please try again.'),
+        error: (error: Error) => this.notificationService.error(error.message || 'Failed to update faculty member. Please try again.'),
       });
     } else {
+      if (!this.hasAvailableClassrooms()) {
+        this.notificationService.warning('No classrooms available. Please add a classroom first.');
+        this.addClassroom();
+        return;
+      }
+
+      if (!this.facultyForm.get('classroomId')?.value) {
+        this.facultyForm.get('classroomId')?.markAsTouched();
+        this.notificationService.warning('Please select a classroom before creating faculty.');
+        return;
+      }
+
       this.facultyService.createFaculty(this.facultyForm.value as any).subscribe({
         next: (response) => {
           const result = response.data;
@@ -221,7 +271,7 @@ export class FacultyFormComponent implements OnInit {
             this.router.navigate(['/faculty']);
           }
         },
-        error: () => this.notificationService.error('Failed to add faculty member. Please try again.'),
+        error: (error: Error) => this.notificationService.error(error.message || 'Failed to add faculty member. Please try again.'),
       });
     }
   }

@@ -1,7 +1,7 @@
 ﻿.dashboard-container { padding: var(--spacing-lg); }
-.dashboard-header .header-content { display: flex; align-items: center; justify-content: space-between; }
+.dashboard-header .header-content { display: flex; align-items: center; justify-content: space-between; background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; }
 .header-title { display: flex; align-items: center; gap: var(--spacing-sm); }
-.header-icon { font-size: 2rem; color: var(--primary-color); }
+.header-icon { font-size: 2rem; color: var(--color-brand-primary); }
 .loading-container { display: flex; flex-direction: column; align-items: center; padding: var(--spacing-xl); gap: var(--spacing-md); }
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--spacing-md); margin-bottom: var(--spacing-lg); }
 .stat-card mat-card-content { display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-md); }

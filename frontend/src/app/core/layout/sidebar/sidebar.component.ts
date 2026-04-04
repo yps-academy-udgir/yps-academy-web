@@ -49,6 +49,11 @@ export class SidebarComponent implements OnInit {
   chatClassrooms = signal<Classroom[]>([]);
   chatRoomsExpanded = signal<boolean>(true);
   unreadCounts = this.chatService.unreadCountsMap;
+  chatLoading = signal<boolean>(false);
+  chatError = signal<string | null>(null);
+  hasChatAccess = computed(() =>
+    this.roleService.isStudent() || this.roleService.isFaculty() || this.roleService.isAdmin()
+  );
 
   // Student portal — items visible only to students
   private readonly studentMenuItems: MenuItem[] = [
@@ -191,18 +196,32 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.roleService.isStudent() || this.roleService.isFaculty()) {
+      this.chatLoading.set(true);
+      this.chatError.set(null);
       this.classroomService.getMyClassrooms().subscribe({
         next: (response) => this.chatClassrooms.set(response.data),
-        error: () => { /* Non-critical; chat section won't show */ },
+        error: (err) => {
+          console.error('[Sidebar] Failed to load chat classrooms:', err);
+          this.chatError.set(err?.error?.message || 'Could not load classrooms');
+          this.chatLoading.set(false);
+        },
+        complete: () => this.chatLoading.set(false),
       });
       this.chatService.loadUnreadCounts();
       return;
     }
 
     if (this.roleService.isAdmin()) {
+      this.chatLoading.set(true);
+      this.chatError.set(null);
       this.classroomService.getAllClassrooms(1, 50).subscribe({
         next: (response) => this.chatClassrooms.set(response.data),
-        error: () => { /* Non-critical; chat section won't show */ },
+        error: (err) => {
+          console.error('[Sidebar] Failed to load chat classrooms:', err);
+          this.chatError.set(err?.error?.message || 'Could not load classrooms');
+          this.chatLoading.set(false);
+        },
+        complete: () => this.chatLoading.set(false),
       });
     }
   }

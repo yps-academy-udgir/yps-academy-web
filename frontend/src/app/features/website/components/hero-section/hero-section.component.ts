@@ -1,4 +1,4 @@
-﻿import { Component, ChangeDetectionStrategy, signal, effect, OnDestroy } from '@angular/core';
+﻿import { Component, ChangeDetectionStrategy, signal, OnDestroy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -13,10 +13,10 @@ import { CommonModule } from '@angular/common';
 })
 export class HeroSectionComponent implements OnDestroy {
   private intervalId?: number;
-  
+
   currentSlide = signal(0);
   isPaused = signal(false);
-  
+
   backgroundImages = [
     'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1920&h=1080&fit=crop',
     'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1920&h=1080&fit=crop',
@@ -35,37 +35,24 @@ export class HeroSectionComponent implements OnDestroy {
 
   startAutoPlay(): void {
     this.intervalId = window.setInterval(() => {
-      if (!this.isPaused()) {
-        this.nextSlide();
-      }
-    }, 5000);
+      if (!this.isPaused()) { this.nextSlide(); }
+    }, 2000);
   }
 
   stopAutoPlay(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
+    if (this.intervalId) { clearInterval(this.intervalId); }
   }
 
   nextSlide(): void {
     this.currentSlide.update(i => (i + 1) % this.backgroundImages.length);
   }
 
-  prevSlide(): void {
-    this.currentSlide.update(i => (i - 1 + this.backgroundImages.length) % this.backgroundImages.length);
-  }
-
   goToSlide(index: number): void {
     this.currentSlide.set(index);
   }
 
-  pauseSlider(): void {
-    this.isPaused.set(true);
-  }
-
-  resumeSlider(): void {
-    this.isPaused.set(false);
-  }
+  pauseSlider(): void { this.isPaused.set(true); }
+  resumeSlider(): void { this.isPaused.set(false); }
 
   scrollToCourses(): void {
     document.querySelector('#courses')?.scrollIntoView({ behavior: 'smooth' });

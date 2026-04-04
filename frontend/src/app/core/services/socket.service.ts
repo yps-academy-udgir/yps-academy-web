@@ -12,6 +12,7 @@ import { AuthService } from '../../features/auth/services/auth.service';
 export class SocketService {
   private socket: Socket | null = null;
   connected = signal(false);
+  private joinedRooms = new Set<string>();
 
   private authService = inject(AuthService);
 
@@ -42,6 +43,10 @@ export class SocketService {
     this.socket.on('connect', () => {
       this.connected.set(true);
       console.log('[Socket] Connected to server');
+      // Re-join any rooms that were registered before connection was ready
+      this.joinedRooms.forEach(classroomId => {
+        this.socket!.emit('classroom:join', { classroomId });
+      });
     });
 
     this.socket.on('disconnect', () => {
@@ -68,8 +73,9 @@ export class SocketService {
    * Join a classroom chat room
    */
   joinClassroom(classroomId: string): void {
+    this.joinedRooms.add(classroomId);
     if (!this.socket?.connected) {
-      console.warn('[Socket] Not connected, cannot join classroom');
+      // Will be joined automatically when socket connects
       return;
     }
     this.socket.emit('classroom:join', { classroomId });
@@ -79,6 +85,7 @@ export class SocketService {
    * Leave a classroom chat room
    */
   leaveClassroom(classroomId: string): void {
+    this.joinedRooms.delete(classroomId);
     if (!this.socket) return;
     this.socket.emit('classroom:leave', { classroomId });
   }

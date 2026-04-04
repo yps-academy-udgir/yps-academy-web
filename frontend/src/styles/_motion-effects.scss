@@ -1,0 +1,256 @@
+// Reusable motion/effect mixins and utility classes.
+// Use these for consistent interactive patterns across website components.
+@use 'sass:math';
+
+// Left-to-right fill slide.
+// The left half carries fill color, right half is transparent.
+// Resting at right shows transparent; hover slides to left to reveal fill.
+@mixin hover-wipe($fill-color, $radius: 10px, $duration: 0.3s) {
+  border-radius: $radius !important;
+  background: linear-gradient(to right, #{$fill-color} 50%, transparent 50%) !important;
+  background-size: 200% 100% !important;
+  background-position: right center !important;
+  transition: background-position #{$duration} cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease !important;
+
+  &:hover,
+  &:focus-visible,
+  &:active {
+    background-position: left center !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: color 0.2s ease !important;
+    background: transparent !important;
+  }
+}
+
+@keyframes ws-orbit-spin {
+  to { --ws-orbit-angle: 360deg; }
+}
+
+@property --ws-orbit-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+// Outer rotating gradient outline only (does not paint inside element).
+@mixin gradient-orbit-outline(
+  $radius: 999px,
+  $thickness: 2px,
+  $duration: 3s,
+  $offset: 1px
+) {
+  position: relative;
+  border-radius: $radius;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * (#{$thickness} + #{$offset}));
+    border-radius: calc(#{$radius} + #{$offset});
+    padding: $thickness;
+    background: conic-gradient(
+      from var(--ws-orbit-angle),
+      var(--color-brand-primary, #ff5a5a),
+      var(--color-brand-secondary, #ff8b5a),
+      var(--color-brand-tertiary, #ffa95a),
+      var(--color-brand-highlight, #ffd45a),
+      var(--color-brand-primary, #ff5a5a)
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: ws-orbit-spin #{$duration} linear infinite;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      animation: none;
+      background: var(--color-brand-gradient);
+    }
+  }
+}
+
+// Global utilities for direct use in templates.
+.ws-hover-wipe {
+  @include hover-wipe(var(--surface-overlay), 999px, 0.3s);
+}
+
+.ws-orbit-outline {
+  @include gradient-orbit-outline();
+}
+
+// Global button treatment: fast outer rotating brand boundary.
+// Scoped to website/app root containers to avoid third-party overlays.
+.website-root,
+.app-container {
+  button,
+  a[mat-button],
+  a[mat-icon-button],
+  a[mat-raised-button],
+  a[mat-flat-button],
+  a[mat-stroked-button] {
+    border: none !important;
+    --mdc-outlined-button-outline-color: transparent !important;
+    --mdc-outlined-button-disabled-outline-color: transparent !important;
+    @include gradient-orbit-outline(999px, 1.5px, 1.4s, 0.75px);
+  }
+
+  // Keep visual separation between grouped actions since orbit outline extends outside bounds.
+  :where(
+    button,
+    a[mat-button],
+    a[mat-icon-button],
+    a[mat-raised-button],
+    a[mat-flat-button],
+    a[mat-stroked-button]
+  ) + :where(
+    button,
+    a[mat-button],
+    a[mat-icon-button],
+    a[mat-raised-button],
+    a[mat-flat-button],
+    a[mat-stroked-button]
+  ) {
+    margin-inline-start: 6px;
+  }
+}
+
+// ── Text Typing Reveal ────────────────────────────────────────────────────────
+// Apply on a span that sits INSIDE a `display:inline-block` wrapper.
+// The wrapper collapses to the text's natural width so width:100% maps to the
+// text edge rather than the parent block width (which causes cursor to go far).
+//
+// $chars  — exact char count of the text (spaces count)
+// $type   — time to type the full line
+// $pause  — hold time at full visibility before resetting
+// $delay  — initial animation-delay before first cycle
+//
+// Usage:  @include motion.text-typing(17, 1.4s, 2s, 0.2s);
+
+@keyframes ws-cursor-blink {
+  0%, 100% { border-right-color: transparent; }
+  50%       { border-right-color: currentColor; }
+}
+
+@mixin text-typing($chars: 20, $type: 1.4s, $pause: 2s, $delay: 0s) {
+  $gap: 0.5s; // blank pause before re-typing
+  $total: $type + $pause + $gap;
+  $type-pct: math.percentage(math.div($type, $total));
+  $hold-pct: math.percentage(math.div($type + $pause, $total));
+  // Tiny offset used to force an instant-reset at the end of the hold phase.
+  // step-start at $hold-pct makes the width jump to 0 immediately.
+  $reset-pct: #{math.percentage(math.div($type + $pause, $total)) + " + 0.01%"};
+
+  @keyframes ws-typing-loop-#{$chars} {
+    0% {
+      width: 0;
+      animation-timing-function: steps(#{$chars}, end);
+    }
+    #{$type-pct} {
+      width: 100%;
+      animation-timing-function: steps(1, end); // hold at full width
+    }
+    #{$hold-pct} {
+      width: 100%;
+      animation-timing-function: step-start;    // instant jump to 0
+    }
+    #{math.percentage(math.div($type + $pause, $total)) + 0.001} {
+      width: 0;
+      animation-timing-function: steps(1, end); // stay at 0 during gap
+    }
+    100% { width: 0; }
+  }
+
+  & {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 0;
+    border-right: 2.5px solid currentColor;
+    animation:
+      ws-typing-loop-#{$chars} #{$total} linear #{$delay} infinite,
+      ws-cursor-blink 0.65s step-end #{$delay} infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    width: auto;
+    border-right: none;
+  }
+}
+
+// ── Word-by-Word Reveal ───────────────────────────────────────────────────────
+// Apply to a container. Each direct <span> child reveals in sequence, holds,
+// exits together, then the full cycle repeats continuously.
+// Stagger timing is baked into per-word keyframes so it is preserved every loop.
+//
+// $delay-start  — time before first word appears (let heading finish typing)
+// $stagger      — gap between each word
+// $duration     — each word's in-animation duration
+// $hold         — time all words stay visible before exit
+//
+// Usage:  @include motion.text-word-reveal(1.8s, 0.1s, 0.5s, 2s);
+
+@mixin text-word-reveal($delay-start: 1.8s, $stagger: 0.1s, $duration: 0.5s, $hold: 2s) {
+  $max-words: 8;
+  $exit-dur: 0.4s;
+  $gap: 0.5s;
+  $last-word-end: $delay-start + ($max-words - 1) * $stagger + $duration;
+  $exit-start: $last-word-end + $hold;
+  $exit-end: $exit-start + $exit-dur;
+  $total: $exit-end + $gap;
+
+  // One keyframe per word slot with timing baked in — stagger preserved every loop
+  @for $i from 1 through $max-words {
+    $in-start: $delay-start + ($i - 1) * $stagger;
+    $in-end: $in-start + $duration;
+
+    @keyframes ws-word-loop-#{$i} {
+      0%,
+      #{math.percentage(math.div($in-start, $total))} {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      #{math.percentage(math.div($in-end, $total))} {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      #{math.percentage(math.div($exit-start, $total))} {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      #{math.percentage(math.div($exit-end, $total))},
+      100% {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+    }
+  }
+
+  & > span {
+    display: inline-block;
+    opacity: 0;
+
+    @for $i from 1 through $max-words {
+      &:nth-child(#{$i}) {
+        animation: ws-word-loop-#{$i} #{$total} ease-out infinite;
+      }
+    }
+
+    // Words beyond max-words stay visible as static fallback
+    &:nth-child(n + #{$max-words + 1}) { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    & > span {
+      opacity: 1;
+      animation: none;
+    }
+  }
+}

@@ -1,5 +1,5 @@
 ﻿.faculty-list { display: flex; flex-direction: column; height: 100%; }
-.dashboard-toolbar h1 { font-size: 1.25rem; margin: 0; }
+.dashboard-toolbar h1 { font-size: inherit; margin: 0; }
 .spacer { flex: 1 1 auto; }
 .dashboard-container { padding: var(--spacing-lg); display: flex; flex-direction: column; gap: var(--spacing-md); }
 .filter-row { display: flex; gap: var(--spacing-md); flex-wrap: wrap; }

@@ -14,19 +14,26 @@
   transition: opacity 0.2s;
 
   &:hover {
-    opacity: 0.8;
+    opacity: 0.85;
   }
 
-  .brand-icon {
-    font-size: 28px;
-    width: 28px;
-    height: 28px;
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    object-fit: contain;
+    flex-shrink: 0;
+
+    @media (max-width: 599px) {
+      width: 28px;
+      height: 28px;
+    }
   }
 
   .brand-text {
-    font-size: 20px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
   }
 }
 
@@ -34,17 +41,70 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
+
+  > button {
+    flex-shrink: 0;
+  }
+
+  button[mat-icon-button] {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
 }
 
 .website-btn {
   margin-right: 4px;
   font-size: 13px;
+  min-width: 84px;
+  padding: 0 10px;
   gap: 4px;
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.mobile-only-menu-item {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding-inline: 8px;
+  }
+
+  .desktop-only-action {
+    display: none !important;
+  }
+
+  .mobile-only-menu-item {
+    display: flex !important;
+  }
+
+  .header-actions {
+    gap: 2px;
+  }
+
+  .website-btn {
+    min-width: 40px;
+    padding: 0 8px;
+    margin-right: 0;
+
+    .website-label {
+      display: none;
+    }
+
+    mat-icon {
+      margin: 0;
+    }
+  }
 }
 
 @media (max-width: 599px) {
   .brand-text {
     display: none;
+  }
+
+  .header-actions {
+    gap: 0;
   }
 }

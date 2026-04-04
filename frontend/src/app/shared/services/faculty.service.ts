@@ -114,12 +114,13 @@ export class FacultyService {
     if (error.error instanceof ErrorEvent) {
       msg = `Error: ${error.error.message}`;
     } else {
+      const serverMessage = error.error?.details || error.error?.error || error.error?.message;
       switch (error.status) {
-        case 400: msg = error.error?.message || 'Invalid request data'; break;
+        case 400: msg = serverMessage || 'Invalid request data'; break;
         case 404: msg = 'Faculty member not found'; break;
         case 409: msg = 'A faculty member with this email already exists'; break;
         case 500: msg = 'Server error. Please try again later'; break;
-        default: msg = error.error?.message || msg;
+        default: msg = serverMessage || msg;
       }
     }
     this.error.set(msg);

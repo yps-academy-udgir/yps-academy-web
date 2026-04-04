@@ -53,8 +53,8 @@
 
 .course-badge {
   display: inline-block;
-  background: var(--warn-color);
-  color: var(--text-primary);
+  background: var(--color-brand-gradient);
+  color: var(--text-on-brand);
   font-size: 11px;
   font-weight: v.$font-weight-bold;
   padding: 2px v.$spacing-xs;

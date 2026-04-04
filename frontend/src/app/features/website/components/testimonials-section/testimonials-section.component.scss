@@ -20,7 +20,7 @@
   font-size: 48px !important;
   width: 48px !important;
   height: 48px !important;
-  color: var(--primary-color);
+  color: var(--color-brand-primary);
   opacity: 0.4;
   margin-bottom: v.$spacing-xs;
   display: block;
@@ -44,7 +44,7 @@
   font-size: 20px !important;
   width: 20px !important;
   height: 20px !important;
-  color: var(--accent-color);
+  color: var(--color-brand-highlight);
 }
 
 .reviewer {
@@ -62,8 +62,8 @@
   width: 48px;
   height: 48px;
   border-radius: v.$border-radius-round;
-  background: var(--primary-color);
-  color: #fff;
+  background: var(--color-brand-gradient);
+  color: var(--text-on-brand);
   font-weight: v.$font-weight-bold;
   display: flex;
   align-items: center;
@@ -83,10 +83,10 @@
   width: 10px;
   height: 10px;
   border-radius: v.$border-radius-round;
-  background: var(--border-color);
+  background: var(--border-strong);
   cursor: pointer;
   transition: background v.$transition-fast;
-  &.active { background: var(--primary-color); }
+  &.active { background: var(--color-brand-primary); }
 }
 
 @keyframes fadeInUp {

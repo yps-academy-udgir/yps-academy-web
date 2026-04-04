@@ -191,7 +191,7 @@ export class StudentService {
       errorMessage = `Error: ${error.error.message}`;
     } else {
       // Server-side error
-      errorMessage = error.error?.error || error.error?.message || error.message;
+      errorMessage = error.error?.details || error.error?.error || error.error?.message || error.message;
     }
 
     this.error.set(errorMessage);

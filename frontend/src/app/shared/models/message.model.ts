@@ -36,7 +36,8 @@ export interface MessageInput {
 }
 
 export interface PaginatedMessageResponse {
-  messages: Message[];
+  success: boolean;
+  data: Message[];
   pagination: {
     page: number;
     limit: number;
