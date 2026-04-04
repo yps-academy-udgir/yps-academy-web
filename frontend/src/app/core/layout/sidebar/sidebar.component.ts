@@ -191,6 +191,11 @@ export class SidebarComponent implements OnInit {
           icon: 'edit_note',
           route: '/results/enter',
         },
+        {
+          label: 'Certificates',
+          icon: 'emoji_events',
+          route: '/results/certificates',
+        },
       ],
     },
     {

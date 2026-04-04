@@ -1,0 +1,226 @@
+<div class="certificates-page">
+  <div class="page-header">
+    <h2 class="tertiary-heading">Certificates</h2>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="downloadAllPdf()" [disabled]="certificates().length === 0 || exporting()">
+        <mat-icon>picture_as_pdf</mat-icon>
+        Download {{ scope() === 'top3' ? 'Top 3' : 'All' }} PDF
+      </button>
+      <button mat-stroked-button (click)="downloadAllPng()" [disabled]="certificates().length === 0 || exporting()">
+        <mat-icon>image</mat-icon>
+        Download {{ scope() === 'top3' ? 'Top 3' : 'All' }} PNG
+      </button>
+      <button mat-stroked-button (click)="downloadAllJpg()" [disabled]="certificates().length === 0 || exporting()">
+        <mat-icon>image</mat-icon>
+        Download {{ scope() === 'top3' ? 'Top 3' : 'All' }} JPG
+      </button>
+    </div>
+  </div>
+
+  <mat-card class="filter-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Class</mat-label>
+          <mat-select [value]="selectedClass()" (valueChange)="selectedClass.set($event); selectedSection.set('')">
+            @for (c of classOptions(); track c) {
+              <mat-option [value]="c">{{ c }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Section</mat-label>
+          <mat-select [value]="selectedSection()" (valueChange)="selectedSection.set($event)" [disabled]="!selectedClass()">
+            <mat-option value="">All Sections</mat-option>
+            @for (s of sectionOptions(); track s) {
+              <mat-option [value]="s">{{ s }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Exam Type</mat-label>
+          <mat-select [value]="selectedExamType()" (valueChange)="selectedExamType.set($event)">
+            <mat-option value="">All Exams</mat-option>
+            @for (et of examTypes; track et) {
+              <mat-option [value]="et">{{ et }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Month</mat-label>
+          <mat-select [value]="selectedMonth()" (valueChange)="selectedMonth.set($event)">
+            @for (m of months; track m.value) {
+              <mat-option [value]="m.value">{{ m.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Year</mat-label>
+          <input matInput type="number" min="2000" [value]="selectedYear()" (change)="selectedYear.set(+$any($event.target).value)" />
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" class="search-btn" (click)="search()" [disabled]="!selectedClass() || loading()">
+          <mat-icon>search</mat-icon>
+          Load Results
+        </button>
+      </div>
+
+      <div class="template-row">
+        <mat-form-field appearance="outline" class="title-field">
+          <mat-label>Certificate Title</mat-label>
+          <input matInput [value]="certificateTitle()" (input)="certificateTitle.set($any($event.target).value)" placeholder="Certificate of Excellence" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="message-field">
+          <mat-label>Message Template</mat-label>
+          <textarea
+            matInput
+            rows="3"
+            [value]="messageTemplate()"
+            (input)="messageTemplate.set($any($event.target).value)"
+            placeholder="Use placeholders: {name}, {rank}, {percentage}, {examType}, {month}, {year}, {class}"
+          ></textarea>
+          <mat-hint>Supported placeholders: name, rank, percentage, class, section, examType, month, year, total, outOf</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div class="scope-row">
+        <button
+          mat-stroked-button
+          type="button"
+          [class.active]="scope() === 'top3'"
+          (click)="setScope('top3')"
+          [disabled]="rows().length === 0"
+        >
+          Generate Top 3
+        </button>
+        <button
+          mat-stroked-button
+          type="button"
+          [class.active]="scope() === 'all'"
+          (click)="setScope('all')"
+          [disabled]="rows().length === 0"
+        >
+          Generate All Students
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  @if (loading()) {
+    <div class="loading-row">
+      <mat-spinner diameter="36"></mat-spinner>
+      <span>Loading ranked results...</span>
+    </div>
+  } @else if (rankedRows().length > 0) {
+    <div class="summary-row">
+      <p>
+        Showing <strong>{{ certificates().length }}</strong> certificate{{ certificates().length !== 1 ? 's' : '' }}
+        from <strong>{{ rankedRows().length }}</strong> ranked student{{ rankedRows().length !== 1 ? 's' : '' }}.
+      </p>
+    </div>
+
+    <div class="table-wrap">
+      <table class="rank-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Student</th>
+            <th>Class</th>
+            <th>Section</th>
+            <th>Percentage</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rankedRows(); track row._id) {
+            <tr>
+              <td>
+                @if (row.rank <= 3) {
+                  <span class="rank-badge top">#{{ row.rank }}</span>
+                } @else {
+                  <span class="rank-badge">#{{ row.rank }}</span>
+                }
+              </td>
+              <td>{{ row.studentName }}</td>
+              <td>{{ row.class }}</td>
+              <td>{{ row.section }}</td>
+              <td>{{ row.percentage | number:'1.0-1' }}%</td>
+              <td>{{ row.totalMarksObtained }} / {{ row.totalOutOf }}</td>
+              <td>
+                <button
+                  mat-icon-button
+                  type="button"
+                  [matMenuTriggerFor]="rowActionsMenu"
+                  [matMenuTriggerData]="{ row: row }"
+                  [disabled]="exporting()"
+                  aria-label="Certificate actions"
+                >
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <mat-menu #rowActionsMenu="matMenu">
+        <ng-template matMenuContent let-row="row">
+          <button mat-menu-item type="button" (click)="openCertificateDialog(row)">
+            <mat-icon>visibility</mat-icon>
+            <span>View Certificate</span>
+          </button>
+          <button mat-menu-item type="button" (click)="downloadRowCertificate(row, 'pdf')">
+            <mat-icon>picture_as_pdf</mat-icon>
+            <span>Download PDF</span>
+          </button>
+          <button mat-menu-item type="button" (click)="downloadRowCertificate(row, 'png')">
+            <mat-icon>image</mat-icon>
+            <span>Download PNG</span>
+          </button>
+          <button mat-menu-item type="button" (click)="downloadRowCertificate(row, 'jpg')">
+            <mat-icon>image</mat-icon>
+            <span>Download JPG</span>
+          </button>
+        </ng-template>
+      </mat-menu>
+    </div>
+
+  } @else {
+    <p class="empty-message">Load a class result set to generate certificates.</p>
+  }
+
+  <!-- Hidden export-only container (actions suppressed) -->
+  <div class="bulk-export-host" [class.exporting]="exporting()">
+    <div class="bulk-export-container" #bulkExportContainer>
+      @for (cert of certificates(); track cert.studentName + '-bulk-' + cert.rank) {
+        <app-award-certificate [data]="cert" [showActions]="false"></app-award-certificate>
+      }
+    </div>
+
+    <div class="single-export-container" #singleExportContainer>
+      @if (selectedCertificate(); as cert) {
+        <app-award-certificate [data]="cert" [showActions]="false"></app-award-certificate>
+      }
+    </div>
+  </div>
+
+  <ng-template #certificateDialogTpl>
+    @if (previewCertificate(); as cert) {
+      <div class="dialog-head">
+        <h3>Certificate Preview</h3>
+        <button mat-icon-button type="button" (click)="closeCertificateDialog()" aria-label="Close preview">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <app-award-certificate [data]="cert"></app-award-certificate>
+      </div>
+    }
+  </ng-template>
+</div>

@@ -22,4 +22,12 @@ export const RESULTS_ROUTES: Routes = [
 			),
 		data: { title: 'Results List' },
 	},
+	{
+		path: 'certificates',
+		loadComponent: () =>
+			import('./components/certificates-page/certificates-page.component').then(
+				(m) => m.CertificatesPageComponent
+			),
+		data: { title: 'Certificates' },
+	},
 ];
