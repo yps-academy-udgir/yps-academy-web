@@ -140,6 +140,8 @@ export const examResultService = {
         _id: result._id,
         studentId: sid,
         studentName: student ? `${student.firstName ?? ''} ${student.lastName ?? ''}`.trim() : 'Unknown',
+        studentImage: student?.image ?? null,
+        image: student?.image ?? null,
         class: classroom?.class ?? classValue,
         section: classroom?.section ?? '-',
         roomNumber: classroom?.roomNumber ?? '-',

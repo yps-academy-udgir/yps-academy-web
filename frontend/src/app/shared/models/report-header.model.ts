@@ -7,7 +7,7 @@ export interface ReportMeta {
   address: string;
   contact: string;
   email: string;
-  reportType: 'CLASS_MARKS' | 'STUDENT_MARKS' | 'FEE_RECEIPT' | 'FACULTY_PAYMENT_RECEIPT' | 'CUSTOM';
+  reportType: 'CLASS_MARKS' | 'STUDENT_MARKS' | 'FEE_RECEIPT' | 'FACULTY_PAYMENT_RECEIPT' | 'CERTIFICATE' | 'CUSTOM';
   reportTitle: string;
 }
 

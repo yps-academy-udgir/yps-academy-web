@@ -22,6 +22,7 @@ export interface FilteredExamResultRow {
   _id: string;
   studentId: string;
   studentName: string;
+  studentImage?: string | null;
   class: string;
   section: string;
   roomNumber: string;
