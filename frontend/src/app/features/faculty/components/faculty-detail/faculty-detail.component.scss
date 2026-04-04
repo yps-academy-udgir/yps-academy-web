@@ -232,7 +232,7 @@
 
 .paid-fee-row .paid-amount {
   font-weight: 600;
-  color: #2e7d32;
+  color: var(--status-success-color);
 }
 
 .pending-fee-row .pending-amount {
@@ -240,7 +240,7 @@
   color: var(--text-secondary, rgba(0, 0, 0, 0.6));
 
   &.has-pending {
-    color: #c62828;
+    color: var(--status-error-color);
   }
 }
 
@@ -267,7 +267,7 @@
 }
 
 .payment-icon mat-icon {
-  color: #2e7d32;
+  color: var(--status-success-color);
   font-size: 22px;
   width: 22px;
   height: 22px;
@@ -291,7 +291,7 @@
 
 .payment-amount {
   font-weight: 600;
-  color: #2e7d32;
+  color: var(--status-success-color);
   font-size: 1rem;
 }
 

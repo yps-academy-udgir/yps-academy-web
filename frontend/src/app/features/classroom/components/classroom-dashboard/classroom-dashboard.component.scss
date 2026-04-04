@@ -20,7 +20,7 @@
 
 .stat-card {
   &.green {
-    border-left: 4px solid #4caf50;
+    border-left: 4px solid var(--success-color);
   }
   &.blue {
     border-left: 4px solid #2196f3;
