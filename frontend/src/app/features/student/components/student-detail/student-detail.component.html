@@ -22,7 +22,11 @@
           <div class="header-content">
             <div class="student-header">
               <div class="avatar">
-                <mat-icon>account_circle</mat-icon>
+                @if (getImageUrl(student()!.image); as imgUrl) {
+                  <img [src]="imgUrl" [alt]="student()!.firstName" class="avatar-img" />
+                } @else {
+                  <mat-icon>account_circle</mat-icon>
+                }
               </div>
               <div class="student-info">
                 <h1 class="student-name">

@@ -6,6 +6,7 @@ import { FacultyService } from '../../../../shared/services/faculty.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { Faculty } from '../../models/faculty.model';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-my-faculty-profile',
@@ -33,6 +34,11 @@ export class MyFacultyProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+  }
+
+  getImageUrl(path: string | undefined): string | null {
+    if (!path) return null;
+    return environment.apiUrl.replace('/api', '') + path;
   }
 
   load(): void {

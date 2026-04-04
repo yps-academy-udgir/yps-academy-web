@@ -90,10 +90,37 @@
                 }
               </mat-form-field>
             </div>
+
+            <!-- Profile Image Upload -->
+            <div class="image-upload-section">
+              <div class="image-preview-container">
+                @if (imagePreviewUrl()) {
+                  <img [src]="imagePreviewUrl()" alt="Preview" class="image-preview" />
+                } @else if (existingImageUrl()) {
+                  <img [src]="existingImageUrl()" alt="Current photo" class="image-preview" />
+                } @else {
+                  <div class="image-placeholder">
+                    <mat-icon>account_circle</mat-icon>
+                  </div>
+                }
+              </div>
+              <div class="image-upload-controls">
+                <label class="upload-label" for="student-image-input">
+                  <mat-icon>upload</mat-icon>
+                  {{ isEditMode() ? 'Change Photo' : 'Upload Photo' }}
+                  <input
+                    id="student-image-input"
+                    type="file"
+                    accept="image/*"
+                    class="hidden-file-input"
+                    (change)="onFileSelected($event)"
+                  />
+                </label>
+                <p class="upload-hint">Optional · JPG, PNG, WEBP · Max 2 MB</p>
+              </div>
+            </div>
           </div>
         </mat-expansion-panel>
-
-        <!-- Panel 2: Academic Details -->
         <mat-expansion-panel class="form-panel">
           <mat-expansion-panel-header class="panel-header">
             <mat-panel-title class="panel-title">

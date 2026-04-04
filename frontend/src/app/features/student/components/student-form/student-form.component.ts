@@ -5,6 +5,7 @@
  * Follows Angular 20 patterns with signals
  */
 import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
+import { environment } from '../../../../../environments/environment';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -70,6 +71,11 @@ export class StudentFormComponent implements OnInit {
   isEditMode = computed(() => this.studentId() !== null);
   pageTitle = computed(() => this.isEditMode() ? 'Edit Student' : 'Add New Student');
   submitButtonText = computed(() => this.isEditMode() ? 'Update Student' : 'Create Student');
+
+  // Image upload signals
+  selectedFile = signal<File | null>(null);
+  imagePreviewUrl = signal<string | null>(null);
+  existingImageUrl = signal<string | null>(null);
 
   // Fee-related signals
   calculatedFees = signal<number>(0);
@@ -302,6 +308,12 @@ export class StudentFormComponent implements OnInit {
     });
 
     // Patch fee details if they exist
+    if (student.image) {
+      this.existingImageUrl.set(
+        environment.apiUrl.replace('/api', '') + student.image
+      );
+    }
+
     if (student.feeDetails) {
       const totalPaid = calculateTotalPaid(student.feeDetails.paymentHistory || []);
       this.paidAmount.set(totalPaid);
@@ -386,12 +398,12 @@ export class StudentFormComponent implements OnInit {
     }
 
     this.submitting.set(true);
-    const formValue = this.prepareFormData();
+    const payload = this.buildSubmitPayload();
 
     if (this.isEditMode()) {
-      this.updateStudent(formValue);
+      this.updateStudent(payload);
     } else {
-      this.createStudent(formValue);
+      this.createStudent(payload);
     }
   }
 
@@ -446,9 +458,49 @@ export class StudentFormComponent implements OnInit {
   }
 
   /**
+   * Build FormData payload for submission (supports optional image file)
+   */
+  private buildSubmitPayload(): FormData {
+    const data = this.prepareFormData();
+    const fd = new FormData();
+
+    if (data.firstName) fd.append('firstName', data.firstName);
+    if (data.lastName) fd.append('lastName', data.lastName);
+    if (data.email) fd.append('email', data.email);
+    if (data.contact) fd.append('contact', data.contact);
+    if (data.gender) fd.append('gender', data.gender);
+    if ((data as any).classroomId) fd.append('classroomId', (data as any).classroomId);
+    if (data.academicDetails) fd.append('academicDetails', JSON.stringify(data.academicDetails));
+    if (data.feeDetails) fd.append('feeDetails', JSON.stringify(data.feeDetails));
+
+    const file = this.selectedFile();
+    if (file) fd.append('image', file);
+
+    return fd;
+  }
+
+  /**
+   * Handle profile image file selection
+   */
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    this.selectedFile.set(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => this.imagePreviewUrl.set(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      this.imagePreviewUrl.set(null);
+    }
+  }
+
+  /**
    * Create new student
    */
-  private createStudent(data: Partial<Student>): void {
+  private createStudent(data: FormData): void {
+    const firstName = this.studentForm.get('firstName')?.value ?? '';
+    const lastName = this.studentForm.get('lastName')?.value ?? '';
     this.studentService.createStudent(data).subscribe({
       next: (response) => {
         this.submitting.set(false);
@@ -456,7 +508,7 @@ export class StudentFormComponent implements OnInit {
         if (result) {
           const dialogRef = this.dialog.open(CredentialsDialogComponent, {
             data: {
-              name: `${data.firstName} ${data.lastName}`,
+              name: `${firstName} ${lastName}`,
               userId: result.userId,
               defaultPassword: result.defaultPassword,
               role: 'student',
@@ -482,7 +534,7 @@ export class StudentFormComponent implements OnInit {
   /**
    * Update existing student
    */
-  private updateStudent(data: Partial<Student>): void {
+  private updateStudent(data: FormData): void {
     const id = this.studentId();
     if (!id) return;
 

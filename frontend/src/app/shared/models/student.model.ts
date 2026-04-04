@@ -98,6 +98,7 @@ export interface Student {
   contact: string;
   gender: 'male' | 'female';
   status?: StudentStatus;
+  image?: string;
   academicDetails?: AcademicDetails;
   academicHistory?: AcademicHistoryEntry[];
   feeDetails?: FeeDetails;

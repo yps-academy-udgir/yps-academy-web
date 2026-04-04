@@ -19,6 +19,7 @@ import { Student, ExamResult, StudentStatus } from '../../../../shared/models/st
 import { ExamResultService } from '../../../../shared/services/exam-result.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { RoleService } from '../../../../shared/services/role.service';
+import { environment } from '../../../../../environments/environment';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -62,6 +63,11 @@ export class StudentDetailComponent implements OnInit {
     } else {
       this.router.navigate(['/students', 'management', 'list']);
     }
+  }
+
+  getImageUrl(path: string | undefined): string | null {
+    if (!path) return null;
+    return environment.apiUrl.replace('/api', '') + path;
   }
 
   /**

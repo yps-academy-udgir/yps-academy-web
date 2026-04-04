@@ -14,6 +14,7 @@ import { CredentialsDialogComponent } from '../../../../shared/components/creden
 import { AuthService } from '../../../auth/services/auth.service';
 import { RoleService } from '../../../../shared/services/role.service';
 import { Faculty } from '../../models/faculty.model';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-faculty-detail',
@@ -53,6 +54,11 @@ export class FacultyDetailComponent implements OnInit, OnDestroy {
         this.router.navigate(['/faculty/list']);
       }
     });
+  }
+
+  getImageUrl(path: string | undefined): string | null {
+    if (!path) return null;
+    return environment.apiUrl.replace('/api', '') + path;
   }
 
   ngOnDestroy(): void {
