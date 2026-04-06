@@ -28,7 +28,15 @@
               </mat-form-field>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Phone Number</mat-label>
-                <input matInput formControlName="phone" type="tel" placeholder="9876543210" />
+                <!-- <input matInput formControlName="phone" type="tel" placeholder="9876543210" /> -->
+<input 
+  matInput 
+  type="tel" 
+  formControlName="contact" 
+  placeholder="9876543210"
+  maxlength="10"
+  inputmode="numeric"
+/>
                 <mat-icon matSuffix>phone</mat-icon>
                 @if (hasError('phone', 'required')) { <mat-error>Phone is required</mat-error> }
                 @if (hasError('phone', 'pattern')) { <mat-error>Enter valid 10-digit mobile number</mat-error> }

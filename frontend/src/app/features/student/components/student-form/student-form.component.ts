@@ -57,6 +57,15 @@ export class StudentFormComponent implements OnInit {
   classrooms = signal<Classroom[]>([]);
   classroomsLoading = signal<boolean>(false);
   selectedClass = signal<string | null>(null);
+ countryCode: string = '+91 ';
+
+get phonePlaceholder(): string {
+  return `${this.countryCode} 00000 00000`;
+
+}
+  
+
+
 
   /** Classrooms that match the selected class AND still have free seats */
   availableClassrooms = computed(() => {
@@ -170,6 +179,7 @@ export class StudentFormComponent implements OnInit {
       lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],
       contact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s-]{10,15}$/)]],
+   
       gender: ['', Validators.required],
       academicDetails: this.fb.group({
         yearOfAdmission: ['', Validators.required],
@@ -584,4 +594,6 @@ export class StudentFormComponent implements OnInit {
 
     return '';
   }
+
+  
 }
