@@ -4,7 +4,7 @@
  * Uses Angular Reactive Forms with Material Design
  * Follows Angular 20 patterns with signals
  */
-import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, effect } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
@@ -22,6 +22,7 @@ import { Student, Gender, Class, Payment } from '../../../../shared/models/stude
 import { Classroom } from '../../../classroom/models/classroom.model';
 import { calculateFees, calculatePendingFees, calculateTotalPaid } from '../../../../shared/utils/fee-calculator.util';
 import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
+import { Subject , takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-student-form',
@@ -36,7 +37,7 @@ import { CredentialsDialogComponent } from '../../../../shared/components/creden
   templateUrl: './student-form.component.html',
   styleUrls: ['./student-form.component.scss'],
 })
-export class StudentFormComponent implements OnInit {
+export class StudentFormComponent implements OnInit, OnDestroy {
   // Inject services using Angular's inject() function
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -81,7 +82,7 @@ export class StudentFormComponent implements OnInit {
   calculatedFees = signal<number>(0);
   paidAmount = signal<number>(0);
   pendingFees = computed(() => calculatePendingFees(this.calculatedFees(), this.paidAmount()));
-
+  destroy$ = new Subject<void>();
   // Stepper form groups (for step control)
   get studentInfoGroup() {
     return this.fb.group({
@@ -140,6 +141,10 @@ export class StudentFormComponent implements OnInit {
     this.loadSubjectConfig();
     this.checkEditMode();
     this.setupFeeCalculation();
+  }
+    ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private loadSubjectConfig(): void {
@@ -207,16 +212,13 @@ export class StudentFormComponent implements OnInit {
    */
   private setupFeeCalculation(): void {
     // Watch class changes: clear subject selection + recalculate
-    this.studentForm.get('academicDetails.class')?.valueChanges.subscribe((cls) => {
+    this.studentForm.get('academicDetails.class')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((cls) => {
       this.selectedClass.set(cls ?? null);
       // Clear subjects that are no longer valid for the new class
-      this.studentForm.get('academicDetails.subjects')?.setValue([]);
-      this.recalculateFees();
-    });
+      this.studentForm.get('academicDetails.subjects')?.setValue([]);});
     // Watch remaining academic fields (selfStudyMode, subjects)
-    this.studentForm.get('academicDetails.selfStudyMode')?.valueChanges.subscribe(() => this.recalculateFees());
-    this.studentForm.get('academicDetails.subjects')?.valueChanges.subscribe(() => this.recalculateFees());
-    this.studentForm.get('feeDetails.discount')?.valueChanges.subscribe(() => {
+    this.studentForm.get('academicDetails')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => this.recalculateFees());
+    this.studentForm.get('feeDetails.discount')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.recalculateFees();
     });
   }
