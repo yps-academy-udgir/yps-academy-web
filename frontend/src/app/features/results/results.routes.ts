@@ -12,7 +12,7 @@ export const RESULTS_ROUTES: Routes = [
 			import('./components/enter-results/enter-results.component').then(
 				(m) => m.EnterResultsComponent
 			),
-		data: { title: 'Enter Results' },
+		data: { title: 'Enter Marks' },
 	},
 	{
 		path: 'list',

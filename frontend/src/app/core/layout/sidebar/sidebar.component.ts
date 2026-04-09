@@ -187,7 +187,7 @@ export class SidebarComponent implements OnInit {
           route: '/results/list',
         },
         {
-          label: 'Enter Results',
+          label: 'Enter Marks',
           icon: 'edit_note',
           route: '/results/enter',
         },
