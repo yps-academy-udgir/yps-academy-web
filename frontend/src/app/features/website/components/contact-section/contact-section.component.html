@@ -93,11 +93,19 @@
             </div>
           </mat-card-content>
         </mat-card>
-        <div class="map-placeholder">
-          <mat-icon class="map-icon">map</mat-icon>
-          <p>42 Shivaji Nagar, Pune</p>
+
+  <div class="map-placeholder">
+  <iframe
+    width="100%"
+    height="250"
+    style="border:0; border-radius:12px;"
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    [src]="mapUrl">
+  </iframe>
+</div>
         </div>
       </div>
     </div>
-  </div>
+  
 </section>
