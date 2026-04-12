@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SharedMaterialModule } from '../../../../shared/shared-material.module';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-contact-section',
@@ -12,9 +13,16 @@ import { SharedMaterialModule } from '../../../../shared/shared-material.module'
   styleUrls: ['./contact-section.component.scss'],
 })
 export class ContactSectionComponent {
+  mapUrl: SafeResourceUrl;
   private fb = inject(FormBuilder);
 
   submitted = signal(false);
+
+  constructor(private sanitizer: DomSanitizer) {
+    this.mapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+      'https://www.google.com/maps?q=YPS+Academy+Udgir&output=embed'
+    );
+}
 
   contactForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -40,4 +48,6 @@ export class ContactSectionComponent {
     const ctrl = this.contactForm.get(field);
     return !!(ctrl?.hasError(error) && ctrl?.touched);
   }
+
+
 }
