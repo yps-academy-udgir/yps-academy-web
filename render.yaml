@@ -1,15 +1,19 @@
-# Render Blueprint — defines all backend services for dev / test / prod
+# Render Blueprint — defines backend services for dev and prod
 # Docs: https://render.com/docs/blueprint-spec
 #
 # One-time setup per environment:
 #   1. Go to https://render.com → New → Blueprint
 #   2. Connect your GitHub repo and select this file
-#   3. Render will create the three services below
-#   4. Set MONGODB_URI and FRONTEND_URL in each service's Environment tab
+#   3. Render will create two services: yps-backend-dev and yps-backend-prod
+#   4. For each service, go to Environment tab and set MONGODB_URI and FRONTEND_URL
 #
-# After setup, get each service's Deploy Hook URL from:
-#   Service → Settings → Deploy Hook
-# Store each URL as a GitHub Secret (see DEPLOYMENT.md).
+# MONGODB_URI values:
+#   - Dev: mongodb+srv://<user>:<password>@cluster.mongodb.net/yps-academy-dev
+#   - Prod: mongodb+srv://<user>:<password>@cluster.mongodb.net/yps-academy-prod
+#
+# FRONTEND_URL values:
+#   - Dev: https://yps-academy-develop.vercel.app
+#   - Prod: https://yps-academy.vercel.app
 
 services:
   # ── Development ──────────────────────────────────────────────
