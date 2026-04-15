@@ -12,6 +12,15 @@ import { notFoundHandler, errorHandler } from './middleware/error.middleware';
 import { requestLogger } from './middleware/request-logger.middleware';
 import logRoutes from './modules/log/log.routes';
 
+// Swagger setup (development only)
+let swaggerUi: any;
+let swaggerSpec: any;
+if (process.env.NODE_ENV === 'development') {
+  swaggerUi = require('swagger-ui-express');
+  const { swaggerSpec: spec } = require('./config/swagger.config');
+  swaggerSpec = spec;
+}
+
 /**
  * Create and configure Express application
  */
@@ -51,6 +60,18 @@ export const createApp = (): Express => {
   // API Routes
   app.use('/api', logRoutes);
   app.use('/api', apiRoutes);
+
+  // Swagger Documentation (Development only)
+  if (process.env.NODE_ENV === 'development' && swaggerUi && swaggerSpec) {
+    app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { 
+      swaggerOptions: { 
+        docExpansion: 'list',
+        persistAuthorization: true,
+      },
+      customCss: '.swagger-ui .topbar { display: none }',
+    }));
+    console.log('✅ Swagger docs available at /api/docs');
+  }
 
   // Root endpoint
   app.get('/', (req, res) => {

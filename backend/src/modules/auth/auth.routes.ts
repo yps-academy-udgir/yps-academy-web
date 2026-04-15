@@ -10,4 +10,3 @@ router.post('/change-password', verifyToken, changePassword);
 router.post('/reset-password', verifyToken, requireRoles('admin'), resetPassword);
 
 export default router;
-
