@@ -29,23 +29,6 @@ services:
       - key: FRONTEND_URL
         sync: false
 
-  # ── Test / Staging ────────────────────────────────────────────
-  - type: web
-    name: yps-backend-test
-    runtime: node
-    plan: free
-    rootDir: backend
-    branch: staging
-    buildCommand: npm install --include=dev && npm run build
-    startCommand: node dist/server.js
-    envVars:
-      - key: NODE_ENV
-        value: test
-      - key: MONGODB_URI
-        sync: false
-      - key: FRONTEND_URL
-        sync: false
-
   # ── Production ───────────────────────────────────────────────
   - type: web
     name: yps-backend-prod

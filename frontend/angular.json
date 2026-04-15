@@ -71,15 +71,6 @@
               "outputHashing": "all",
               "serviceWorker": "ngsw-config.json"
             },
-            "test": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.test.ts"
-                }
-              ],
-              "outputHashing": "all"
-            },
             "development": {
               "fileReplacements": [
                 {
@@ -102,9 +93,6 @@
           "configurations": {
             "production": {
               "buildTarget": "frontend:build:production"
-            },
-            "test": {
-              "buildTarget": "frontend:build:test"
             },
             "development": {
               "buildTarget": "frontend:build:development"
