@@ -27,10 +27,9 @@ This project is set up to deploy across three environments using **entirely free
    ```
    mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/<dbname>?retryWrites=true&w=majority
    ```
-7. Create **three databases** (one per environment) by replacing `<dbname>`:
-   - `yps-academy-dev`
-   - `yps-academy-test`
-   - `yps-academy-prod`
+7. Create **two databases** (one per environment) by replacing `<dbname>`:
+   - `yps-academy-dev` (for develop branch)
+   - `yps-academy-prod` (for main branch)
 
 ---
 
@@ -41,7 +40,7 @@ This project is set up to deploy across three environments using **entirely free
 1. Go to [https://render.com](https://render.com) → sign up (GitHub login recommended).
 2. Dashboard → **New** → **Blueprint**.
 3. Connect your GitHub repo (`yps-academy-udgir/yps-academy-web`) and select the `render.yaml` file at the root.
-4. Render will create three services: `yps-backend-dev`, `yps-backend-test`, `yps-backend-prod`.
+4. Render will create two services: `yps-backend-dev` (develop branch) and `yps-backend-prod` (main branch).
 
 ### 2b. Set environment variables for each service
 
@@ -60,7 +59,6 @@ For each service, go to **Environment** tab and add:
 | Service | GitHub Secret name |
 |---|---|
 | `yps-backend-dev` | `RENDER_DEV_DEPLOY_HOOK` |
-| `yps-backend-test` | `RENDER_TEST_DEPLOY_HOOK` |
 | `yps-backend-prod` | `RENDER_PROD_DEPLOY_HOOK` |
 
 ---
@@ -113,8 +111,7 @@ Add all of the following:
 | `VERCEL_PROJECT_ID` | `frontend/.vercel/project.json` |
 | `RENDER_DEV_DEPLOY_HOOK` | Render `yps-backend-dev` → Settings → Deploy Hook |
 | `RENDER_TEST_DEPLOY_HOOK` | Render `yps-backend-test` → Settings → Deploy Hook |
-| `RENDER_PROD_DEPLOY_HOOK` | Render `yps-backend-prod` → Settings → Deploy Hook |
-
+| `RENDER_
 ---
 
 ## Step 5 — Branch strategy (triggers auto-deploy)
@@ -123,8 +120,7 @@ Add all of the following:
 |---|---|---|
 | `develop` | Development | Vercel preview + Render dev |
 | `staging` | Test/Staging | Vercel preview (staging alias) + Render test |
-| `main` | Production | Vercel production + Render prod |
-
+| `
 Push to any of these branches and GitHub Actions will:
 1. Build the Angular app with the correct environment config.
 2. Deploy the frontend to Vercel.
@@ -157,6 +153,7 @@ Copy `backend/.env.dev.example` to `backend/.env` and fill in your values first.
 |---|---|---|
 | Dev | `<branch>.vercel.app` preview URL | `yps-backend-dev.onrender.com` |
 | Test | `staging-yps-academy.vercel.app` | `yps-backend-test.onrender.com` |
+| Prod | develop-yps-academy.vercel.app` (preview URL) | `yps-backend-dev.onrender.com` |
 | Prod | `yps-academy-web.vercel.app` (or custom domain) | `yps-backend-prod.onrender.com` |
 
-> Update `frontend/src/environments/environment.prod.ts` and `environment.test.ts` with the actual Render backend URLs once they are created.
+> Update `frontend/src/environments/environment.prod
