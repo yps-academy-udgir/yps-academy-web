@@ -21,10 +21,18 @@
           <div class="header-content">
             <div class="student-header">
               <div class="avatar">
-                <mat-icon>account_circle</mat-icon>
+                @if (getImageUrl(faculty()!.image); as imgUrl) {
+                  <img [src]="imgUrl" [alt]="faculty()!.firstName" class="avatar-img" />
+                } @else {
+                  <mat-icon>account_circle</mat-icon>
+                }
               </div>
               <div class="student-info">
                 <h1 class="student-name">{{ faculty()!.firstName }} {{ faculty()!.lastName }}</h1>
+                <p class="student-email">
+                  <mat-icon>badge</mat-icon>
+                  User ID: {{ faculty()!.userId || '-' }}
+                </p>
                 <p class="student-email">
                   <mat-icon>email</mat-icon>
                   {{ faculty()!.email }}
@@ -40,20 +48,32 @@
                 <mat-icon>arrow_back</mat-icon>
                 Back
               </button>
-              <button mat-raised-button color="primary" (click)="onEdit()">
-                <mat-icon>edit</mat-icon>
-                Edit
+              <button mat-icon-button [matMenuTriggerFor]="facultyHeaderActions" matTooltip="Actions">
+                <mat-icon>more_vert</mat-icon>
               </button>
-              @if (roleService.isAdmin()) {
-                <button mat-stroked-button color="warn" (click)="onResetPassword()">
-                  <mat-icon>lock_reset</mat-icon>
-                  Reset Password
+              <mat-menu #facultyHeaderActions="matMenu">
+                @if (roleService.isAdmin() || isOwnProfile()) {
+                  <button mat-menu-item (click)="onViewPaymentReceipt()">
+                    <mat-icon>receipt_long</mat-icon>
+                    <span>View Payment Receipt</span>
+                  </button>
+                }
+                <button mat-menu-item (click)="onEdit()">
+                  <mat-icon>edit</mat-icon>
+                  <span>Edit</span>
                 </button>
-                <button mat-raised-button color="warn" (click)="onDelete()">
-                  <mat-icon>delete</mat-icon>
-                  Delete
-                </button>
-              }
+                @if (roleService.isAdmin()) {
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="onResetPassword()">
+                    <mat-icon>lock_reset</mat-icon>
+                    <span>Reset Password</span>
+                  </button>
+                  <button mat-menu-item (click)="onDelete()">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                }
+              </mat-menu>
             </div>
           </div>
         </mat-card-header>
@@ -80,6 +100,10 @@
                 <span class="info-value">{{ faculty()!.lastName }}</span>
               </div>
               <div class="info-row">
+                <span class="info-label">User ID:</span>
+                <span class="info-value">{{ faculty()!.userId || '-' }}</span>
+              </div>
+              <div class="info-row">
                 <span class="info-label">Email:</span>
                 <span class="info-value">
                   <a [href]="'mailto:' + faculty()!.email">{{ faculty()!.email }}</a>
@@ -92,7 +116,8 @@
             </div>
           </mat-expansion-panel>
 
-          <!-- Salary Information -->
+          <!-- Salary Information: visible to admin or faculty viewing own profile -->
+          @if (roleService.isAdmin() || isOwnProfile()) {
           <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header>
               <mat-panel-title><mat-icon>payments</mat-icon> Salary Information</mat-panel-title>
@@ -118,7 +143,7 @@
               @if (faculty()!.salaryPayments && faculty()!.salaryPayments.length > 0) {
                 <mat-divider class="section-divider"></mat-divider>
                 <div class="payment-history-section">
-                  <h4 class="subsection-title">
+                  <h4 class="subheading-row quaternary-heading">
                     <mat-icon>history</mat-icon>
                     Payment History
                   </h4>
@@ -144,6 +169,7 @@
               }
             </div>
           </mat-expansion-panel>
+          } <!-- end salary guard -->
 
         </mat-accordion>
 
@@ -188,7 +214,7 @@
 
               @if (faculty()!.pastExperience && faculty()!.pastExperience.length > 0) {
                 <mat-divider class="section-divider"></mat-divider>
-                <h4 class="subsection-title">
+                <h4 class="subheading-row quaternary-heading">
                   <mat-icon>history_edu</mat-icon>
                   Past Experience
                 </h4>

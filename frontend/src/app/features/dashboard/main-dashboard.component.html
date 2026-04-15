@@ -2,8 +2,8 @@
   <!-- Header Section -->
   <div class="dashboard-header">
     <div class="header-text">
-      <h1 class="dashboard-title">Main Dashboard</h1>
-      <p class="dashboard-subtitle">Overview of all modules and key statistics</p>
+      <h1 class="dashboard-title tertiary-heading">Main Dashboard</h1>
+      <p class="dashboard-subtitle">Overview of Student, Faculty, Classrooms and Quick Actions</p>
     </div>
     <button mat-stroked-button (click)="refresh()" [disabled]="loading()">
       <mat-icon>refresh</mat-icon>
@@ -71,47 +71,88 @@
   <!-- Quick Actions Section -->
   <div class="quick-actions">
     <h2>Quick Actions</h2>
-    <div class="actions-grid">
-      <button mat-raised-button color="primary" (click)="navigateToModule('/students/management/add')">
-        <mat-icon>person_add</mat-icon>
-        Add Student
-      </button>
-      <button mat-raised-button color="primary" (click)="navigateToModule('/faculty/add')">
-        <mat-icon>person_add</mat-icon>
-        Add Faculty
-      </button>
-      <button mat-raised-button (click)="navigateToModule('/students/management/list')">
-        <mat-icon>list</mat-icon>
-        View All Students
-      </button>
-      <button mat-raised-button (click)="navigateToModule('/faculty/list')">
-        <mat-icon>list</mat-icon>
-        View All Faculty
-      </button>
-      <button mat-raised-button color="primary" (click)="navigateToModule('/classrooms/management/add')">
-        <mat-icon>add_circle</mat-icon>
-        Add Classroom
-      </button>
-      <button mat-raised-button (click)="navigateToModule('/classrooms/management/list')">
-        <mat-icon>meeting_room</mat-icon>
-        View All Classrooms
-      </button>
-      <button mat-raised-button (click)="navigateToModule('/classrooms/attendance/mark')">
-        <mat-icon>how_to_reg</mat-icon>
-        Mark Attendance
-      </button>
-      <button mat-raised-button (click)="navigateToModule('/classrooms/marks/enter')">
-        <mat-icon>grading</mat-icon>
-        Enter Marks
-      </button>
-      <button mat-raised-button (click)="navigateToModule('/results/list')">
-        <mat-icon>table_view</mat-icon>
-        Results List
-      </button>
-      <button mat-raised-button (click)="navigateToModule('/results/enter')">
-        <mat-icon>edit_note</mat-icon>
-        Enter Results
-      </button>
+    <div class="action-groups">
+
+      <!-- Students -->
+      <div class="action-group">
+        <div class="action-group-header" style="--group-color: #3f51b5; --group-bg: rgba(63,81,181,0.1)">
+          <mat-icon>people</mat-icon>
+          <span>Students</span>
+        </div>
+        <div class="action-group-buttons">
+          <button mat-flat-button color="primary" (click)="navigateToModule('/students/management/add')">
+            <mat-icon>person_add</mat-icon>
+            Add Student
+          </button>
+          <button mat-stroked-button (click)="navigateToModule('/students/management/list')">
+            <mat-icon>list</mat-icon>
+            View All
+          </button>
+        </div>
+      </div>
+
+      <!-- Faculty -->
+      <div class="action-group">
+        <div class="action-group-header" style="--group-color: #9c27b0; --group-bg: rgba(156,39,176,0.1)">
+          <mat-icon>school</mat-icon>
+          <span>Faculty</span>
+        </div>
+        <div class="action-group-buttons">
+          <button mat-flat-button color="primary" (click)="navigateToModule('/faculty/add')">
+            <mat-icon>person_add</mat-icon>
+            Add Faculty
+          </button>
+          <button mat-stroked-button (click)="navigateToModule('/faculty/list')">
+            <mat-icon>list</mat-icon>
+            View All
+          </button>
+        </div>
+      </div>
+
+      <!-- Classrooms -->
+      <div class="action-group">
+        <div class="action-group-header" style="--group-color: #ff9800; --group-bg: rgba(255,152,0,0.1)">
+          <mat-icon>meeting_room</mat-icon>
+          <span>Classrooms</span>
+        </div>
+        <div class="action-group-buttons">
+          <button mat-flat-button color="primary" (click)="navigateToModule('/classrooms/management/add')">
+            <mat-icon>add_circle</mat-icon>
+            Add Classroom
+          </button>
+          <button mat-stroked-button (click)="navigateToModule('/classrooms/management/list')">
+            <mat-icon>meeting_room</mat-icon>
+            View All
+          </button>
+          <button mat-stroked-button (click)="navigateToModule('/classrooms/attendance/mark')">
+            <mat-icon>how_to_reg</mat-icon>
+            Mark Attendance
+          </button>
+          <button mat-stroked-button (click)="navigateToModule('/classrooms/marks/enter')">
+            <mat-icon>grading</mat-icon>
+            Enter Marks
+          </button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="action-group">
+        <div class="action-group-header" style="--group-color: #009688; --group-bg: rgba(0,150,136,0.1)">
+          <mat-icon>bar_chart</mat-icon>
+          <span>Results & Exams</span>
+        </div>
+        <div class="action-group-buttons">
+          <button mat-flat-button color="primary" (click)="navigateToModule('/results/enter')">
+            <mat-icon>edit_note</mat-icon>
+            Enter Marks
+          </button>
+          <button mat-stroked-button (click)="navigateToModule('/results/list')">
+            <mat-icon>table_view</mat-icon>
+            Results List
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

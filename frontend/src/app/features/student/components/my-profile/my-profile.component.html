@@ -18,7 +18,13 @@
         <mat-card-header>
           <div class="header-content">
             <div class="student-header">
-              <div class="avatar"><mat-icon>account_circle</mat-icon></div>
+              <div class="avatar">
+                @if (getImageUrl(student()!.image); as imgUrl) {
+                  <img [src]="imgUrl" [alt]="student()!.firstName" class="avatar-img" />
+                } @else {
+                  <mat-icon>account_circle</mat-icon>
+                }
+              </div>
               <div class="student-info">
                 <h1 class="student-name">{{ student()!.firstName }} {{ student()!.lastName }}</h1>
                 <p class="student-email">
@@ -116,7 +122,7 @@
                 @if (student()!.feeDetails!.paymentHistory && student()!.feeDetails!.paymentHistory.length > 0) {
                   <mat-divider class="section-divider"></mat-divider>
                   <div class="payment-history-section">
-                    <h4 class="subsection-title"><mat-icon>history</mat-icon> Payment History</h4>
+                    <h4 class="subheading-row quaternary-heading"><mat-icon>history</mat-icon> Payment History</h4>
                     <div class="payment-timeline">
                       @for (payment of student()!.feeDetails!.paymentHistory; track $index) {
                         <div class="payment-record">

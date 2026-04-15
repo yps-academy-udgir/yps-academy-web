@@ -10,6 +10,32 @@
 // Include the common styles for Angular Material
 @include mat.core();
 
+// Global defaults (light mode) so gradients work even before ThemeService applies classes.
+:root {
+  --color-brand-primary: #{vars.$primary-500};
+  --color-brand-secondary: #{vars.$accent-500};
+  --color-brand-tertiary: #{vars.$tertiary-500};
+  --color-brand-highlight: #{vars.$highlight-500};
+  --color-brand-gradient: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$accent-500} 34%, #{vars.$tertiary-500} 68%, #{vars.$highlight-500} 100%);
+  --color-brand-gradient-soft: linear-gradient(135deg, #{vars.$accent-300} 0%, #{vars.$highlight-300} 100%);
+  --color-brand-gradient-hero: linear-gradient(135deg, #{vars.$primary-600} 0%, #{vars.$accent-600} 35%, #{vars.$tertiary-700} 68%, #{vars.$highlight-700} 100%);
+  --profile-header-gradient: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$accent-500} 100%);
+  --form-summary-gradient: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$accent-700} 100%);
+  --report-band-gradient: linear-gradient(90deg, #{vars.$accent-700} 0%, #{vars.$highlight-500} 100%);
+  --marks-report-band-gradient: linear-gradient(90deg, #{vars.$primary-700} 0%, #{vars.$tertiary-500} 100%);
+  // First-paint fallbacks used before ThemeService applies .light-theme/.dark-theme.
+  --surface-page: #fff9f5;
+  --surface-section: #ffffff;
+  --surface-overlay: rgba(255, 90, 90, 0.06);
+  --text-primary: #2a1915;
+  --text-secondary: #6a4a42;
+  --border-color: #ecd8cf;
+  --border-subtle: #f3e5de;
+  --background-primary: var(--surface-page);
+  --background-secondary: var(--surface-section);
+  --background-hover: var(--surface-overlay);
+}
+
 // =====================================
 // Define Custom Palettes
 // =====================================
@@ -98,11 +124,11 @@ $custom-warn-palette: (
 $light-theme: mat.define-theme((
   color: (
     theme-type: light,
-    primary: mat.$violet-palette,
-    tertiary: mat.$blue-palette,
+    primary: mat.$orange-palette,
+    tertiary: mat.$yellow-palette,
   ),
   typography: (
-    brand-family: vars.$font-family-base,
+    brand-family: vars.$font-family-display,
     plain-family: vars.$font-family-base,
   ),
   density: (
@@ -116,11 +142,11 @@ $light-theme: mat.define-theme((
 $dark-theme: mat.define-theme((
   color: (
     theme-type: dark,
-    primary: mat.$violet-palette,
-    tertiary: mat.$blue-palette,
+    primary: mat.$orange-palette,
+    tertiary: mat.$yellow-palette,
   ),
   typography: (
-    brand-family: vars.$font-family-base,
+    brand-family: vars.$font-family-display,
     plain-family: vars.$font-family-base,
   ),
   density: (
@@ -140,61 +166,143 @@ html, body {
 // Light theme class
 .light-theme {
   @include mat.all-component-colors($light-theme);
-  
-  // Custom CSS variables for light theme
-  --background-primary: #{vars.$gray-50};
-  --background-secondary: #ffffff;
-  --background-tertiary: #{vars.$gray-100};
-  --background-hover: rgba(0, 0, 0, 0.04);
-  
-  --text-primary: rgba(0, 0, 0, 0.87);
-  --text-secondary: rgba(0, 0, 0, 0.60);
-  --text-tertiary: rgba(0, 0, 0, 0.38);
-  --text-disabled: rgba(0, 0, 0, 0.26);
-  
-  --border-color: #{vars.$gray-300};
-  --divider-color: #{vars.$gray-200};
-  
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  
-  --primary-color: #{vars.$primary-500};
-  --accent-color: #{vars.$accent-500};
+
+  // Brand bridge tokens
+  --color-brand-primary: #{vars.$primary-500};
+  --color-brand-secondary: #{vars.$accent-500};
+  --color-brand-tertiary: #{vars.$tertiary-500};
+  --color-brand-highlight: #{vars.$highlight-500};
+  --color-brand-primary-soft: #{vars.$primary-100};
+  --color-brand-secondary-soft: #{vars.$accent-100};
+  --color-brand-gradient: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$accent-500} 34%, #{vars.$tertiary-500} 68%, #{vars.$highlight-500} 100%);
+  --color-brand-gradient-soft: linear-gradient(135deg, #{vars.$accent-200} 0%, #{vars.$highlight-200} 100%);
+  --color-brand-gradient-hero: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$accent-500} 35%, #{vars.$tertiary-700} 68%, #{vars.$highlight-700} 100%);
+
+  // Surface and text tokens
+  --surface-page: #fff9f5;
+  --surface-section: #ffffff;
+  --surface-card: #ffffff;
+  --surface-card-elevated: #ffffff;
+  --surface-overlay: rgba(255, 90, 90, 0.06);
+  --surface-hover: rgba(255, 90, 90, 0.08);
+  --surface-inverse: #1b1412;
+
+  --text-primary: #2a1915;
+  --text-secondary: #6a4a42;
+  --text-tertiary: #8e6a61;
+  --text-disabled: #b4948b;
+  --text-on-brand: #ffffff;
+  --text-on-dark: #fff7f2;
+  --text-link: #{vars.$primary-600};
+  --text-link-hover: #{vars.$accent-700};
+
+  --border-color: #ecd8cf;
+  --divider-color: #f3e5de;
+  --border-subtle: #f3e5de;
+  --border-strong: #d9bfb5;
+  --border-brand: #{vars.$accent-400};
+  --border-glow: rgba(255, 139, 90, 0.45);
+
+  --shadow-color: rgba(70, 30, 22, 0.14);
+
+  // Backward compatibility aliases for existing components
+  --background-primary: var(--surface-page);
+  --background-secondary: var(--surface-section);
+  --background-tertiary: #fff2ec;
+  --background-hover: var(--surface-hover);
+  --primary-color: var(--color-brand-primary);
+  --accent-color: var(--color-brand-secondary);
   --warn-color: #{vars.$warn-500};
   --success-color: #{vars.$success-500};
-  
+  --profile-header-gradient: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$accent-500} 100%);
+  --form-summary-gradient: linear-gradient(135deg, #{vars.$primary-500} 0%, #{vars.$accent-700} 100%);
+  --report-band-gradient: linear-gradient(90deg, #{vars.$accent-700} 0%, #{vars.$highlight-500} 100%);
+  --marks-report-band-gradient: linear-gradient(90deg, #{vars.$primary-700} 0%, #{vars.$tertiary-500} 100%);
+
   // Error states
   --error-background: #{vars.$warn-50};
   --error-color: #{vars.$warn-700};
   --error-text: #{vars.$warn-900};
+
+  // Semantic status colors (for status badges, fee amounts, etc.)
+  --status-success-color: #{vars.$success-800};
+  --status-success-bg: #{vars.$success-50};
+  --status-warning-color: #f57f17;
+  --status-warning-bg: #fff9c4;
+  --status-error-color: #{vars.$warn-800};
+  --status-error-bg: #{vars.$warn-50};
+  --status-info-color: #1565c0;
+  --status-info-bg: rgba(33, 150, 243, 0.15);
 }
 
 // Dark theme class
 .dark-theme {
   @include mat.all-component-colors($dark-theme);
-  
-  // Custom CSS variables for dark theme
-  --background-primary: #121212;
-  --background-secondary: #1e1e1e;
-  --background-tertiary: #2a2a2a;
-  --background-hover: rgba(255, 255, 255, 0.08);
-  
-  --text-primary: rgba(255, 255, 255, 0.87);
-  --text-secondary: rgba(255, 255, 255, 0.60);
-  --text-tertiary: rgba(255, 255, 255, 0.38);
-  --text-disabled: rgba(255, 255, 255, 0.26);
-  
-  --border-color: rgba(255, 255, 255, 0.12);
-  --divider-color: rgba(255, 255, 255, 0.08);
-  
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  
-  --primary-color: #{vars.$primary-300};
-  --accent-color: #{vars.$accent-300};
+
+  // Brand bridge tokens
+  --color-brand-primary: #ff7a6b;
+  --color-brand-secondary: #ff9f73;
+  --color-brand-tertiary: #ffc36d;
+  --color-brand-highlight: #ffe082;
+  --color-brand-primary-soft: rgba(255, 122, 107, 0.15);
+  --color-brand-secondary-soft: rgba(255, 159, 115, 0.14);
+  --color-brand-gradient: linear-gradient(135deg, #ff7a6b 0%, #ff9f73 40%, #ffc36d 100%);
+  --color-brand-gradient-soft: linear-gradient(135deg, rgba(255, 122, 107, 0.2) 0%, rgba(255, 224, 130, 0.16) 100%);
+  --color-brand-gradient-hero: linear-gradient(135deg, #5a1f1c 0%, #8a3d22 35%, #b05d20 68%, #d39a2f 100%);
+
+  // Surface and text tokens
+  --surface-page: #140f0e;
+  --surface-section: #1d1614;
+  --surface-card: #2a211d;
+  --surface-card-elevated: #332823;
+  --surface-overlay: rgba(255, 159, 115, 0.12);
+  --surface-hover: rgba(255, 212, 90, 0.08);
+  --surface-inverse: #fff7f2;
+
+  --text-primary: #fff7f2;
+  --text-secondary: #d7c6bd;
+  --text-tertiary: #a89287;
+  --text-disabled: #7d6860;
+  --text-on-brand: #1b1412;
+  --text-on-dark: #fff7f2;
+  --text-link: #ffc36d;
+  --text-link-hover: #ffe082;
+
+  --border-color: rgba(255, 226, 206, 0.14);
+  --divider-color: rgba(255, 226, 206, 0.08);
+  --border-subtle: rgba(255, 226, 206, 0.08);
+  --border-strong: rgba(255, 226, 206, 0.2);
+  --border-brand: rgba(255, 159, 115, 0.58);
+  --border-glow: rgba(255, 195, 109, 0.45);
+
+  --shadow-color: rgba(0, 0, 0, 0.4);
+
+  // Backward compatibility aliases for existing components
+  --background-primary: var(--surface-page);
+  --background-secondary: var(--surface-section);
+  --background-tertiary: var(--surface-card);
+  --background-hover: var(--surface-hover);
+  --primary-color: var(--color-brand-primary);
+  --accent-color: var(--color-brand-secondary);
   --warn-color: #{vars.$warn-300};
   --success-color: #{vars.$success-300};
-  
+  --profile-header-gradient: linear-gradient(135deg, #5a1f1c 0%, #8a3d22 100%);
+  --form-summary-gradient: linear-gradient(135deg, #5a1f1c 0%, #b05d20 100%);
+  --report-band-gradient: linear-gradient(90deg, #8a3d22 0%, #d39a2f 100%);
+  --marks-report-band-gradient: linear-gradient(90deg, #8a3d22 0%, #ffc36d 100%);
+
   // Error states
   --error-background: #5d1f1f;
   --error-color: #{vars.$warn-400};
   --error-text: #{vars.$warn-200};
+
+  // Semantic status colors (for status badges, fee amounts, etc.)
+  --status-success-color: #{vars.$success-300};
+  --status-success-bg: rgba(46, 125, 50, 0.22);
+  --status-warning-color: #ffd54f;
+  --status-warning-bg: rgba(178, 106, 0, 0.2);
+  --status-error-color: #{vars.$warn-200};
+  --status-error-bg: rgba(176, 0, 32, 0.2);
+  --status-info-color: #90caf9;
+  --status-info-bg: rgba(33, 150, 243, 0.2);
 }

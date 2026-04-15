@@ -87,7 +87,7 @@ export class LoginComponent {
         this.notificationService.success('Login successful! Welcome back.');
         const userRole = this.authService.role();
         if (userRole === UserRole.FACULTY) {
-          this.router.navigate(['/faculty']);
+          this.router.navigate(['/my-faculty-profile']);
         } else if (userRole === UserRole.STUDENT) {
           this.router.navigate(['/my-profile']);
         } else {

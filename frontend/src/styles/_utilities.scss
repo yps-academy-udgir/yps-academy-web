@@ -1,6 +1,46 @@
 ﻿// ── Cross-component Utility Styles ────────────────────────────────────────────
 // Global classes for consistent layout across all feature components.
 // Add new patterns here instead of duplicating them in component SCSS files.
+@use './motion-effects' as motion;
+
+// ── Gradient Text ─────────────────────────────────────────────────────────────
+// Works in both light and dark themes (--color-brand-gradient adapts per theme).
+@keyframes ws-gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-text {
+  background: var(--color-brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+// Animated variant: gradient pans across the text continuously.
+.gradient-text-animated {
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-primary),
+    var(--color-brand-secondary),
+    var(--color-brand-tertiary),
+    var(--color-brand-highlight),
+    var(--color-brand-primary)
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: ws-gradient-shift 5s ease infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background-size: 100% 100%;
+  }
+}
 
 // ── Website / Public Pages ────────────────────────────────────────────────────
 // Shared layout primitives used across all website section components.
@@ -17,11 +57,10 @@
   text-align: center;
   margin-bottom: 48px;
 
+  // h2 sizing is handled by .secondary-heading class applied in templates.
+  // Gradient text is handled by .gradient-text class applied in templates.
   h2 {
-    font-size: clamp(1.6rem, 3vw, 2.4rem);
-    font-weight: 700;
     margin: 8px 0 12px;
-    color: var(--text-primary);
   }
 
   p {
@@ -31,18 +70,209 @@
     margin: 0 auto;
     line-height: 1.7;
   }
+
+}
+
+// Reusable heading typing effect.
+.ws-typing-wrap {
+  display: inline-block;
+}
+
+.ws-typing-title {
+  @include motion.text-typing(40, 1.3s, 2s, 0.15s);
+}
+
+// Slower typing variant for compact areas like footer/announcement.
+.ws-typing-title-soft {
+  @include motion.text-typing(34, 1.7s, 2.4s, 0.2s);
+}
+
+// Reusable intro/content reveal. Wrap chunks in spans in template.
+.ws-reveal-text {
+  @include motion.text-word-reveal(1.8s, 0.12s, 0.45s, 2s);
+
+  > span {
+    margin-inline-end: 0.32ch;
+  }
+}
+
+// Softer reveal variant for dense supporting copy.
+.ws-reveal-text-soft {
+  @include motion.text-word-reveal(2.2s, 0.16s, 0.5s, 2.4s);
+
+  > span {
+    margin-inline-end: 0.32ch;
+  }
 }
 
 .ws-label {
   display: inline-block;
-  background: var(--background-tertiary);
-  color: var(--primary-color);
-  padding: 4px 14px;
+  position: relative;
+  padding: 5px 16px;
   border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
+  background: var(--surface-overlay);
+  color: var(--color-brand-primary);
+
+  // Gradient border via pseudo-element mask technique (works with border-radius)
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 1.5px;
+    background: var(--color-brand-gradient);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+// ── Global Heading Hierarchy ─────────────────────────────────────────────────
+// Semantic tags can vary per context; these classes enforce visual consistency.
+.primary-heading,
+.secondary-heading,
+.tertiary-heading,
+.quaternary-heading {
+  margin: 0;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.primary-heading {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-4xl);
+  font-weight: 700;
+  line-height: var(--line-height-tight);
+}
+
+.secondary-heading {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xxxl);
+  font-weight: 700;
+  line-height: var(--line-height-tight);
+}
+
+.tertiary-heading {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  line-height: var(--line-height-normal);
+}
+
+.quaternary-heading {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  line-height: var(--line-height-normal);
+}
+
+.body-text {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-relaxed);
+  color: var(--text-secondary);
+}
+
+.body-text-sm {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--text-secondary);
+}
+
+.caption-text,
+.eyebrow-text {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  line-height: var(--line-height-normal);
+  color: var(--text-tertiary);
+}
+
+.eyebrow-text {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 960px) {
+  .primary-heading { font-size: var(--font-size-xxxl); }
+  .secondary-heading { font-size: var(--font-size-xxl); }
+}
+
+@media (max-width: 600px) {
+  .primary-heading { font-size: var(--font-size-xxl); }
+  .secondary-heading { font-size: var(--font-size-xl); }
+  .tertiary-heading { font-size: var(--font-size-lg); }
+}
+
+// ── Responsive Show / Hide ────────────────────────────────────────────────────
+// Use these to prioritize content on mobile without JS.
+.hide-on-mobile  { @media (max-width: 599px)  { display: none !important; } }
+.hide-on-tablet  { @media (max-width: 959px)  { display: none !important; } }
+.show-on-mobile  { display: none !important; @media (max-width: 599px)  { display: revert !important; } }
+.show-on-tablet  { display: none !important; @media (max-width: 959px)  { display: revert !important; } }
+
+// ── Website Button Variants ───────────────────────────────────────────────────
+// Material-safe: all MDC overrides are scoped inside these classes.
+// Do NOT use these inside the authenticated app shell.
+
+// Primary: gradient-flow — background pans left→right on hover
+.ws-btn-primary {
+  --mdc-filled-button-container-color: transparent;
+  --mdc-filled-button-label-text-color: var(--text-on-brand);
+  --mdc-elevated-button-container-color: transparent;
+  background: var(--color-brand-gradient) !important;
+  background-size: 200% 200% !important;
+  background-position: left center !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  transition: background-position 0.5s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+
+  &:hover {
+    background-position: right center !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--border-glow) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+    &:hover { transform: none; }
+  }
+}
+
+// Secondary: ghost with gradient border + gradient text on hover
+.ws-btn-secondary {
+  --mdc-outlined-button-outline-color: var(--color-brand-primary);
+  --mdc-outlined-button-label-text-color: var(--color-brand-primary);
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease !important;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    padding: 1.5px;
+    background: var(--color-brand-gradient);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  &:hover {
+    --mdc-outlined-button-label-text-color: var(--color-brand-secondary);
+    background: var(--surface-overlay) !important;
+    transform: translateY(-1px);
+  }
 }
 
 // ── Loading Container ─────────────────────────────────────────────────────────
@@ -99,7 +329,7 @@
 }
 
 .panel-icon {
-  color: var(--primary-color, #1976d2);
+  color: var(--color-brand-primary);
   font-size: 22px;
   width: 22px;
   height: 22px;
@@ -112,7 +342,7 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 10px 0;
-  border-bottom: 1px solid var(--divider-color, #e0e0e0);
+  border-bottom: 1px solid var(--border-subtle);
 
   &:last-child { border-bottom: none; }
 }
@@ -131,7 +361,7 @@
   color: var(--text-primary);
 
   a {
-    color: var(--primary-color);
+    color: var(--color-brand-primary);
     text-decoration: none;
     &:hover { text-decoration: underline; }
   }
@@ -167,14 +397,12 @@
 // ── Section Divider & Subsection Title ───────────────────────────────────────
 .section-divider { margin: 20px 0; }
 
+.subheading-row,
 .subsection-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 12px;
+  margin: 4px 0 8px;
 
   mat-icon {
     font-size: 18px;
@@ -214,9 +442,16 @@
   font-weight: 600;
   border-radius: 10px;
 
+  // Dark-mode aware colour modifiers
   &.pct-high { background: #e6f4ea; color: #1e7e34; }
   &.pct-mid  { background: #fff8e1; color: #b26a00; }
   &.pct-low  { background: #fce8e6; color: #b00020; }
+
+  .dark-theme & {
+    &.pct-high { background: rgba(30, 126, 52, 0.2);  color: #4caf6e; }
+    &.pct-mid  { background: rgba(178, 106, 0, 0.2);  color: #ffd54f; }
+    &.pct-low  { background: rgba(176, 0, 32, 0.2);   color: #ef9a9a; }
+  }
 }
 
 .pct-badge {

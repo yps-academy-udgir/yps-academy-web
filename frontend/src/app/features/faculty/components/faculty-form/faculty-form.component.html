@@ -61,6 +61,35 @@
                 }
               </mat-form-field>
             </div>
+
+            <!-- Profile Image Upload -->
+            <div class="image-upload-section">
+              <div class="image-preview-container">
+                @if (imagePreviewUrl()) {
+                  <img [src]="imagePreviewUrl()" alt="Preview" class="image-preview" />
+                } @else if (existingImageUrl()) {
+                  <img [src]="existingImageUrl()" alt="Current photo" class="image-preview" />
+                } @else {
+                  <div class="image-placeholder">
+                    <mat-icon>account_circle</mat-icon>
+                  </div>
+                }
+              </div>
+              <div class="image-upload-controls">
+                <label class="upload-label" for="faculty-image-input">
+                  <mat-icon>upload</mat-icon>
+                  {{ isEditMode() ? 'Change Photo' : 'Upload Photo' }}
+                  <input
+                    id="faculty-image-input"
+                    type="file"
+                    accept="image/*"
+                    class="hidden-file-input"
+                    (change)="onFileSelected($event)"
+                  />
+                </label>
+                <p class="upload-hint">Optional · JPG, PNG, WEBP · Max 2 MB</p>
+              </div>
+            </div>
           </div>
         </mat-expansion-panel>
 
@@ -96,6 +125,39 @@
                 }
               </mat-form-field>
             </div>
+
+            @if (!isEditMode()) {
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Assign Classroom</mat-label>
+                  <mat-select formControlName="classroomId" [disabled]="classroomLoading()">
+                    <mat-option [value]="''">Select Classroom</mat-option>
+                    @for (classroom of classrooms(); track classroom._id) {
+                      <mat-option [value]="classroom._id">{{ getClassroomLabel(classroom) }}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-icon matPrefix>meeting_room</mat-icon>
+                  <mat-hint>Faculty will be assigned to this classroom using selected speciality.</mat-hint>
+                  @if (facultyForm.get('classroomId')?.invalid && facultyForm.get('classroomId')?.touched) {
+                    <mat-error>Classroom is required</mat-error>
+                  }
+                </mat-form-field>
+                <button mat-stroked-button type="button" color="primary" (click)="addClassroom()">
+                  <mat-icon>add</mat-icon>
+                  Add Classroom
+                </button>
+              </div>
+
+              <div class="form-row">
+                @if (classroomLoading()) {
+                  <p>No classrooms loaded yet.</p>
+                } @else if (hasAvailableClassrooms()) {
+                  <p>Faculty will get chat access after being assigned to the selected classroom.</p>
+                } @else {
+                  <p>No classroom available. Add a classroom first, then create faculty.</p>
+                }
+              </div>
+            }
           </div>
         </mat-expansion-panel>
 
@@ -126,8 +188,22 @@
 
             <div class="section-label">
               <mat-icon>history_edu</mat-icon>
-              <span>Past Experience</span>
+              <span>
+                Past Experience
+                @if (hasExperience()) {
+                  <span class="required-badge">Required</span>
+                } @else {
+                  <span class="optional-badge">(optional)</span>
+                }
+              </span>
             </div>
+
+            @if (hasExperience() && pastExperienceArray.controls.length === 0) {
+              <p class="past-exp-hint">
+                <mat-icon>warning_amber</mat-icon>
+                Please add at least one past experience entry.
+              </p>
+            }
 
             @for (exp of pastExperienceArray.controls; track $index) {
               <div class="dynamic-row" [formGroup]="$any(exp)">

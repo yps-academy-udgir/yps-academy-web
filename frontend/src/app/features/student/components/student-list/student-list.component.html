@@ -2,7 +2,7 @@
 <div class="student-list">
   <!-- Toolbar -->
   <mat-toolbar color="primary" class="dashboard-toolbar">
-    <h1>Students List</h1>
+    <h1 class="tertiary-heading">Students List</h1>
     <span class="spacer"></span>
     <button mat-raised-button color="accent" (click)="createStudent()">
       <mat-icon>add</mat-icon>
@@ -16,6 +16,7 @@
     <app-filter-bar
       [classOptions]="classOptions"
       [yearOptions]="yearOptions()"
+      [statusOptions]="statusOptions"
       (filterChange)="onFilterChange($event)"
     ></app-filter-bar>
 
@@ -46,11 +47,18 @@
     @if (!loading() && students().length > 0) {
     <mat-card class="table-card">
       <mat-card-header>
-        <mat-card-title>Students List ({{ totalRecords() }} total)</mat-card-title>
+        <mat-card-title>
+            Students List
+            @if (filteredStudents().length !== students().length) {
+              ({{ filteredStudents().length }} of {{ students().length }})
+            } @else {
+              ({{ students().length }} total)
+            }
+          </mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="table-container">
-          <table mat-table [dataSource]="filteredStudents()" class="students-table">
+          <table mat-table [dataSource]="pagedStudents()" class="students-table">
             <!-- Roll Number Column -->
             <ng-container matColumnDef="rollNumber">
               <th mat-header-cell *matHeaderCellDef>Roll No.</th>
@@ -62,6 +70,16 @@
               <th mat-header-cell *matHeaderCellDef>Name</th>
               <td mat-cell *matCellDef="let student">
                 <strong>{{ getFullName(student) }}</strong>
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let student">
+                <span class="status-badge status-{{ student.status ?? 'active' }}">
+                  {{ (student.status ?? 'active') | titlecase }}
+                </span>
               </td>
             </ng-container>
 
@@ -91,30 +109,50 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let student" class="actions-cell">
-                <button
-                  mat-icon-button
-                  color="primary"
-                  (click)="viewStudent(student)"
-                  matTooltip="View Details"
-                >
-                  <mat-icon>visibility</mat-icon>
+                <button mat-icon-button [matMenuTriggerFor]="studentActionMenu" matTooltip="Actions">
+                  <mat-icon>more_vert</mat-icon>
                 </button>
-                <button
-                  mat-icon-button
-                  color="accent"
-                  (click)="editStudent(student)"
-                  matTooltip="Edit Student"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteStudent(student)"
-                  matTooltip="Delete Student"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
+                <mat-menu #studentActionMenu="matMenu">
+                  <button mat-menu-item (click)="viewStudent(student)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>View Details</span>
+                  </button>
+                  <button mat-menu-item (click)="enterMarks(student)">
+                    <mat-icon>edit_note</mat-icon>
+                    <span>Enter Marks</span>
+                  </button>
+                  <button mat-menu-item (click)="viewFeeReceipt(student)">
+                    <mat-icon>receipt_long</mat-icon>
+                    <span>View Fee Receipt</span>
+                  </button>
+                  <button mat-menu-item (click)="editStudent(student)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  @if (roleService.isAdmin()) {
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="resetPassword(student)">
+                      <mat-icon>lock_reset</mat-icon>
+                      <span>Reset Password</span>
+                    </button>
+                    @if ((student.status ?? 'active') === 'active') {
+                      <button mat-menu-item (click)="markDropped(student)">
+                        <mat-icon>person_remove</mat-icon>
+                        <span>Mark as Dropped</span>
+                      </button>
+                    }
+                    @if ((student.status ?? 'active') === 'dropped') {
+                      <button mat-menu-item (click)="reinstateStudent(student)">
+                        <mat-icon>person_add</mat-icon>
+                        <span>Reinstate Student</span>
+                      </button>
+                    }
+                    <button mat-menu-item (click)="deleteStudent(student)">
+                      <mat-icon>delete</mat-icon>
+                      <span>Delete Student</span>
+                    </button>
+                  }
+                </mat-menu>
               </td>
             </ng-container>
 
@@ -126,8 +164,9 @@
 
         <!-- Paginator -->
         <mat-paginator
-          [length]="totalRecords()"
+          [length]="filteredStudents().length"
           [pageSize]="pageSize()"
+          [pageIndex]="currentPage()"
           [pageSizeOptions]="[5, 10, 25, 50]"
           (page)="onPageChange($event)"
           showFirstLastButtons

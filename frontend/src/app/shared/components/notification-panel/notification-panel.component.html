@@ -1,0 +1,47 @@
+<div class="notif-panel">
+  <div class="notif-header">
+    <span class="notif-title">Notifications</span>
+    <div class="notif-header-actions">
+      @if (roleService.isAdmin()) {
+        <button mat-icon-button matTooltip="Compose Notification" (click)="goToSend()">
+          <mat-icon>edit_notifications</mat-icon>
+        </button>
+      }
+      @if (unreadCount() > 0) {
+        <button mat-button (click)="markAllRead()">Mark all read</button>
+      }
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  @if (loading()) {
+    <div class="notif-loading">
+      <mat-spinner diameter="32"></mat-spinner>
+    </div>
+  } @else if (notifications().length === 0) {
+    <div class="notif-empty">
+      <mat-icon>notifications_none</mat-icon>
+      <span>No notifications yet</span>
+    </div>
+  } @else {
+    <div class="notif-list">
+      @for (n of notifications(); track n._id) {
+        <div class="notif-item" [class.unread]="isUnread(n)" (click)="markRead(n, $event)">
+          <div class="notif-icon-wrap" [class]="typeClass(n.type)">
+            <mat-icon>{{ typeIcon(n.type) }}</mat-icon>
+          </div>
+          <div class="notif-body">
+            <div class="notif-item-title">{{ n.title }}</div>
+            <div class="notif-item-msg">{{ n.message }}</div>
+            <div class="notif-item-time">{{ n.createdAt | date: 'dd MMM, hh:mm a' }}</div>
+          </div>
+          @if (isUnread(n)) {
+            <span class="unread-dot"></span>
+          }
+        </div>
+        <mat-divider></mat-divider>
+      }
+    </div>
+  }
+</div>

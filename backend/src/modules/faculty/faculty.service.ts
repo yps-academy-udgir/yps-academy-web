@@ -1,4 +1,5 @@
 import { facultyRepository, FacultyFilter, PaginationOptions } from './faculty.repository';
+import { classroomService } from '../classroom/classroom.service';
 import { createAuthUser, deleteAuthUser } from '../../utils/auth-user.util';
 import { generateFacultyRollNumber } from '../../utils/generate-roll-number.util';
 import { generateUserId } from '../../utils/generate-user-id.util';
@@ -17,25 +18,53 @@ export const facultyService = {
     return facultyRepository.findById(id);
   },
 
+  async getMe(userId: string) {
+    const faculty = await facultyRepository.findByUserId(userId);
+    if (!faculty) throw Object.assign(new Error('Faculty profile not found'), { statusCode: 404 });
+    return faculty;
+  },
+
   async create(dto: CreateFacultyDto, imageFile?: Express.Multer.File) {
     const existing = await facultyRepository.findByEmail(dto.email);
     if (existing) throw serviceError('A faculty member with this email already exists', 400);
+
+    if (!dto.classroomId) {
+      throw serviceError('Please add/select a classroom before creating faculty', 400);
+    }
 
     const imagePath = imageFile ? `/uploads/${imageFile.filename}` : undefined;
     const rollNumber = await generateFacultyRollNumber();
 
     const userId = await generateUserId('faculty', dto.firstName, rollNumber);
 
+    const { classroomId, ...facultyInput } = dto as CreateFacultyDto & { classroomId: string };
+
     const faculty = await facultyRepository.create({
-      ...dto,
+      ...facultyInput,
       userId,
       rollNumber,
       ...(imagePath && { image: imagePath }),
     });
 
-    const { defaultPassword } = await createAuthUser(userId, `${dto.firstName} ${dto.lastName}`, 'faculty');
+    try {
+      await classroomService.assignFaculty(classroomId, {
+        facultyId: (faculty._id as unknown as string).toString(),
+        subject: dto.speciality,
+        isPrimary: false,
+      });
+    } catch (error: any) {
+      await facultyRepository.delete((faculty._id as unknown as string).toString());
+      throw serviceError(error?.message || 'Failed to assign faculty to classroom', error?.statusCode || 400);
+    }
 
-    return { faculty, userId, defaultPassword };
+    try {
+      const { defaultPassword } = await createAuthUser(userId, `${dto.firstName} ${dto.lastName}`, 'faculty');
+      return { faculty, userId, defaultPassword };
+    } catch (error) {
+      await classroomService.removeFaculty(classroomId, (faculty._id as unknown as string).toString());
+      await facultyRepository.delete((faculty._id as unknown as string).toString());
+      throw error;
+    }
   },
 
   async update(id: string, dto: UpdateFacultyDto, imageFile?: Express.Multer.File) {

@@ -86,6 +86,13 @@ export class ClassroomService {
   }
 
   /**
+   * Get classrooms for the currently logged-in student or faculty member
+   */
+  getMyClassrooms(): Observable<ApiResponse<Classroom[]>> {
+    return this.http.get<ApiResponse<Classroom[]>>(`${this.API_URL}/my`);
+  }
+
+  /**
    * Get classroom by ID
    */
   getClassroomById(id: string): Observable<ApiResponse<Classroom>> {

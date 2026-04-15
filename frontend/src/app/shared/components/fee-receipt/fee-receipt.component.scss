@@ -14,14 +14,21 @@
 }
 
 .receipt-wrapper {
-  background: #fff;
+  // Force light theme — receipts must always print/display on white
+  --surface-card: #ffffff;
+  --surface-page: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  color-scheme: light;
+
+  background: #ffffff;
   max-width: 920px;
   margin: 0 auto;
   border: 1px solid v.$gray-300;
   border-radius: v.$border-radius-lg;
   overflow: hidden;
   font-family: v.$font-family-base;
-  color: v.$gray-900;
+  color: var(--text-primary, #111827);
   box-shadow: v.$shadow-sm;
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
@@ -31,7 +38,7 @@
 
 .receipt-topband {
   height: 10px;
-  background: linear-gradient(90deg, v.$primary-700 0%, v.$primary-400 100%);
+  background: var(--report-band-gradient, linear-gradient(90deg, v.$primary-700 0%, v.$primary-400 100%));
 }
 
 .receipt-header {
@@ -67,7 +74,7 @@
   padding: v.$spacing-md;
   border: 1px solid v.$gray-300;
   border-radius: v.$border-radius-md;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 
 .receipt-title {
@@ -125,7 +132,7 @@
   border: 1px solid v.$gray-300;
   border-radius: v.$border-radius-md;
   padding: v.$spacing-lg;
-  background: #fff;
+  background: var(--surface-card, #fff);
 }
 
 .section-title-row {
@@ -137,7 +144,6 @@
 
 .section-title-row h3 {
   margin: 2px 0 0;
-  font-size: v.$font-size-lg;
 }
 
 .student-grid,
@@ -158,7 +164,7 @@
 
 .data-value {
   font-size: v.$font-size-md;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .emphasis {
@@ -177,8 +183,8 @@
   padding: v.$spacing-lg;
   border-radius: v.$border-radius-md;
   border: 1px solid v.$gray-300;
-  background: #fff;
-  color: #111827;
+  background: var(--surface-card, #fff);
+  color: var(--text-primary, #111827);
 }
 
 .summary-card.total {
@@ -204,7 +210,7 @@
 .summary-amount {
   font-size: v.$font-size-xxl;
   font-weight: v.$font-weight-bold;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .ledger-table {
@@ -218,18 +224,18 @@
   border-bottom: 1px solid v.$gray-300;
   text-align: left;
   font-size: v.$font-size-sm;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .ledger-table th {
-  background: #f3f4f6;
+  background: var(--surface-page, #f3f4f6);
   font-weight: v.$font-weight-bold;
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .ledger-table tfoot td {
   font-weight: v.$font-weight-bold;
-  background: #f9fafb;
+  background: var(--surface-page, #f9fafb);
 }
 
 .ledger-table.compact th,
@@ -264,7 +270,7 @@
 }
 
 .footer-note {
-  color: #111827;
+  color: var(--text-primary, #111827);
   font-size: v.$font-size-sm;
 }
 
@@ -275,7 +281,7 @@
 .signature-block {
   min-width: 220px;
   text-align: center;
-  color: #111827;
+  color: var(--text-primary, #111827);
   font-size: v.$font-size-sm;
 }
 

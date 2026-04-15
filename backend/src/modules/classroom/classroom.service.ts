@@ -17,6 +17,10 @@ export const classroomService = {
     return classroomRepository.findById(id);
   },
 
+  async getMyClassrooms(userId: string, role: 'student' | 'faculty') {
+    return classroomRepository.findByUser(userId, role);
+  },
+
   async create(dto: CreateClassroomDto) {
     const duplicate = await classroomRepository.findDuplicate(
       dto.class, dto.section, dto.academicYear

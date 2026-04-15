@@ -22,9 +22,7 @@
 
   h1 {
     margin: 0;
-    font-size: 24px;
-    font-weight: 500;
-    color: var(--text-primary);
+    // Visual sizing handled by .tertiary-heading class applied in template
   }
 
   .spacer {
@@ -174,6 +172,21 @@
   background-color: var(--background-tertiary);
   color: var(--text-primary);
   text-transform: capitalize;
+}
+
+// ==================== Status Badge ====================
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+
+  &.status-active  { background: var(--status-success-bg); color: var(--status-success-color); }
+  &.status-alumni  { background: var(--status-info-bg); color: var(--status-info-color); }
+  &.status-dropped { background: var(--status-error-bg);  color: var(--status-error-color); }
 }
 
 // ==================== Empty State ====================

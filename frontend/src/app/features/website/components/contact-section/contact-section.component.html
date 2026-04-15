@@ -2,8 +2,8 @@
   <div class="ws-container">
     <div class="ws-section-header">
       <span class="ws-label">Get In Touch</span>
-      <h2>Contact Us</h2>
-      <p>We'd love to hear from you. Fill in the form and we'll get back to you shortly.</p>
+      <h2 class="secondary-heading gradient-text">Contact Us</h2>
+      <p class="ws-reveal-text"><span>We'd love to hear from you.</span><span>Fill in the form and we'll get back to you shortly.</span></p>
     </div>
     <div class="contact-layout">
 
@@ -64,7 +64,7 @@
               <mat-icon color="primary">location_on</mat-icon>
               <div>
                 <h4>Our Address</h4>
-                <p>YPS Academy, 42 Shivaji Nagar,<br />Near Central Bus Stand,<br />Pune – 411005, Maharashtra</p>
+                <p>Aurade Nivas, Navi Abadi,<br> Udgir. 413517, <br>Maharashtra, India.<br>Landmark : Near Ganesh Temple.</p>
               </div>
             </div>
             <mat-divider></mat-divider>
@@ -72,7 +72,7 @@
               <mat-icon color="primary">phone</mat-icon>
               <div>
                 <h4>Phone</h4>
-                <p>+91 98765 43210<br />+91 91234 56789</p>
+                <p>+91 99702 52067, <br />+91 94939 28196</p>
               </div>
             </div>
             <mat-divider></mat-divider>
@@ -80,7 +80,7 @@
               <mat-icon color="primary">email</mat-icon>
               <div>
                 <h4>Email</h4>
-                <p>info&#64;ypsacademy.in<br />admissions&#64;ypsacademy.in</p>
+                <p>ypsacademyudgir@gmail.com</p>
               </div>
             </div>
             <mat-divider></mat-divider>
@@ -93,11 +93,19 @@
             </div>
           </mat-card-content>
         </mat-card>
-        <div class="map-placeholder">
-          <mat-icon class="map-icon">map</mat-icon>
-          <p>42 Shivaji Nagar, Pune</p>
+
+  <div class="map-placeholder">
+  <iframe
+    width="100%"
+    height="250"
+    style="border:0; border-radius:12px;"
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    [src]="mapUrl">
+  </iframe>
+</div>
         </div>
       </div>
     </div>
-  </div>
+  
 </section>

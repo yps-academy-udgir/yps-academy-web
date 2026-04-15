@@ -4,19 +4,25 @@
  * Uses Angular Reactive Forms with Material Design
  * Follows Angular 20 patterns with signals
  */
-import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, effect } from '@angular/core';
+import { environment } from '../../../../../environments/environment';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 
 import { SharedMaterialModule } from '../../../../shared/shared-material.module';
 import { StudentService } from '../../../../shared/services/student.service';
+import { ClassroomService } from '../../../../shared/services/classroom.service';
+import { SubjectConfigService } from '../../../../shared/services/subject-config.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { RoleService } from '../../../../shared/services/role.service';
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
-import { Student, Gender, Class, Subject, Payment } from '../../../../shared/models/student.model';
+import { Student, Gender, Class, Payment } from '../../../../shared/models/student.model';
+import { Classroom } from '../../../classroom/models/classroom.model';
 import { calculateFees, calculatePendingFees, calculateTotalPaid } from '../../../../shared/utils/fee-calculator.util';
 import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
+import { Subject , takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-student-form',
@@ -25,35 +31,58 @@ import { CredentialsDialogComponent } from '../../../../shared/components/creden
     CommonModule,
     ReactiveFormsModule,
     SharedMaterialModule,
+    RouterLink,
     LoadingComponent,
   ],
   templateUrl: './student-form.component.html',
   styleUrls: ['./student-form.component.scss'],
 })
-export class StudentFormComponent implements OnInit {
+export class StudentFormComponent implements OnInit, OnDestroy {
   // Inject services using Angular's inject() function
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private studentService = inject(StudentService);
+  private classroomService = inject(ClassroomService);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
+  private roleService = inject(RoleService);
+  subjectConfigService = inject(SubjectConfigService);
+
+  isAdmin = this.roleService.isAdmin;
 
   // Signals for reactive state
   studentId = signal<string | null>(null);
   loading = signal<boolean>(false);
   submitting = signal<boolean>(false);
+  classrooms = signal<Classroom[]>([]);
+  classroomsLoading = signal<boolean>(false);
+  selectedClass = signal<string | null>(null);
+
+  /** Classrooms that match the selected class AND still have free seats */
+  availableClassrooms = computed(() => {
+    const cls = this.selectedClass();
+    if (!cls) return [];
+    return this.classrooms().filter(
+      c => c.class === cls && c.enrolledStudents.length < c.capacity
+    );
+  });
 
   // Computed signals
   isEditMode = computed(() => this.studentId() !== null);
   pageTitle = computed(() => this.isEditMode() ? 'Edit Student' : 'Add New Student');
   submitButtonText = computed(() => this.isEditMode() ? 'Update Student' : 'Create Student');
 
+  // Image upload signals
+  selectedFile = signal<File | null>(null);
+  imagePreviewUrl = signal<string | null>(null);
+  existingImageUrl = signal<string | null>(null);
+
   // Fee-related signals
   calculatedFees = signal<number>(0);
   paidAmount = signal<number>(0);
   pendingFees = computed(() => calculatePendingFees(this.calculatedFees(), this.paidAmount()));
-
+  destroy$ = new Subject<void>();
   // Stepper form groups (for step control)
   get studentInfoGroup() {
     return this.fb.group({
@@ -92,21 +121,49 @@ export class StudentFormComponent implements OnInit {
     { value: Class.TENTH, label: '10th' },
   ];
 
-  // Subject options (predefined)
-  availableSubjects = [
-    Subject.MATHEMATICS,
-    Subject.SCIENCE,
-    Subject.ENGLISH,
-  ];
+  // Subject options — filtered by selected class, from SubjectConfig API
+  get availableSubjects() {
+    const cls = this.selectedClass();
+    if (!cls) return [];
+    return this.subjectConfigService.getSubjectsForClass(cls);
+  }
 
-  // Current year for year of admission
+  // App starts 2026 — no historical entries; grows by 1 each year automatically
   currentYear = new Date().getFullYear();
-  yearRange = Array.from({ length: 20 }, (_, i) => this.currentYear - i + 1);
+  yearRange = Array.from(
+    { length: Math.max(1, this.currentYear - 2025) },
+    (_, i) => this.formatAcademicSession(2026 + i)
+  );
   
   ngOnInit(): void {
     this.initializeForm();
+    this.loadClassrooms();
+    this.loadSubjectConfig();
     this.checkEditMode();
     this.setupFeeCalculation();
+  }
+    ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadSubjectConfig(): void {
+    this.subjectConfigService.get().subscribe();
+  }
+
+  private loadClassrooms(): void {
+    this.classroomsLoading.set(true);
+    this.classroomService.getAllClassrooms(1, 200).subscribe({
+      next: (response) => {
+        this.classrooms.set(response.data);
+      },
+      error: () => {
+        this.classrooms.set([]);
+      },
+      complete: () => {
+        this.classroomsLoading.set(false);
+      },
+    });
   }
 
   /**
@@ -120,8 +177,9 @@ export class StudentFormComponent implements OnInit {
       contact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s-]{10,15}$/)]],
       gender: ['', Validators.required],
       academicDetails: this.fb.group({
-        yearOfAdmission: [''],
-        class: [''],
+        yearOfAdmission: ['', Validators.required],
+        class: ['', Validators.required],
+        classroomId: [null], // optional — shown when >1 room available
         subjects: [[]],
         selfStudyMode: [false],
       }),
@@ -129,26 +187,38 @@ export class StudentFormComponent implements OnInit {
         totalFees: [{ value: 0, disabled: true }],
         paidAmount: [0],
         pendingFees: [{ value: 0, disabled: true }],
+        discount: [0, [Validators.min(0)]],
         feeBreakdown: this.fb.group({
           baseFeePerSubject: [0],
           numberOfSubjects: [0],
           subjectsFee: [0],
           selfStudyFee: [0],
+          discount: [0],
         }),
         paymentHistory: [[]],
-        initialPayment: [0, [Validators.min(0)]], // For adding first payment
+        initialPayment: [0, [Validators.min(0)]],
         paymentDate: [new Date()],
         paymentRemarks: [''],
       }),
     });
   }
 
+  private formatAcademicSession(startYear: number): string {
+    return `${startYear}-${startYear + 1}`;
+  }
+
   /**
    * Setup fee calculation reactivity
    */
   private setupFeeCalculation(): void {
-    // Watch for changes in class, subjects, or selfStudyMode
-    this.studentForm.get('academicDetails')?.valueChanges.subscribe((academicDetails) => {
+    // Watch class changes: clear subject selection + recalculate
+    this.studentForm.get('academicDetails.class')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((cls) => {
+      this.selectedClass.set(cls ?? null);
+      // Clear subjects that are no longer valid for the new class
+      this.studentForm.get('academicDetails.subjects')?.setValue([]);});
+    // Watch remaining academic fields (selfStudyMode, subjects)
+    this.studentForm.get('academicDetails')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => this.recalculateFees());
+    this.studentForm.get('feeDetails.discount')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.recalculateFees();
     });
   }
@@ -158,11 +228,15 @@ export class StudentFormComponent implements OnInit {
    */
   private recalculateFees(): void {
     const academicDetails = this.studentForm.get('academicDetails')?.value;
-    const studentClass = academicDetails?.class;
-    const subjects = academicDetails?.subjects || [];
-    const selfStudyMode = academicDetails?.selfStudyMode || false;
+    const subjects: string[] = academicDetails?.subjects || [];
+    const selfStudyMode: boolean = academicDetails?.selfStudyMode || false;
+    const discount: number = this.studentForm.get('feeDetails.discount')?.value || 0;
+    const cls: string = academicDetails?.class || '';
 
-    const feeCalculation = calculateFees(studentClass, subjects, selfStudyMode);
+    const feeMap = this.subjectConfigService.getFeeMapForClass(cls);
+    const selfStudyFee = this.subjectConfigService.subjectConfig()?.selfStudyFee ?? 0;
+
+    const feeCalculation = calculateFees(subjects, selfStudyMode, feeMap, selfStudyFee, discount);
 
     // Update fee breakdown
     this.studentForm.get('feeDetails.feeBreakdown')?.patchValue({
@@ -170,6 +244,7 @@ export class StudentFormComponent implements OnInit {
       numberOfSubjects: feeCalculation.numberOfSubjects,
       subjectsFee: feeCalculation.subjectsFee,
       selfStudyFee: feeCalculation.selfStudyFee,
+      discount: feeCalculation.discount,
     });
 
     // Update total fees
@@ -217,6 +292,9 @@ export class StudentFormComponent implements OnInit {
    * Patch form with student data
    */
   private patchFormValues(student: Student): void {
+    // Sync selectedClass signal so subject dropdown populates correctly
+    this.selectedClass.set(student.academicDetails?.class ?? null);
+
     this.studentForm.patchValue({
       firstName: student.firstName,
       lastName: student.lastName,
@@ -232,6 +310,12 @@ export class StudentFormComponent implements OnInit {
     });
 
     // Patch fee details if they exist
+    if (student.image) {
+      this.existingImageUrl.set(
+        environment.apiUrl.replace('/api', '') + student.image
+      );
+    }
+
     if (student.feeDetails) {
       const totalPaid = calculateTotalPaid(student.feeDetails.paymentHistory || []);
       this.paidAmount.set(totalPaid);
@@ -307,22 +391,36 @@ export class StudentFormComponent implements OnInit {
       return;
     }
 
+    if (!this.isEditMode()) {
+      const selectedClass = this.studentForm.get('academicDetails.class')?.value as string | null;
+      if (selectedClass && !this.hasAvailableClassroom(selectedClass)) {
+        this.notificationService.warning(`No classroom is available for class ${selectedClass}. Please add a classroom first.`);
+        return;
+      }
+    }
+
     this.submitting.set(true);
-    const formValue = this.prepareFormData();
+    const payload = this.buildSubmitPayload();
 
     if (this.isEditMode()) {
-      this.updateStudent(formValue);
+      this.updateStudent(payload);
     } else {
-      this.createStudent(formValue);
+      this.createStudent(payload);
     }
   }
 
   /**
    * Prepare form data before submission
    */
-  private prepareFormData(): Partial<Student> {
+  private prepareFormData(): Partial<Student> & { classroomId?: string } {
     const formValue = this.studentForm.getRawValue(); // Use getRawValue to include disabled fields
     
+    // Hoist classroomId to the top level so the backend can read it directly
+    const classroomId: string | null = formValue.academicDetails?.classroomId || null;
+    if (formValue.academicDetails) {
+      delete formValue.academicDetails.classroomId;
+    }
+
     // Add initial payment to payment history if it exists and is greater than 0
     const initialPayment = formValue.feeDetails?.initialPayment;
     const paymentDate = formValue.feeDetails?.paymentDate;
@@ -351,7 +449,7 @@ export class StudentFormComponent implements OnInit {
       delete formValue.feeDetails.paymentRemarks;
     }
 
-    return formValue;
+    return classroomId ? { ...formValue, classroomId } : formValue;
   }
 
   /**
@@ -362,9 +460,49 @@ export class StudentFormComponent implements OnInit {
   }
 
   /**
+   * Build FormData payload for submission (supports optional image file)
+   */
+  private buildSubmitPayload(): FormData {
+    const data = this.prepareFormData();
+    const fd = new FormData();
+
+    if (data.firstName) fd.append('firstName', data.firstName);
+    if (data.lastName) fd.append('lastName', data.lastName);
+    if (data.email) fd.append('email', data.email);
+    if (data.contact) fd.append('contact', data.contact);
+    if (data.gender) fd.append('gender', data.gender);
+    if ((data as any).classroomId) fd.append('classroomId', (data as any).classroomId);
+    if (data.academicDetails) fd.append('academicDetails', JSON.stringify(data.academicDetails));
+    if (data.feeDetails) fd.append('feeDetails', JSON.stringify(data.feeDetails));
+
+    const file = this.selectedFile();
+    if (file) fd.append('image', file);
+
+    return fd;
+  }
+
+  /**
+   * Handle profile image file selection
+   */
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    this.selectedFile.set(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => this.imagePreviewUrl.set(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      this.imagePreviewUrl.set(null);
+    }
+  }
+
+  /**
    * Create new student
    */
-  private createStudent(data: Partial<Student>): void {
+  private createStudent(data: FormData): void {
+    const firstName = this.studentForm.get('firstName')?.value ?? '';
+    const lastName = this.studentForm.get('lastName')?.value ?? '';
     this.studentService.createStudent(data).subscribe({
       next: (response) => {
         this.submitting.set(false);
@@ -372,7 +510,7 @@ export class StudentFormComponent implements OnInit {
         if (result) {
           const dialogRef = this.dialog.open(CredentialsDialogComponent, {
             data: {
-              name: `${data.firstName} ${data.lastName}`,
+              name: `${firstName} ${lastName}`,
               userId: result.userId,
               defaultPassword: result.defaultPassword,
               role: 'student',
@@ -388,8 +526,8 @@ export class StudentFormComponent implements OnInit {
           this.router.navigate(['/students', 'management', 'list']);
         }
       },
-      error: () => {
-        this.notificationService.error('Failed to create student');
+      error: (error: Error) => {
+        this.notificationService.error(error.message || 'Failed to create student');
         this.submitting.set(false);
       },
     });
@@ -398,7 +536,7 @@ export class StudentFormComponent implements OnInit {
   /**
    * Update existing student
    */
-  private updateStudent(data: Partial<Student>): void {
+  private updateStudent(data: FormData): void {
     const id = this.studentId();
     if (!id) return;
 
@@ -408,11 +546,22 @@ export class StudentFormComponent implements OnInit {
         this.submitting.set(false);
         this.router.navigate(['/students', 'management', 'list']);
       },
-      error: (error) => {
-        this.notificationService.error('Failed to update student');
+      error: (error: Error) => {
+        this.notificationService.error(error.message || 'Failed to update student');
         this.submitting.set(false);
       },
     });
+  }
+
+  hasAvailableClassroom(classValue: string | null | undefined): boolean {
+    if (!classValue) return false;
+    return this.classrooms().some(
+      c => c.class === classValue && c.enrolledStudents.length < c.capacity
+    );
+  }
+
+  addClassroom(): void {
+    this.router.navigate(['/classrooms/management/add']);
   }
 
   /**

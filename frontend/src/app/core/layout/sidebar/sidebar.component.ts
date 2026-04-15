@@ -4,12 +4,16 @@
  * Uses Angular Material navigation list
  * Follows Angular 20 patterns with signals
  */
-import { Component, inject, output, signal, computed } from '@angular/core';
+import { Component, inject, output, signal, computed, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
 import { RoleService } from '../../../shared/services/role.service';
+import { ClassroomService } from '../../../shared/services/classroom.service';
+import { ChatService } from '../../../shared/services/chat.service';
+import { Classroom } from '../../../features/classroom/models/classroom.model';
 
 interface MenuItem {
   label: string;
@@ -18,6 +22,7 @@ interface MenuItem {
   badge?: number;
   children?: MenuItem[];
   expanded?: boolean;
+  adminOnly?: boolean;
 }
 
 @Component({
@@ -27,16 +32,29 @@ interface MenuItem {
     MatListModule,
     MatIconModule,
     MatDividerModule,
+    MatBadgeModule,
     RouterLink,
     RouterLinkActive,
   ],
   templateUrl: './sidebar.component.html',  
   styleUrls: ['./sidebar.component.scss'],
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   // Output event when navigation item is clicked
   navigationClick = output<void>();
   private roleService = inject(RoleService);
+  private classroomService = inject(ClassroomService);
+  private chatService = inject(ChatService);
+
+  // Chat room classroom list for role-based direct access
+  chatClassrooms = signal<Classroom[]>([]);
+  chatRoomsExpanded = signal<boolean>(true);
+  unreadCounts = this.chatService.unreadCountsMap;
+  chatLoading = signal<boolean>(false);
+  chatError = signal<string | null>(null);
+  hasChatAccess = computed(() =>
+    this.roleService.isStudent() || this.roleService.isFaculty() || this.roleService.isAdmin()
+  );
 
   // Student portal — items visible only to students
   private readonly studentMenuItems: MenuItem[] = [
@@ -46,10 +64,19 @@ export class SidebarComponent {
     { label: 'Change Password',  icon: 'lock_reset',    route: '/auth/change-password' },
   ];
 
-  // Computed: returns student menu or full admin/faculty menu based on role
-  visibleMenuItems = computed(() =>
-    this.roleService.isStudent() ? this.studentMenuItems : this.menuItems()
-  );
+  // Computed: returns role-appropriate menu
+  visibleMenuItems = computed(() => {
+    if (this.roleService.isStudent()) return this.studentMenuItems;
+    const items = this.menuItems();
+    const filtered = this.roleService.isAdmin() ? items : items.filter((i) => !i.adminOnly);
+    if (this.roleService.isFaculty()) {
+      return [
+        { label: 'My Profile', icon: 'person', route: '/my-faculty-profile' },
+        ...filtered,
+      ];
+    }
+    return filtered;
+  });
 
   // Menu items using signals with hierarchical structure
   menuItems = signal<MenuItem[]>([
@@ -160,15 +187,87 @@ export class SidebarComponent {
           route: '/results/list',
         },
         {
-          label: 'Enter Results',
+          label: 'Enter Marks',
           icon: 'edit_note',
           route: '/results/enter',
+        },
+        {
+          label: 'Certificates',
+          icon: 'emoji_events',
+          route: '/results/certificates',
+        },
+      ],
+    },
+    {
+      label: 'Settings',
+      icon: 'settings',
+      expanded: false,
+      adminOnly: true,
+      children: [
+        {
+          label: 'Subject & Fee Config',
+          icon: 'menu_book',
+          route: '/settings/subjects',
+        },
+        {
+          label: 'Promote Academic Year',
+          icon: 'upgrade',
+          route: '/settings/promote-year',
+        },
+        {
+          label: 'Send Notification',
+          icon: 'campaign',
+          route: '/notifications/send',
         },
       ],
     },
   ]);
 
   constructor(private router: Router) {}
+
+  ngOnInit(): void {
+    if (this.roleService.isStudent() || this.roleService.isFaculty()) {
+      this.chatLoading.set(true);
+      this.chatError.set(null);
+      this.classroomService.getMyClassrooms().subscribe({
+        next: (response) => this.chatClassrooms.set(response.data),
+        error: (err) => {
+          console.error('[Sidebar] Failed to load chat classrooms:', err);
+          this.chatError.set(err?.error?.message || 'Could not load classrooms');
+          this.chatLoading.set(false);
+        },
+        complete: () => this.chatLoading.set(false),
+      });
+      this.chatService.loadUnreadCounts();
+      return;
+    }
+
+    if (this.roleService.isAdmin()) {
+      this.chatLoading.set(true);
+      this.chatError.set(null);
+      this.classroomService.getAllClassrooms(1, 50).subscribe({
+        next: (response) => this.chatClassrooms.set(response.data),
+        error: (err) => {
+          console.error('[Sidebar] Failed to load chat classrooms:', err);
+          this.chatError.set(err?.error?.message || 'Could not load classrooms');
+          this.chatLoading.set(false);
+        },
+        complete: () => this.chatLoading.set(false),
+      });
+    }
+  }
+
+  getUnreadCount(classroomId: string): number {
+    return this.unreadCounts().get(classroomId) ?? 0;
+  }
+
+  getClassroomLabel(classroom: Classroom): string {
+    return `${classroom.class} ${classroom.section}`;
+  }
+
+  toggleChatRooms(): void {
+    this.chatRoomsExpanded.set(!this.chatRoomsExpanded());
+  }
 
   /**
    * Toggle expansion of parent menu item

@@ -66,7 +66,7 @@
     text-align: center;
 
     mat-icon { font-size: 48px; width: 48px; height: 48px; }
-    p { font-size: 1rem; color: #666; }
+    p { font-size: 1rem; color: var(--text-secondary); }
   }
 }
 
@@ -105,14 +105,14 @@
   th, td {
     padding: 10px 12px;
     text-align: left;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
   }
 
   thead th {
-    background: #f5f5f5;
+    background: var(--surface-page);
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     white-space: nowrap;
   }
 
@@ -156,10 +156,10 @@
 
 // ── Total footer row ─────────────────────────────────────────────
 .total-row {
-  background: #fafafa;
+  background: var(--surface-page);
   font-weight: 600;
 
-  td { border-top: 2px solid #bbb; padding: 12px; }
+  td { border-top: 2px solid var(--border-color); padding: 12px; }
 
   .total-label {
     display: flex;
@@ -175,7 +175,7 @@
 // .pct-badge with .pct-high/.pct-mid/.pct-low/.pct-total is a global utility
 // shared with student-detail — see src/styles/_utilities.scss
 
-.pct-dash { color: #aaa; font-size: 1.1rem; display: block; text-align: center; }
+.pct-dash { color: var(--text-disabled); font-size: 1.1rem; display: block; text-align: center; }
 
 // ── Form actions ─────────────────────────────────────────────────
 // Base layout (flex, justify-content, align-items, gap) is a global utility.
@@ -204,8 +204,7 @@
   }
 
   .result-card {
-    border: 1px solid #e0e0e0;
-    transition: box-shadow 0.2s;
+      border: 1px solid var(--border-color);
 
     &:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
 
@@ -233,14 +232,14 @@
       justify-content: space-between;
       padding: 4px 0;
       font-size: 0.88rem;
-      border-bottom: 1px dashed #eee;
+      border-bottom: 1px dashed var(--border-subtle);
 
       &:last-child { border-bottom: none; }
     }
 
-    .sm-subject { color: #555; }
+    .sm-subject { color: var(--text-secondary); }
     .sm-score   { font-weight: 600; }
-    .sm-outof   { font-weight: 400; color: #888; }
+    .sm-outof   { font-weight: 400; color: var(--text-tertiary); }
 
     .result-total {
       display: flex;

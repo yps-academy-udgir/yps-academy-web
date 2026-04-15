@@ -29,12 +29,29 @@ export enum Subject {
   ENGLISH = 'English',
 }
 
+// Student lifecycle status
+export enum StudentStatus {
+  ACTIVE  = 'active',
+  ALUMNI  = 'alumni',
+  DROPPED = 'dropped',
+}
+
 // Academic Details Interface
 export interface IAcademicDetails {
-  yearOfAdmission: number;
+  yearOfAdmission: string;
   class: Class;
-  subjects: string[]; // Array to allow predefined + custom subjects
+  subjects: string[];
   selfStudyMode: boolean;
+}
+
+// Academic History Entry — one per past academic year
+export interface IAcademicHistoryEntry {
+  academicYear: string;        // e.g. "2026-2027"
+  class: Class;
+  classroomId?: string;
+  classroomName?: string;      // denormalised "8th-A" for display
+  subjects: string[];
+  promotedAt: Date;
 }
 
 // Payment History Interface
@@ -51,6 +68,7 @@ export interface IFeeBreakdown {
   numberOfSubjects: number;
   subjectsFee: number;
   selfStudyFee: number;
+  discount: number;
 }
 
 // Fee Details Interface
@@ -64,16 +82,18 @@ export interface IFeeDetails {
 
 // Student Interface
 export interface IStudent extends Document {
-  userId?: string;          // Human-readable login ID e.g. 26-YPS-STUD-JOHN-001
-  rollNumber?: string;      // Class-wise sequential roll number e.g. 001
+  userId?: string;
+  rollNumber?: string;
   firstName: string;
   lastName: string;
   email: string;
   contact: string;
   gender: Gender;
+  status: StudentStatus;
   academicDetails?: IAcademicDetails;
+  academicHistory: IAcademicHistoryEntry[];
   feeDetails?: IFeeDetails;
-  image?: string; // Path to uploaded image
+  image?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -81,10 +101,9 @@ export interface IStudent extends Document {
 // Academic Details Schema
 const AcademicDetailsSchema = new Schema({
   yearOfAdmission: {
-    type: Number,
+    type: String,
     required: false,
-    min: [1900, 'Year of admission must be after 1900'],
-    max: [new Date().getFullYear() + 10, 'Year of admission cannot be too far in the future'],
+    match: [/^\d{4}-\d{4}$/, 'Year of admission must be in format YYYY-YYYY (example: 2026-2027)'],
   },
   class: {
     type: String,
@@ -110,9 +129,23 @@ const AcademicDetailsSchema = new Schema({
     required: false,
     default: false,
   },
-}, { _id: false }); // Don't create _id for subdocument
+}, { _id: false });
 
-// Payment History Schema
+// Academic History Entry Schema
+const AcademicHistoryEntrySchema = new Schema({
+  academicYear: { type: String, required: true },
+  class: {
+    type: String,
+    required: true,
+    enum: [Class.FIFTH, Class.SIXTH, Class.SEVENTH, Class.EIGHTH, Class.NINTH, Class.TENTH],
+  },
+  classroomId:   { type: Schema.Types.ObjectId, ref: 'Classroom', required: false },
+  classroomName: { type: String, required: false },
+  subjects:      { type: [String], default: [] },
+  promotedAt:    { type: Date, required: true, default: Date.now },
+}, { _id: false });
+
+// Payment Schema
 const PaymentSchema = new Schema({
   amount: {
     type: Number,
@@ -158,6 +191,12 @@ const FeeBreakdownSchema = new Schema({
     type: Number,
     required: false,
     default: 0,
+  },
+  discount: {
+    type: Number,
+    required: false,
+    default: 0,
+    min: [0, 'Discount cannot be negative'],
   },
 }, { _id: false });
 
@@ -243,6 +282,15 @@ const StudentSchema: Schema = new Schema(
       },
     },
     academicDetails: AcademicDetailsSchema,
+    academicHistory: {
+      type: [AcademicHistoryEntrySchema],
+      default: [],
+    },
+    status: {
+      type: String,
+      enum: [StudentStatus.ACTIVE, StudentStatus.ALUMNI, StudentStatus.DROPPED],
+      default: StudentStatus.ACTIVE,
+    },
     feeDetails: FeeDetailsSchema,
     image: {
       type: String,

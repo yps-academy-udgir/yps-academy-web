@@ -5,9 +5,13 @@ import { STUDENT_ROUTES } from './features/student/student.routes';
 import { FACULTY_ROUTES } from './features/faculty/faculty.routes';
 import { CLASSROOM_ROUTES } from './features/classroom/classroom.routes';
 import { RESULTS_ROUTES } from './features/results/results.routes';
+import { SETTINGS_ROUTES } from './features/settings/settings.routes';
+import { NOTIFICATION_ROUTES } from './features/notifications/notifications.routes';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { authGuard } from './core/guards/auth.guard';
 import { firstLoginGuard } from './core/guards/first-login.guard';
+import { roleGuard } from './core/guards/role.guard';
+import { UserRole } from './features/auth/models/auth.model';
 
 export const routes: Routes = [
   {
@@ -36,6 +40,24 @@ export const routes: Routes = [
             (m) => m.MyProfileComponent
           ),
         data: { title: 'My Profile' },
+      },
+      {
+        path: 'my-faculty-profile',
+        loadComponent: () =>
+          import('./features/faculty/components/my-faculty-profile/my-faculty-profile.component').then(
+            (m) => m.MyFacultyProfileComponent
+          ),
+        canActivate: [roleGuard(UserRole.FACULTY)],
+        data: { title: 'My Profile' },
+      },
+      {
+        path: 'my-faculty-payment-receipt',
+        loadComponent: () =>
+          import('./features/faculty/components/faculty-payment-receipt-page/faculty-payment-receipt-page.component').then(
+            (m) => m.FacultyPaymentReceiptPageComponent
+          ),
+        canActivate: [roleGuard(UserRole.FACULTY)],
+        data: { title: 'My Payment Receipt' },
       },
       {
         path: 'my-fees',
@@ -73,6 +95,14 @@ export const routes: Routes = [
       {
         path: 'results',
         children: RESULTS_ROUTES,
+      },
+      {
+        path: 'settings',
+        children: SETTINGS_ROUTES,
+      },
+      {
+        path: 'notifications',
+        children: NOTIFICATION_ROUTES,
       },
     ],
   },

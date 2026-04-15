@@ -29,15 +29,15 @@
   color: var(--text-primary);
 
   &.active {
-    background-color: rgba(63, 81, 181, 0.08);
-    border-right: 3px solid var(--primary-color);
+    background-color: var(--surface-overlay);
+    border-right: 3px solid var(--color-brand-primary);
 
     mat-icon {
-      color: var(--primary-color);
+      color: var(--color-brand-primary);
     }
 
     span {
-      color: var(--primary-color);
+      color: var(--color-brand-primary);
       font-weight: 500;
     }
   }
@@ -51,8 +51,8 @@
   }
 
   .badge {
-    background-color: var(--accent-color);
-    color: white;
+    background-color: var(--color-brand-secondary);
+    color: var(--text-on-brand);
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 12px;
@@ -122,6 +122,58 @@
     opacity: 1;
     max-height: 500px;
   }
+}
+
+.sidebar-section {
+  padding: 0;
+
+  .sidebar-section-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 16px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .expand-icon {
+      margin-left: auto;
+      transition: transform 0.2s ease;
+    }
+
+    &.expanded .expand-icon {
+      transform: rotate(180deg);
+    }
+  }
+
+  .sidebar-section-helper {
+    margin: 4px 16px 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+}
+
+.chat-rooms-list {
+  animation: slideDown 0.2s ease;
+}
+
+.unread-badge {
+  background: var(--mat-sys-primary, #6750a4) !important;
+  color: white !important;
+  border-radius: 10px !important;
+  font-size: 11px !important;
+  min-width: 20px !important;
+  text-align: center !important;
 }
 
 .sidebar-footer {

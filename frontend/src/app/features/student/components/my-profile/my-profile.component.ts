@@ -7,6 +7,7 @@ import { ExamResultService } from '../../../../shared/services/exam-result.servi
 import { LoadingComponent } from '../../../../shared/components/loading/loading.component';
 import { ErrorMessageComponent } from '../../../../shared/components/error-message/error-message.component';
 import { Student, ExamResult } from '../../../../shared/models/student.model';
+import { environment } from '../../../../../environments/environment';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -33,6 +34,11 @@ export class MyProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+  }
+
+  getImageUrl(path: string | undefined): string | null {
+    if (!path) return null;
+    return environment.apiUrl.replace('/api', '') + path;
   }
 
   load(): void {

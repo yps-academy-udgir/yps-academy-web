@@ -1,5 +1,8 @@
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, isValidObjectId } from 'mongoose';
 import Classroom, { IClassroom } from '../../models/classroom.model';
+import { Student } from '../../models/student.model';
+import { Faculty } from '../../models/faculty.model';
+import { AuthUser } from '../../models/auth.model';
 
 export interface ClassroomFilter {
   class?: string;
@@ -25,8 +28,8 @@ export const classroomRepository = {
     const skip = (page - 1) * limit;
     const [classrooms, total] = await Promise.all([
       Classroom.find(query)
-        .populate('facultyAssignments.facultyId', 'firstName lastName email speciality')
-        .populate('enrolledStudents', 'firstName lastName email rollNumber')
+        .populate('facultyAssignments.facultyId', 'firstName lastName email speciality userId rollNumber')
+        .populate('enrolledStudents', 'firstName lastName email rollNumber userId')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -39,8 +42,8 @@ export const classroomRepository = {
 
   async findById(id: string) {
     return Classroom.findById(id)
-      .populate('facultyAssignments.facultyId', 'firstName lastName email contact department speciality')
-      .populate('enrolledStudents', 'firstName lastName email contact academicDetails rollNumber')
+      .populate('facultyAssignments.facultyId', 'firstName lastName email contact department speciality userId rollNumber')
+      .populate('enrolledStudents', 'firstName lastName email contact academicDetails rollNumber userId')
       .lean();
   },
 
@@ -63,6 +66,55 @@ export const classroomRepository = {
       .lean();
   },
 
+  async findByUser(userId: string, role: 'student' | 'faculty') {
+    const baseQuery = {
+      $or: [
+        { userId },
+        { rollNumber: userId },
+      ],
+    } as any;
+
+    if (isValidObjectId(userId)) {
+      baseQuery.$or.push({ _id: userId });
+    }
+
+    let entity = role === 'student'
+      ? await Student.findOne(baseQuery).select('_id').lean()
+      : await Faculty.findOne(baseQuery).select('_id').lean();
+
+    if (!entity?._id) {
+      const authUser = await AuthUser.findOne({ userId, role }).select('name').lean();
+      const name = authUser?.name?.trim();
+      if (name) {
+        const [firstName, ...rest] = name.split(/\s+/);
+        const lastName = rest.join(' ');
+        const fallbackNameQuery: any = {
+          firstName: new RegExp(`^${escapeRegex(firstName)}$`, 'i'),
+        };
+        if (lastName) {
+          fallbackNameQuery.lastName = new RegExp(`^${escapeRegex(lastName)}$`, 'i');
+        }
+
+        entity = role === 'student'
+          ? await Student.findOne(fallbackNameQuery).select('_id').lean()
+          : await Faculty.findOne(fallbackNameQuery).select('_id').lean();
+      }
+    }
+
+    if (!entity?._id) {
+      return [];
+    }
+
+    const query: FilterQuery<IClassroom> = role === 'student'
+      ? { enrolledStudents: entity._id }
+      : { 'facultyAssignments.facultyId': entity._id };
+
+    return Classroom.find(query)
+      .select('class section roomNumber academicYear capacity enrolledStudents')
+      .sort({ academicYear: -1, class: 1, section: 1 })
+      .lean();
+  },
+
   async create(data: Record<string, unknown>) {
     const classroom = new Classroom(data);
     return classroom.save();
@@ -70,8 +122,8 @@ export const classroomRepository = {
 
   async update(id: string, data: Record<string, unknown>) {
     return Classroom.findByIdAndUpdate(id, data, { new: true, runValidators: true })
-      .populate('facultyAssignments.facultyId', 'firstName lastName email speciality')
-      .populate('enrolledStudents', 'firstName lastName email rollNumber');
+      .populate('facultyAssignments.facultyId', 'firstName lastName email speciality userId rollNumber')
+      .populate('enrolledStudents', 'firstName lastName email rollNumber userId');
   },
 
   async delete(id: string) {
@@ -111,3 +163,7 @@ export const classroomRepository = {
     };
   },
 };
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

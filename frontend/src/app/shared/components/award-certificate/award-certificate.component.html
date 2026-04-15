@@ -1,0 +1,84 @@
+<div class="cert-shell">
+  <!-- Action buttons — outside the printable area -->
+  @if (showActions()) {
+    <div class="cert-actions">
+      <button mat-stroked-button type="button" (click)="downloadPdf()">
+        <mat-icon>picture_as_pdf</mat-icon>
+        Download PDF
+      </button>
+      <button mat-stroked-button type="button" (click)="downloadPng()">
+        <mat-icon>image</mat-icon>
+        Download PNG
+      </button>
+      <button mat-stroked-button type="button" (click)="downloadJpg()">
+        <mat-icon>image</mat-icon>
+        Download JPG
+      </button>
+    </div>
+  }
+
+  <!-- Printable / capturable certificate -->
+  <div class="cert-wrapper" #certContainer>
+    <!-- Top colour band -->
+    <div class="cert-band"></div>
+
+    <!-- Decorative border frame -->
+    <div class="cert-frame">
+
+      <!-- Header -->
+      <div class="cert-header">
+        <div class="academy-name">{{ data().academyName }}</div>
+        <div class="cert-title">{{ data().certificateTitle }}</div>
+      </div>
+
+      <!-- Rank badge -->
+      <div class="rank-row">
+        <span class="medal">{{ getMedal() }}</span>
+        <span class="rank-label" [class]="getRankClass()">
+          {{ data().rank }}<sup>{{ getRankSuffix() }}</sup>&nbsp;Rank
+        </span>
+      </div>
+
+      <!-- Student photo / initials avatar -->
+      <div class="photo-ring" [class]="getRankClass()">
+        @if (getImageUrl(data().studentImage); as imgUrl) {
+          <img [src]="imgUrl" [alt]="data().studentName" class="photo-img" />
+        } @else {
+          <span class="photo-initials">{{ initials() }}</span>
+        }
+      </div>
+
+      <!-- Student name + meta -->
+      <div class="student-name">{{ data().studentName }}</div>
+      <div class="cert-meta">
+        Class {{ data().class }}&nbsp;&bull;&nbsp;{{ data().examType }}&nbsp;&bull;&nbsp;{{ data().monthLabel }} {{ data().year }}
+      </div>
+
+      <!-- Score -->
+      <div class="score-row">
+        <div class="score-pct">{{ data().percentage | number:'1.0-1' }}%</div>
+        <div class="score-marks">{{ data().totalMarksObtained }} / {{ data().totalOutOf }} marks</div>
+      </div>
+
+      <!-- Divider -->
+      <div class="cert-divider">
+        <span class="divider-star">✦</span>
+      </div>
+
+      <!-- Dynamic congratulation message -->
+      <div class="cert-message">{{ data().message }}</div>
+
+      <!-- Signature block -->
+      <div class="signature-block">
+        <div class="signature-line"></div>
+        <div class="signature-label">Principal / Authorised Signatory</div>
+        <div class="signature-date">{{ data().year }}</div>
+      </div>
+
+      <!-- Bottom decoration -->
+      <div class="cert-footer-text">{{ data().academyName }}</div>
+    </div>
+
+    <div class="cert-band cert-band--bottom"></div>
+  </div>
+</div>

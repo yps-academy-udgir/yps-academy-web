@@ -62,18 +62,56 @@
     }
   </mat-nav-list>
 
+  <!-- Chat Rooms section (role-based direct access) -->
+  @if (hasChatAccess()) {
+    <mat-divider></mat-divider>
+    <div class="sidebar-section">
+      <p class="sidebar-section-label" (click)="toggleChatRooms()" [class.expanded]="chatRoomsExpanded()">
+        <mat-icon>chat</mat-icon>
+        Chat Rooms
+        <mat-icon class="expand-icon">expand_more</mat-icon>
+      </p>
+      @if (chatRoomsExpanded()) {
+        @if (chatLoading()) {
+          <p class="sidebar-section-helper">Loading classrooms...</p>
+        } @else if (chatError()) {
+          <p class="sidebar-section-helper">{{ chatError() }}</p>
+        } @else if (chatClassrooms().length === 0) {
+          <p class="sidebar-section-helper">No classroom assigned yet.</p>
+        } @else {
+          <mat-nav-list class="nav-list chat-rooms-list">
+            @for (classroom of chatClassrooms(); track classroom._id) {
+              <a
+                mat-list-item
+                [routerLink]="['/classrooms/management', classroom._id]"
+                [queryParams]="{ tab: 'chat' }"
+                routerLinkActive="active"
+                (click)="onNavigate()"
+                class="nav-item child-item"
+              >
+                <mat-icon matListItemIcon>forum</mat-icon>
+                <span matListItemTitle>{{ getClassroomLabel(classroom) }}</span>
+                @if (getUnreadCount(classroom._id!) > 0) {
+                  <span matListItemMeta class="badge unread-badge">
+                    {{ getUnreadCount(classroom._id!) }}
+                  </span>
+                }
+              </a>
+            }
+          </mat-nav-list>
+        }
+      }
+    </div>
+  }
+
   <mat-divider></mat-divider>
 
-  <!-- Additional Actions Section -->
+  <!-- Footer actions -->
   <div class="sidebar-footer">
     <mat-nav-list>
       <a mat-list-item class="nav-item">
-        <mat-icon matListItemIcon>settings</mat-icon>
-        <span matListItemTitle>Settings</span>
-      </a>
-      <a mat-list-item class="nav-item">
         <mat-icon matListItemIcon>help</mat-icon>
-        <span matListItemTitle>Help & Support</span>
+        <span matListItemTitle>Help &amp; Support</span>
       </a>
     </mat-nav-list>
   </div>

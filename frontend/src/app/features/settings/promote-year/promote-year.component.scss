@@ -1,0 +1,113 @@
+@use '../../../../styles/variables' as *;
+
+.promote-card {
+  max-width: 680px;
+  margin: $spacing-lg auto;
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    .title-icon { color: var(--mat-sys-primary); }
+  }
+}
+
+.year-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+
+  .year-field { min-width: 200px; }
+}
+
+.loading-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin: $spacing-lg 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.preview-panel {
+  margin-top: $spacing-md;
+}
+
+.stat-row {
+  display: flex;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 160px;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $border-radius-md;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &.promote {
+    background: rgba(var(--mat-sys-primary-rgb, 0 0 0), 0.08);
+    border: 1px solid rgba(var(--mat-sys-primary-rgb, 0 0 0), 0.25);
+  }
+  &.graduate {
+    background: rgba(33, 150, 243, 0.08);
+    border: 1px solid rgba(33, 150, 243, 0.25);
+  }
+
+  .stat-num {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--mat-sys-primary);
+  }
+  .stat-label {
+    margin-top: $spacing-xxs;
+    font-size: $font-size-xs;
+    color: var(--mat-sys-on-surface-variant);
+    text-align: center;
+  }
+}
+
+.divider { margin: $spacing-md 0; }
+
+.blocker-section {
+  .blocker-title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-weight: 600;
+    color: var(--mat-sys-error);
+  }
+  .blocker-list {
+    margin: $spacing-xs 0 0 $spacing-md;
+    li { margin-bottom: $spacing-xxs; color: var(--mat-sys-on-surface-variant); }
+  }
+}
+
+.all-clear {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: var(--mat-sys-primary);
+  font-weight: 500;
+  margin-top: $spacing-md;
+}
+
+.result-banner {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(var(--mat-sys-primary-rgb, 0 0 0), 0.08);
+  border-radius: $border-radius-md;
+  margin-top: $spacing-md;
+  color: var(--mat-sys-primary);
+}
+
+.btn-spinner {
+  display: inline-block;
+  margin-right: $spacing-xs;
+}

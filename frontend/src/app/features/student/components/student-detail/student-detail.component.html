@@ -22,11 +22,18 @@
           <div class="header-content">
             <div class="student-header">
               <div class="avatar">
-                <mat-icon>account_circle</mat-icon>
+                @if (getImageUrl(student()!.image); as imgUrl) {
+                  <img [src]="imgUrl" [alt]="student()!.firstName" class="avatar-img" />
+                } @else {
+                  <mat-icon>account_circle</mat-icon>
+                }
               </div>
               <div class="student-info">
                 <h1 class="student-name">
                   {{ student()!.firstName }} {{ student()!.lastName }}
+                  <span class="status-badge status-{{ student()!.status ?? 'active' }}">
+                    {{ (student()!.status ?? 'active') | titlecase }}
+                  </span>
                 </h1>
                 @if (student()!.rollNumber) {
                   <p class="student-email">
@@ -34,6 +41,10 @@
                     Roll No: {{ student()!.rollNumber }}
                   </p>
                 }
+                <p class="student-email">
+                  <mat-icon>badge</mat-icon>
+                  User ID: {{ student()!.userId || '-' }}
+                </p>
                 <p class="student-email">
                   <mat-icon>email</mat-icon>
                   {{ student()!.email }}
@@ -45,32 +56,50 @@
                 <mat-icon>arrow_back</mat-icon>
                 Back
               </button>
-              <button mat-raised-button color="accent" (click)="onEnterMarks()">
-                <mat-icon>edit_note</mat-icon>
-                Enter Marks
+              <button mat-icon-button [matMenuTriggerFor]="studentHeaderActions" matTooltip="Actions">
+                <mat-icon>more_vert</mat-icon>
               </button>
-              <button mat-stroked-button color="primary" (click)="onViewFeeReceipt()">
-                <mat-icon>receipt_long</mat-icon>
-                View Fee Receipt
-              </button>
-              <button mat-stroked-button color="primary" (click)="onGenerateLatestMarksReport()">
-                <mat-icon>description</mat-icon>
-                Generate Marks Report
-              </button>
-              <button mat-raised-button color="primary" (click)="onEdit()">
-                <mat-icon>edit</mat-icon>
-                Edit
-              </button>
-              @if (roleService.isAdmin()) {
-                <button mat-stroked-button color="warn" (click)="onResetPassword()">
-                  <mat-icon>lock_reset</mat-icon>
-                  Reset Password
+              <mat-menu #studentHeaderActions="matMenu">
+                <button mat-menu-item (click)="onEnterMarks()">
+                  <mat-icon>edit_note</mat-icon>
+                  <span>Enter Marks</span>
                 </button>
-                <button mat-raised-button color="warn" (click)="onDelete()">
-                  <mat-icon>delete</mat-icon>
-                  Delete
+                <button mat-menu-item (click)="onViewFeeReceipt()">
+                  <mat-icon>receipt_long</mat-icon>
+                  <span>View Fee Receipt</span>
                 </button>
-              }
+                <button mat-menu-item (click)="onGenerateLatestMarksReport()">
+                  <mat-icon>description</mat-icon>
+                  <span>Marks Report</span>
+                </button>
+                <button mat-menu-item (click)="onEdit()">
+                  <mat-icon>edit</mat-icon>
+                  <span>Edit</span>
+                </button>
+                @if (roleService.isAdmin()) {
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="onResetPassword()">
+                    <mat-icon>lock_reset</mat-icon>
+                    <span>Reset Password</span>
+                  </button>
+                  @if ((student()!.status ?? 'active') === 'active') {
+                    <button mat-menu-item (click)="onMarkDropped()">
+                      <mat-icon>person_remove</mat-icon>
+                      <span>Mark as Dropped</span>
+                    </button>
+                  }
+                  @if ((student()!.status ?? 'active') === 'dropped') {
+                    <button mat-menu-item (click)="onReinstate()">
+                      <mat-icon>person_add</mat-icon>
+                      <span>Reinstate Student</span>
+                    </button>
+                  }
+                  <button mat-menu-item (click)="onDelete()">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                }
+              </mat-menu>
             </div>
           </div>
         </mat-card-header>
@@ -96,6 +125,10 @@
               <div class="info-row">
                 <span class="info-label">Roll Number:</span>
                 <span class="info-value">{{ student()!.rollNumber || '-' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">User ID:</span>
+                <span class="info-value">{{ student()!.userId || '-' }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label">Last Name:</span>
@@ -154,7 +187,7 @@
                 @if (student()!.feeDetails!.feeBreakdown) {
                   <mat-divider class="section-divider"></mat-divider>
                   <div class="fee-breakdown-section">
-                    <h4 class="subsection-title">Fee Breakdown</h4>
+                    <h4 class="subheading-row quaternary-heading">Fee Breakdown</h4>
                     <div class="breakdown-grid">
                       <div class="breakdown-item">
                         <span class="breakdown-label">Base Fee/Subject:</span>
@@ -182,7 +215,7 @@
                 @if (student()!.feeDetails!.paymentHistory && student()!.feeDetails!.paymentHistory.length > 0) {
                   <mat-divider class="section-divider"></mat-divider>
                   <div class="payment-history-section">
-                    <h4 class="subsection-title">
+                    <h4 class="subheading-row quaternary-heading">
                       <mat-icon>history</mat-icon>
                       Payment History
                     </h4>
@@ -304,7 +337,7 @@
                         </span>
                         <button mat-stroked-button type="button" color="primary" (click)="onGenerateMarksReport(result)">
                           <mat-icon>description</mat-icon>
-                          Generate Marks Report
+                          Marks Report
                         </button>
                       </div>
                     </div>

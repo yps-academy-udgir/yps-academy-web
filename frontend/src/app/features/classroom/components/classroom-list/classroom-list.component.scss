@@ -38,18 +38,18 @@ mat-card {
   font-size: 12px;
 
   &.green {
-    background-color: #e8f5e9;
-    color: #2e7d32;
+    background-color: var(--status-success-bg);
+    color: var(--status-success-color);
   }
 
   &.yellow {
-    background-color: #fff9c4;
-    color: #f57f17;
+    background-color: var(--status-warning-bg);
+    color: var(--status-warning-color);
   }
 
   &.red {
-    background-color: #ffebee;
-    color: #c62828;
+    background-color: var(--status-error-bg);
+    color: var(--status-error-color);
   }
 }
 

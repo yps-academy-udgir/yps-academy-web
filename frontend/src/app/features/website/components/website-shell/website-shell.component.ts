@@ -9,6 +9,7 @@ import { TestimonialsSectionComponent } from '../testimonials-section/testimonia
 import { GallerySectionComponent } from '../gallery-section/gallery-section.component';
 import { ContactSectionComponent } from '../contact-section/contact-section.component';
 import { WebsiteFooterComponent } from '../website-footer/website-footer.component';
+import { RevealOnScrollDirective } from '../../../../shared/directives/reveal-on-scroll.directive';
 
 @Component({
   selector: 'app-website-shell',
@@ -25,6 +26,7 @@ import { WebsiteFooterComponent } from '../website-footer/website-footer.compone
     GallerySectionComponent,
     ContactSectionComponent,
     WebsiteFooterComponent,
+    RevealOnScrollDirective,
   ],
   templateUrl: './website-shell.component.html',
   styleUrls: ['./website-shell.component.scss'],

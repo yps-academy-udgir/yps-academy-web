@@ -1,11 +1,18 @@
 import multer, { StorageEngine, FileFilterCallback } from 'multer';
 import { Request } from 'express';
 import path from 'path';
+import fs from 'fs';
+
+// Resolve to the project-root /uploads directory (same path that app.ts static-serves from)
+const UPLOADS_DIR = path.join(__dirname, '../../../uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
 
 // ✅ Storage config
 const storage: StorageEngine = multer.diskStorage({
   destination: (req: Request, file, cb) => {
-    cb(null, 'uploads/'); // later we will make dynamic
+    cb(null, UPLOADS_DIR);
   },
 
   filename: (req: Request, file, cb) => {

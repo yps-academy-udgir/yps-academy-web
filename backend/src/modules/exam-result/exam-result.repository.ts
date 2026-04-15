@@ -36,7 +36,7 @@ export const examResultRepository = {
     if (filter.year) query['year'] = filter.year;
 
     return ExamResult.find(query)
-      .populate('studentId', 'firstName lastName')
+      .populate('studentId', 'firstName lastName image')
       .lean();
   },
 };

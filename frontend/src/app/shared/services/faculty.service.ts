@@ -51,10 +51,10 @@ export class FacultyService {
     );
   }
 
-  createFaculty(faculty: Partial<Faculty>): Observable<ApiResponse<{ faculty: Faculty; userId: string; defaultPassword: string }>> {
+  createFaculty(body: FormData): Observable<ApiResponse<{ faculty: Faculty; userId: string; defaultPassword: string }>> {
     this.loading.set(true);
     this.error.set(null);
-    return this.http.post<ApiResponse<{ faculty: Faculty; userId: string; defaultPassword: string }>>(this.API_URL, faculty).pipe(
+    return this.http.post<ApiResponse<{ faculty: Faculty; userId: string; defaultPassword: string }>>(this.API_URL, body).pipe(
       tap((res) => {
         if (res.data?.faculty) {
           this.faculty.update((list) => [res.data!.faculty, ...list]);
@@ -66,10 +66,10 @@ export class FacultyService {
     );
   }
 
-  updateFaculty(id: string, data: Partial<Faculty>): Observable<ApiResponse<Faculty>> {
+  updateFaculty(id: string, body: FormData): Observable<ApiResponse<Faculty>> {
     this.loading.set(true);
     this.error.set(null);
-    return this.http.put<ApiResponse<Faculty>>(`${this.API_URL}/${id}`, data).pipe(
+    return this.http.put<ApiResponse<Faculty>>(`${this.API_URL}/${id}`, body).pipe(
       tap((res) => {
         if (res.data) {
           this.faculty.update((list) => list.map((f) => (f._id === id ? res.data! : f)));
@@ -95,6 +95,16 @@ export class FacultyService {
     );
   }
 
+  getMyProfile(): Observable<ApiResponse<Faculty>> {
+    this.loading.set(true);
+    this.error.set(null);
+    return this.http.get<ApiResponse<Faculty>>(`${this.API_URL}/me`).pipe(
+      tap((res) => { if (res.data) this.selectedFaculty.set(res.data); }),
+      catchError((err) => this.handleError(err)),
+      finalize(() => this.loading.set(false))
+    );
+  }
+
   clearSelectedFaculty(): void {
     this.selectedFaculty.set(null);
   }
@@ -104,12 +114,13 @@ export class FacultyService {
     if (error.error instanceof ErrorEvent) {
       msg = `Error: ${error.error.message}`;
     } else {
+      const serverMessage = error.error?.details || error.error?.error || error.error?.message;
       switch (error.status) {
-        case 400: msg = error.error?.message || 'Invalid request data'; break;
+        case 400: msg = serverMessage || 'Invalid request data'; break;
         case 404: msg = 'Faculty member not found'; break;
         case 409: msg = 'A faculty member with this email already exists'; break;
         case 500: msg = 'Server error. Please try again later'; break;
-        default: msg = error.error?.message || msg;
+        default: msg = serverMessage || msg;
       }
     }
     this.error.set(msg);

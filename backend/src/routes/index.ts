@@ -5,6 +5,10 @@ import facultyRoutes from '../modules/faculty/faculty.routes';
 import classroomRoutes from '../modules/classroom/classroom.routes';
 import attendanceRoutes from '../modules/attendance/attendance.routes';
 import authRoutes from '../modules/auth/auth.routes';
+import chatRoutes from '../modules/chat/chat.routes';
+import subjectConfigRoutes from '../modules/subject-config/subject-config.routes';
+import notificationRoutes from '../modules/notification/notification.routes';
+import academicYearRoutes from '../modules/academic-year/academic-year.routes';
 
 const router = Router();
 
@@ -24,6 +28,11 @@ router.use('/students', studentRoutes);
 router.use('/exam-results', examResultRoutes);
 router.use('/faculty', facultyRoutes);
 router.use('/classrooms', classroomRoutes);
+router.use('/classrooms', chatRoutes);  // Chat routes nested under /classrooms
+router.use('/messages', chatRoutes);    // Message-level operations
 router.use('/attendance', attendanceRoutes);
+router.use('/subject-config', subjectConfigRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/academic-year', academicYearRoutes);
 
 export default router;

@@ -17,7 +17,7 @@ export enum Class {
 }
 
 /**
- * Available subjects
+ * Available subjects — kept for backward compat; live list comes from SubjectConfig API
  */
 export enum Subject {
   MATHEMATICS = 'Mathematics',
@@ -26,13 +26,34 @@ export enum Subject {
 }
 
 /**
+ * Student lifecycle status
+ */
+export enum StudentStatus {
+  ACTIVE  = 'active',
+  ALUMNI  = 'alumni',
+  DROPPED = 'dropped',
+}
+
+/**
  * Academic Details Interface
  */
 export interface AcademicDetails {
-  yearOfAdmission?: number;
+  yearOfAdmission?: string;
   class?: Class;
   subjects?: string[];
   selfStudyMode?: boolean;
+}
+
+/**
+ * Academic History Entry — one record per past academic year
+ */
+export interface AcademicHistoryEntry {
+  academicYear: string;
+  class: Class;
+  classroomId?: string;
+  classroomName?: string;
+  subjects: string[];
+  promotedAt: Date;
 }
 
 /**
@@ -53,6 +74,7 @@ export interface FeeBreakdown {
   numberOfSubjects: number;
   subjectsFee: number;
   selfStudyFee: number;
+  discount: number;
 }
 
 /**
@@ -75,7 +97,10 @@ export interface Student {
   email: string;
   contact: string;
   gender: 'male' | 'female';
+  status?: StudentStatus;
+  image?: string;
   academicDetails?: AcademicDetails;
+  academicHistory?: AcademicHistoryEntry[];
   feeDetails?: FeeDetails;
   createdAt?: Date;
   updatedAt?: Date;
@@ -85,6 +110,7 @@ export interface FilterState {
   search: string;
   selectedClass: string;
   selectedYear: string;
+  selectedStatus: string;
 }
 
 /**

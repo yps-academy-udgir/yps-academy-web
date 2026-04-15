@@ -1,0 +1,107 @@
+<mat-card class="promote-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon class="title-icon">school</mat-icon>
+      Academic Year Promotion
+    </mat-card-title>
+    <mat-card-subtitle>Promote all active students to the next academic year</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+
+    <!-- Year selector -->
+    <div class="year-row">
+      <mat-form-field appearance="outline" class="year-field">
+        <mat-label>Promote to Academic Year</mat-label>
+        <mat-select [value]="selectedYear()" (selectionChange)="onYearChange($event.value)">
+          @for (yr of yearOptions; track yr) {
+            <mat-option [value]="yr">{{ yr }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button (click)="loadPreview()" [disabled]="loading()">
+        <mat-icon>refresh</mat-icon>
+        Refresh Preview
+      </button>
+    </div>
+
+    <!-- Loading spinner -->
+    @if (loading()) {
+      <div class="loading-row">
+        <mat-spinner diameter="36"></mat-spinner>
+        <span>Loading preview…</span>
+      </div>
+    }
+
+    <!-- Preview panel -->
+    @if (preview() && !loading()) {
+      <div class="preview-panel">
+
+        <div class="stat-row">
+          <div class="stat-card promote">
+            <span class="stat-num">{{ preview()!.toPromote }}</span>
+            <span class="stat-label">students to promote</span>
+          </div>
+          <div class="stat-card graduate">
+            <span class="stat-num">{{ preview()!.toGraduate }}</span>
+            <span class="stat-label">10th students to graduate</span>
+          </div>
+        </div>
+
+        <!-- Blockers -->
+        @if (preview()!.blocked.length > 0) {
+          <mat-divider class="divider"></mat-divider>
+          <div class="blocker-section">
+            <div class="blocker-title">
+              <mat-icon color="warn">warning</mat-icon>
+              <span>Cannot proceed — fix the following issues first:</span>
+            </div>
+            <ul class="blocker-list">
+              @for (b of preview()!.blocked; track b.class) {
+                <li>{{ b.reason }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        <!-- All clear -->
+        @if (preview()!.canProceed && !promoted()) {
+          <div class="all-clear">
+            <mat-icon color="primary">check_circle</mat-icon>
+            <span>All classrooms are set up for {{ selectedYear() }}. Ready to promote.</span>
+          </div>
+        }
+
+        <!-- Already promoted -->
+        @if (promoted()) {
+          <div class="result-banner">
+            <mat-icon>celebration</mat-icon>
+            <strong>Promotion complete!</strong>
+            {{ promotionResult()!.promoted }} students promoted,
+            {{ promotionResult()!.graduated }} graduated to alumni.
+          </div>
+        }
+
+      </div>
+    }
+
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="!canProceed() || promoting()"
+      (click)="promote()"
+    >
+      @if (promoting()) {
+        <mat-progress-spinner diameter="18" mode="indeterminate" class="btn-spinner"></mat-progress-spinner>
+        <span>Promoting…</span>
+      } @else {
+        <mat-icon>upgrade</mat-icon>
+        <span>Promote to {{ selectedYear() }}</span>
+      }
+    </button>
+  </mat-card-actions>
+</mat-card>

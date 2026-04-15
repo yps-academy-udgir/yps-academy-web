@@ -1,11 +1,28 @@
 .defaulters-container { padding: 24px; }
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
 .header-left { display: flex; align-items: center; gap: 8px; }
-.header-left h2 { margin: 0; font-size: 20px; font-weight: 600; }
+.header-left h2 { margin: 0; }
 .filter-field { width: 200px; }
 .spinner-center { display: flex; justify-content: center; padding: 48px; }
 .table-wrapper { overflow-x: auto; }
 table { width: 100%; }
-.green { color: #388e3c; }
-.red { color: #d32f2f; }
-.empty-message { text-align: center; padding: 32px; color: #757575; font-style: italic; }
+.green { color: var(--status-success-color); }
+.red { color: var(--status-error-color); }
+.empty-message { text-align: center; padding: 32px; color: var(--text-secondary); font-style: italic; }
+
+@media (max-width: 768px) {
+	.defaulters-container { padding: 16px; }
+
+	.page-header {
+		align-items: stretch;
+		gap: 10px;
+	}
+
+	.header-left {
+		width: 100%;
+	}
+
+	.filter-field {
+		width: 100%;
+	}
+}

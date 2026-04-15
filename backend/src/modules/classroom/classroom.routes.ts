@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   getAllClassrooms, getClassroomById, createClassroom, updateClassroom, deleteClassroom,
   assignFaculty, removeFaculty, enrollStudent, removeStudent,
-  getSchedule, updateSchedule, getClassroomStats,
+  getSchedule, updateSchedule, getClassroomStats, getMyClassrooms,
 } from './classroom.controller';
 import { validateObjectId } from '../../middleware/validation.middleware';
 import { verifyToken, requireRoles } from '../../middleware/auth.middleware';
@@ -13,6 +13,7 @@ router.use(verifyToken);
 
 // All roles readable
 router.get('/stats/overview', requireRoles('admin', 'faculty'), getClassroomStats);
+router.get('/my', requireRoles('student', 'faculty'), getMyClassrooms);
 router.get('/', requireRoles('admin', 'faculty', 'student'), getAllClassrooms);
 router.get('/:id', validateObjectId, requireRoles('admin', 'faculty', 'student'), getClassroomById);
 router.get('/:id/schedule', validateObjectId, requireRoles('admin', 'faculty', 'student'), getSchedule);

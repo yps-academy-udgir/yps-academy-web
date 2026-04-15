@@ -12,12 +12,8 @@ function serviceError(message: string, statusCode: number): Error {
 
 export const authService = {
   async login(dto: LoginDto) {
-    const user = await AuthUser.findOne({ userId: dto.userId });
+    const user = await AuthUser.findOne({ userId: dto.userId, role: dto.role as UserRole });
     if (!user) throw serviceError('Invalid userId or password', 401);
-
-    if (user.role !== (dto.role as UserRole)) {
-      throw serviceError('Selected role does not match this account. Please choose your correct role.', 401);
-    }
 
     const passwordMatch = await bcrypt.compare(dto.password, user.passwordHash);
     if (!passwordMatch) throw serviceError('Invalid userId or password', 401);
@@ -26,7 +22,7 @@ export const authService = {
     const expiresIn = (process.env.JWT_EXPIRES_IN || '8h') as jwt.SignOptions['expiresIn'];
 
     const token = jwt.sign(
-      { _id: (user._id as unknown as string).toString(), userId: user.userId, role: user.role, isFirstLogin: user.isFirstLogin },
+      { _id: (user._id as unknown as string).toString(), userId: user.userId, role: user.role, name: user.name, isFirstLogin: user.isFirstLogin },
       secret,
       { expiresIn }
     );

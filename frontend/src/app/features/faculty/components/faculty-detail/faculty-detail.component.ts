@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -14,6 +14,7 @@ import { CredentialsDialogComponent } from '../../../../shared/components/creden
 import { AuthService } from '../../../auth/services/auth.service';
 import { RoleService } from '../../../../shared/services/role.service';
 import { Faculty } from '../../models/faculty.model';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-faculty-detail',
@@ -36,6 +37,12 @@ export class FacultyDetailComponent implements OnInit, OnDestroy {
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
+  /** True when the logged-in faculty is viewing their own profile */
+  isOwnProfile = computed(() => {
+    const loggedInUserId = this.authService.currentUser()?.userId;
+    return !!loggedInUserId && this.faculty()?.userId === loggedInUserId;
+  });
+
   private paramSub!: Subscription;
 
   ngOnInit(): void {
@@ -47,6 +54,11 @@ export class FacultyDetailComponent implements OnInit, OnDestroy {
         this.router.navigate(['/faculty/list']);
       }
     });
+  }
+
+  getImageUrl(path: string | undefined): string | null {
+    if (!path) return null;
+    return environment.apiUrl.replace('/api', '') + path;
   }
 
   ngOnDestroy(): void {
@@ -79,6 +91,12 @@ export class FacultyDetailComponent implements OnInit, OnDestroy {
   onEdit(): void {
     const id = this.faculty()?._id;
     if (id) this.router.navigate(['/faculty', id, 'edit']);
+  }
+
+  onViewPaymentReceipt(): void {
+    const id = this.faculty()?._id;
+    if (!id) return;
+    this.router.navigate(['/faculty', id, 'payment-receipt']);
   }
 
   onDelete(): void {

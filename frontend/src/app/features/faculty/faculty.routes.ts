@@ -29,6 +29,12 @@ export const FACULTY_ROUTES: Routes = [
     data: { title: 'Edit Faculty' },
   },
   {
+    path: ':id/payment-receipt',
+    loadComponent: () =>
+      import('./components/faculty-payment-receipt-page/faculty-payment-receipt-page.component').then((m) => m.FacultyPaymentReceiptPageComponent),
+    data: { title: 'Faculty Payment Receipt' },
+  },
+  {
     path: ':id',
     loadComponent: () =>
       import('./components/faculty-detail/faculty-detail.component').then((m) => m.FacultyDetailComponent),

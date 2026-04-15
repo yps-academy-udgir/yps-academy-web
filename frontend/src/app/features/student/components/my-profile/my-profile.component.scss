@@ -11,7 +11,7 @@
 }
 
 .header-card {
-  background: linear-gradient(135deg, var(--primary-color, #1976d2) 0%, var(--accent-color, #7c3aed) 100%);
+  background: var(--profile-header-gradient, linear-gradient(135deg, var(--primary-color, #1976d2) 0%, var(--accent-color, #7c3aed) 100%));
   color: #fff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 
@@ -56,12 +56,19 @@
   background: rgba(255, 255, 255, 0.25);
   flex-shrink: 0;
   border: 3px solid rgba(255, 255, 255, 0.5);
+  overflow: hidden;
 
   mat-icon {
     font-size: 80px;
     width: 80px;
     height: 80px;
     color: #fff;
+  }
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   @media (max-width: 768px) {
