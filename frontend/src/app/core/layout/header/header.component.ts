@@ -43,54 +43,47 @@ export class HeaderComponent {
   private themeService = inject(ThemeService);
   private authService = inject(AuthService);
   protected notificationService = inject(AppNotificationService);
-
   protected currentUser = this.authService.currentUser;
-
   // Computed signal for theme icon
   protected themeIcon = computed(() => 
     this.themeService.isDarkMode() ? 'light_mode' : 'dark_mode'
   );
-
   // Computed signal for theme tooltip
   protected themeTooltip = computed(() => 
     this.themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'
   );
-
   /**
    * Emit menu toggle event
    */
+  isSidebarpen = true
   onMenuToggle(): void {
     this.menuToggle.emit();
+    this.isSidebarpen = !this.isSidebarpen
   }
-
   /**
    * Navigate to dashboard
    */
   goToDashboard(): void {
     this.router.navigate(['/students']);
   }
-
   /**
    * Navigate to public website
    */
   goToWebsite(): void {
     this.router.navigate(['/website']);
   }
-
   /**
    * Toggle between light and dark theme
    */
   toggleTheme(): void {
     this.themeService.toggleTheme();
   }
-
-  /**
+/**
    * Open notifications (placeholder)
    */
   openNotifications(): void {
     // Handled by matMenuTrigger in template
   }
-
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/website']);
