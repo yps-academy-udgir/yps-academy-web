@@ -1,7 +1,7 @@
 <mat-toolbar color="primary" class="app-header">
   <!-- Menu Toggle Button (Mobile) -->
   <button mat-icon-button (click)="onMenuToggle()"aria-label="Toggle menu">
- <mat-icon> {{ isSidebarpen ? 'view_sidebar' : 'view_agenda' }}</mat-icon></button>
+ <mat-icon>{{ isSidebar ? 'view_sidebar' : 'view_agenda' }}</mat-icon></button>
   <!-- App Logo/Branding -->
   <div class="app-branding" (click)="goToDashboard()">
     <img src="icons/icon-yps.svg" alt="YPS Academy" class="brand-logo" width="32" height="32" />
@@ -9,7 +9,6 @@
   </div>
 
   <span class="spacer"></span>
-
   <!-- Header Actions -->
   <div class="header-actions">
     <!-- Website Button -->

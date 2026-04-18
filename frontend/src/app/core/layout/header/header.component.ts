@@ -55,10 +55,10 @@ export class HeaderComponent {
   /**
    * Emit menu toggle event
    */
-  isSidebarpen = true
+  isSidebar = true
   onMenuToggle(): void {
     this.menuToggle.emit();
-    this.isSidebarpen = !this.isSidebarpen
+    this.isSidebar = !this.isSidebar
   }
   /**
    * Navigate to dashboard
