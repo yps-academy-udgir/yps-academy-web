@@ -1,7 +1,7 @@
 <!-- Main Layout with Material Sidenav -->
 <div class="main-layout">
   <!-- Header -->
-  <app-header (menuToggle)="toggleSidenav()"></app-header>
+  <app-header (menuToggle)="toggleSidenav()" [sidenavOpened]="sidenavOpened()"></app-header>
 
   <!-- Breadcrumb Navigation -->
   <app-breadcrumb></app-breadcrumb>
