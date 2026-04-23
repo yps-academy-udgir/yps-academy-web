@@ -81,6 +81,11 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "local": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -88,17 +93,9 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
+            "buildTarget": "frontend:build:local",
             "port": 4025
-          },
-          "configurations": {
-            "production": {
-              "buildTarget": "frontend:build:production"
-            },
-            "development": {
-              "buildTarget": "frontend:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
+          }
         },
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n"
