@@ -4,7 +4,7 @@
  * Uses Angular Material toolbar
  * Follows Angular 20 patterns with signals
  */
-import { Component, output, inject, computed, OnInit } from '@angular/core';
+import { Component, output, inject, computed, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -55,10 +55,10 @@ export class HeaderComponent {
   /**
    * Emit menu toggle event
    */
-  isSidebar = true
+  sidenavOpened = input<boolean>(true);
   onMenuToggle(): void {
     this.menuToggle.emit();
-    this.isSidebar = !this.isSidebar
+  
   }
   /**
    * Navigate to dashboard
