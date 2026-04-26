@@ -11,9 +11,9 @@ import {
 const ACADEMY: Pick<ReportMeta, 'academyName' | 'academySubtitle' | 'address' | 'contact' | 'email'> = {
   academyName: 'YPS Academy',
   academySubtitle: 'Coaching Institute',
-  address: 'YPS Academy, Main Street, City',
-  contact: '+91 00000 00000',
-  email: 'info@ypsacademy.in',
+  address: 'YPS Academy,Aurade Nivas, Navi Abadi,Udgir',
+  contact: '+91 9970252067',
+  email: 'ypsacademyudgir@gmail.com',
 };
 
 /**
