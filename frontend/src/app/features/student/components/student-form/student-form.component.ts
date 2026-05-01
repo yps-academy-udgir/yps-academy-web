@@ -23,7 +23,6 @@ import { Classroom } from '../../../classroom/models/classroom.model';
 import { calculateFees, calculatePendingFees, calculateTotalPaid } from '../../../../shared/utils/fee-calculator.util';
 import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
 import { Subject , takeUntil } from 'rxjs';
-import { NumericFormatDirective } from '../../../../shared/directives/numeric-format.directive';
 
 @Component({
   selector: 'app-student-form',
@@ -34,7 +33,6 @@ import { NumericFormatDirective } from '../../../../shared/directives/numeric-fo
     SharedMaterialModule,
     RouterLink,
     LoadingComponent,
-    NumericFormatDirective,
   ],
   templateUrl: './student-form.component.html',
   styleUrls: ['./student-form.component.scss'],
