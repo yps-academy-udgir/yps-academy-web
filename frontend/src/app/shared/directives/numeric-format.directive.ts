@@ -12,6 +12,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
  *   [delimiterType] string    Delimiter char e.g. '-' or ' '  (default: '-')
  *   [numericOnly]   boolean   Block non-digit keystrokes       (default: true)
  *
+ *  issue regarding merge
  * Usage examples:
  *   <input appNumericFormat [length]="[4,4,4]"   delimiterType="-" />   → XXXX-XXXX-XXXX  (Aadhaar)
  *   <input appNumericFormat [length]="[5,5]"     delimiterType="-" />   → XXXXX-XXXXX     (Mobile)
