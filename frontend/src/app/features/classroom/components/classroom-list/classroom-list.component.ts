@@ -120,7 +120,7 @@ export class ClassroomListComponent implements OnInit {
   }
 
   deleteClassroom(classroom: Classroom): void {
-    let MatDialog= this.dialog.open(ConfirmDialogComponent,{
+    let matDialog= this.dialog.open(ConfirmDialogComponent,{
       data:{
         title:"Delete classroom",
         message: `are you sure you want to delete ${classroom.class}`,
@@ -129,15 +129,15 @@ export class ClassroomListComponent implements OnInit {
         confirmColor: 'warn',
       }
     })
-    MatDialog.afterClosed().subscribe((confirmed)=>{
+    matDialog.afterClosed().subscribe((confirmed)=>{
       if(confirmed && classroom._id){
          this.classroomService.deleteClassroom(classroom._id!).subscribe({
-        next: () => {
-          this.notification.success('Classroom deleted successfully');
+        next: (res) => {
+          this.notification.success(res.message);
           this.loadClassrooms();
         },
         error: (err) => {
-          this.notification.error(err.error?.message || 'Failed to delete classroom');
+          this.notification.error(err.message || 'Failed to delete classroom');
         },
       });
       }
