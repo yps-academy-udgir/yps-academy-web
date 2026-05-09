@@ -29,3 +29,4 @@ export class NumericFormatPipe implements PipeTransform {
     return parts.join(delimiter);
   }
 }
+// changing this for merge confict to clear the conflict
