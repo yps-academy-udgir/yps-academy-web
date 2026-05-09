@@ -17,6 +17,8 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { ClassroomService } from '../../../../shared/services/classroom.service';
 import { Classroom, Class, getOccupancyPercentage, getOccupancyColor } from '../../models/classroom.model';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+
 
 @Component({
   selector: 'app-classroom-list',
@@ -118,9 +120,18 @@ export class ClassroomListComponent implements OnInit {
   }
 
   deleteClassroom(classroom: Classroom): void {
-    const confirmed = confirm('Delete classroom ' + classroom.class + ' ' + classroom.section + '?');
-    if (confirmed) {
-      this.classroomService.deleteClassroom(classroom._id!).subscribe({
+    let MatDialog= this.dialog.open(ConfirmDialogComponent,{
+      data:{
+        title:"Delete classroom",
+        message: `are you sure you want to delete ${classroom.class}`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        confirmColor: 'warn',
+      }
+    })
+    MatDialog.afterClosed().subscribe((confirmed)=>{
+      if(confirmed && classroom._id){
+         this.classroomService.deleteClassroom(classroom._id!).subscribe({
         next: () => {
           this.notification.success('Classroom deleted successfully');
           this.loadClassrooms();
@@ -129,7 +140,8 @@ export class ClassroomListComponent implements OnInit {
           this.notification.error(err.error?.message || 'Failed to delete classroom');
         },
       });
-    }
+      }
+    })
   }
 
   assignFaculty(id: string): void {
