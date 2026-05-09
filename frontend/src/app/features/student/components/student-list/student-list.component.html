@@ -94,7 +94,7 @@
             <!-- Contact Column -->
             <ng-container matColumnDef="contact">
               <th mat-header-cell *matHeaderCellDef>Contact</th>
-              <td mat-cell *matCellDef="let student">{{ student.contact }}</td>
+              <td mat-cell *matCellDef="let student">{{ student.contact | numericFormat: [5,3,3] }}</td>
             </ng-container>
 
             <!-- Gender Column -->

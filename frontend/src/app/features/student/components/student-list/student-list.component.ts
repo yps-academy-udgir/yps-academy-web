@@ -24,6 +24,7 @@ import { Student, Class, FilterState, StudentStatus } from '../../../../shared/m
 import { FilterBarComponent } from '../../../../shared/components/filter-bar/filter-bar.component';
 import { RoleService } from '../../../../shared/services/role.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { NumericFormatPipe } from '../../../../shared/pipes/numeric-format.pipe';
 
 
 @Component({
@@ -34,6 +35,7 @@ import { AuthService } from '../../../auth/services/auth.service';
     FormsModule,
     SharedMaterialModule,
     FilterBarComponent,
+    NumericFormatPipe
   ],
   templateUrl: './student-list.component.html',
   styleUrls: ['./student-list.component.scss'],
