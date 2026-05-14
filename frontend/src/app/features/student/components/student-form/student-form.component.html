@@ -68,7 +68,7 @@
 
               <mat-form-field appearance="outline" class="form-field">
                 <mat-label>Contact</mat-label>
-                <input matInput type="tel" formControlName="contact" appNumericFormat [length]=[5,3,3] placeholder="+91 00000 00000" />
+                <input matInput type="tel" formControlName="contact" appNumericFormat [length]=[4,3,3] placeholder="+91 00000 00000" />
                 <mat-icon matPrefix>phone</mat-icon>
                 @if (studentForm.get('contact')?.invalid && studentForm.get('contact')?.touched) {
                   <mat-error>{{ getErrorMessage('contact') }}</mat-error>
