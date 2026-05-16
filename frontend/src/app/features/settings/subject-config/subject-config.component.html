@@ -37,7 +37,7 @@
             </div>
 
             <div formArrayName="subjects" class="subjects-list">
-              @for (row of subjectsArrayForClass(ci).controls; track $index; let si = $index) {
+              @for (row of subjectsArrayForClass(ci).controls; track row; let si = $index) {
                 <div [formGroupName]="si" class="subjects-grid subject-row">
                   <mat-form-field appearance="outline" class="field-name">
                     <mat-label>Subject Name</mat-label>
