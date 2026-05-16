@@ -352,6 +352,9 @@
                   <input matInput type="number" formControlName="initialPayment" placeholder="0.00" />
                   <mat-icon matPrefix>currency_rupee</mat-icon>
                   <mat-hint>Enter payment amount (optional)</mat-hint>
+                  @if(studentForm.get('feeDetails.initialPayment')?.hasError('min')){
+                   <mat-error>Amount should be 0 or greater than 0</mat-error>
+                  }
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="form-field">
