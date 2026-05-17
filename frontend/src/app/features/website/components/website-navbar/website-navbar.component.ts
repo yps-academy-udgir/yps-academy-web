@@ -26,7 +26,7 @@ export class WebsiteNavbarComponent {
 
   navLinks = [
     { label: 'Home', href: '#home' },
-    { label: 'About', href: '#achievements' },
+    { label: 'About', href: '#contact' },
     { label: 'Courses', href: '#courses' },
     { label: 'Faculty', href: '#faculty' },
     { label: 'Results', href: '#achievements' },
