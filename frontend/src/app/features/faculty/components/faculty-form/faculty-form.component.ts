@@ -53,7 +53,8 @@ export class FacultyFormComponent implements OnInit {
     firstName: ['', [Validators.required, Validators.minLength(2)]],
     lastName: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    contact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-().]{7,20}$/)]],
+    contact: ['+91 ',[Validators.required,Validators.pattern(/^\+91\s[6-9]\d{9}$/)]
+  ],
     department: ['', Validators.required],
     speciality: ['', Validators.required],
     degree: ['', Validators.required],
@@ -64,6 +65,45 @@ export class FacultyFormComponent implements OnInit {
     salaryPayments: this.fb.array([]),
   });
 
+  onContactInput(event: any): void {
+  let value = event.target.value;
+//contact 
+  if (!value.startsWith('+91 ')) {
+    value = '+91 ';
+  }
+  let mobileNumber = value.replace('+91 ', '').replace(/\D/g, '');
+  mobileNumber = mobileNumber.substring(0, 10);
+  if (mobileNumber.length > 0 && !/^[6-9]/.test(mobileNumber)) {
+    mobileNumber = '';
+  }
+ value = '+91 ' + mobileNumber;
+  this.facultyForm.get('contact')?.setValue(value, {
+    emitEvent: false
+  });
+};
+ getErrorMessage(controlName: string): string {
+
+  const control = this.facultyForm.get(controlName);
+
+  // Your existing common error function call
+  const commonError = this.resolveError(control);
+
+  // If common errors already exist return them
+  if (commonError) {
+    return commonError;
+  }
+
+  // Custom contact validation messages
+  if (control?.hasError('required')) {
+    return 'Contact number is required';
+  }
+
+  if (control?.hasError('pattern')) {
+    return 'Enter valid Indian mobile number';
+  }
+
+  return '';
+}
   get loading() {
     return this.facultyService.loading;
   }
@@ -274,9 +314,9 @@ export class FacultyFormComponent implements OnInit {
     return (group as FormGroup).get(name);
   }
 
-  getErrorMessage(controlName: string): string {
-    return this.resolveError(this.facultyForm.get(controlName));
-  }
+  // getErrorMessage(controlName: string): string {
+  //   return this.resolveError(this.facultyForm.get(controlName));
+  // }
 
   getNestedError(group: AbstractControl, name: string): string {
     return this.resolveError((group as FormGroup).get(name));
