@@ -85,19 +85,19 @@ export class SubjectConfigComponent implements OnInit {
       .at(subjectIndex)
       .get('name')?.value;
 
-     const ref = this.dialog.open(ConfirmDialogComponent, {
-          data: {
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+        data: {
           title: 'Delete Subject',
           message: `Are You Sure You Want To Delete ${subjectName} Subject?`,
           confirmText: 'Delete',
-            cancelText: 'Cancel',
-            confirmColor: 'warn',
-          },
-        });
+          cancelText: 'Cancel',
+          confirmColor: 'warn',
+        },
+      });
       ref.afterClosed().subscribe((res : boolean) =>{
         if(res){this.subjectsArrayForClass(classIndex).removeAt(subjectIndex)};
       })
-    }
+  }
 
   save(): void {
     if (this.form.invalid) {
