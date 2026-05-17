@@ -125,6 +125,7 @@ export class StudentListComponent implements OnInit {
   displayedColumns: string[] = [
     'rollNumber',
     'name',
+    'class',
     'status',
     'email',
     'contact',
