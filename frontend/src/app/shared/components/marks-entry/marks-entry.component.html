@@ -40,7 +40,7 @@
 
 				<mat-form-field appearance="outline">
 					<mat-label>Year</mat-label>
-					<input matInput type="number" [value]="selectedYear()" (input)="limitYearLength($event)" (change)="selectedYear.set(+$any($event.target).value); onFilterChange()" min="2000" [disabled]="!selectedClassroomId()" />
+					<input matInput type="number" [value]="selectedYear()" (input)="limitYearLength($event)" (change)="selectedYear.set(+$any($event.target).value); onFilterChange()" min="2000" [disabled]="!selectedClassroomId()"/>
 				</mat-form-field>
 			</div>
 
