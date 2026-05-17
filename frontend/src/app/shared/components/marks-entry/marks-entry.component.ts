@@ -241,6 +241,13 @@ export class MarksEntryComponent implements OnInit {
 		return typeof student === 'object' ? student._id : student;
 	}
 
+	limitYearLength(event:Event) : void{
+		const input = event.target as HTMLInputElement;
+		if(input.value.length > 4){
+			input.value = input.value.slice(0,4);
+		}
+	}
+	
 	submit(): void {
 		if (!this.isFilterReady() || !this.allMaxMarksFilled()) return;
 
