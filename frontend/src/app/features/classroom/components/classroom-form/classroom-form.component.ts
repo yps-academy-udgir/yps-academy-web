@@ -50,7 +50,7 @@ export class ClassroomFormComponent implements OnInit {
     this.classroomForm = this.fb.group({
       class: ['', Validators.required],
       section: ['', [Validators.required, Validators.pattern(/^[A-Z]$/i)]],
-      roomNumber: ['', Validators.required],
+      roomNumber: ['', [Validators.required, Validators.pattern(/^[0-9]+$/)]],
       capacity: [30, [Validators.required, Validators.min(1)]],
       academicYear: ['', [Validators.required, Validators.pattern(/^\d{4}-\d{4}$/)]],
     });

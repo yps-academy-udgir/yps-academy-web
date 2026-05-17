@@ -26,7 +26,16 @@
           <mat-form-field appearance="outline">
             <mat-label>Room Number</mat-label>
             <input matInput formControlName="roomNumber" placeholder="101" required />
+           @if
+            (classroomForm.get('roomNumber')?.errors?.['required']){
             <mat-error>Room number is required</mat-error>
+            }
+            @if
+            (classroomForm.get('roomNumber')?.errors?.['pattern']){
+            <mat-error>
+              Room number should contain numbers only
+            </mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
