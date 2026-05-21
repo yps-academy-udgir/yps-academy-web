@@ -53,7 +53,9 @@ export class FacultyFormComponent implements OnInit {
     firstName: ['', [Validators.required, Validators.minLength(2)]],
     lastName: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    contact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-().]{7,20}$/)]],
+    contact: ['', [Validators.required, Validators.pattern(/^(\+91[\-\s]?)?[0-9]{10}$/)]],
+
+    // contact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-().]{7,20}$/)]],
     department: ['', Validators.required],
     speciality: ['', Validators.required],
     degree: ['', Validators.required],
@@ -287,7 +289,7 @@ export class FacultyFormComponent implements OnInit {
     if (control.errors['required']) return 'This field is required.';
     if (control.errors['minlength']) return `Minimum ${control.errors['minlength'].requiredLength} characters required.`;
     if (control.errors['email']) return 'Enter a valid email address.';
-    if (control.errors['pattern']) return 'Enter a valid contact number.';
+    if (control.errors['pattern']) return 'Enter a valid 10 digit contact number.';
     if (control.errors['min']) return 'Value must be 0 or greater.';
     return 'Invalid value.';
   }
