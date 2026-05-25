@@ -20,8 +20,42 @@ export interface ConfirmDialogData {
   selector: 'app-confirm-dialog',
   standalone: true,
   imports: [SharedMaterialModule],
-  templateUrl: './confirm-dialog.component.html',
-  styleUrls: ['./confirm-dialog.component.scss']
+  template: `
+    <h2 mat-dialog-title>{{ data.title }}</h2>
+    <mat-dialog-content>
+      <p>{{ data.message }}</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">
+        {{ data.cancelText || 'Cancel' }}
+      </button>
+      <button
+        mat-raised-button
+        [color]="data.confirmColor || 'warn'"
+        (click)="onConfirm()"
+        cdkFocusInitial
+      >
+        {{ data.confirmText || 'Confirm' }}
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    mat-dialog-content {
+      min-width: 300px;
+      padding: 20px 24px;
+
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--mat-dialog-subhead-color)
+      }
+    }
+
+    mat-dialog-actions {
+      padding: 8px 16px 16px;
+      gap: 8px;
+    }
+  `],
 })
 export class ConfirmDialogComponent {
   // Inject dialog data and reference using Angular's inject() function
