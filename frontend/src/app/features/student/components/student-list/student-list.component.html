@@ -72,6 +72,13 @@
                 <strong>{{ getFullName(student) }}</strong>
               </td>
             </ng-container>
+               <!-- class Column -->
+            <ng-container matColumnDef="class">
+              <th mat-header-cell *matHeaderCellDef>Class</th>
+              <td mat-cell *matCellDef="let student">
+                <strong>{{student.academicDetails.class}}</strong>
+              </td>
+            </ng-container>
 
             <!-- Status Column -->
             <ng-container matColumnDef="status">
