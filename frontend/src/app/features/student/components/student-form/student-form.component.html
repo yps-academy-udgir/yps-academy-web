@@ -39,7 +39,7 @@
             <div class="form-row">
               <mat-form-field appearance="outline" class="form-field">
                 <mat-label>First Name</mat-label>
-                <input matInput formControlName="firstName" placeholder="Enter first name" />
+                <input matInput formControlName="firstName" placeholder="Enter first name" (keypress)="allowOnlyAlphabets($event)" />
                 <mat-icon matPrefix>person</mat-icon>
                 @if (studentForm.get('firstName')?.invalid && studentForm.get('firstName')?.touched) {
                   <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
@@ -48,7 +48,7 @@
 
               <mat-form-field appearance="outline" class="form-field">
                 <mat-label>Last Name</mat-label>
-                <input matInput formControlName="lastName" placeholder="Enter last name" />
+                <input matInput formControlName="lastName" placeholder="Enter last name" (keypress)="allowOnlyAlphabets($event)"/>
                 <mat-icon matPrefix>person_outline</mat-icon>
                 @if (studentForm.get('lastName')?.invalid && studentForm.get('lastName')?.touched) {
                   <mat-error>{{ getErrorMessage('lastName') }}</mat-error>

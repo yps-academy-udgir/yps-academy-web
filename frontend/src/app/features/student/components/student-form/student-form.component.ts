@@ -290,6 +290,20 @@ export class StudentFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  allowOnlyAlphabets(event: KeyboardEvent): void {
+  // A-Z = 65-90
+  // a-z = 97-122
+  // space = 32
+  const charCode = event.which ? event.which : event.keyCode;
+  if (
+    !(charCode >= 65 && charCode <= 90) &&
+    !(charCode >= 97 && charCode <= 122) &&
+    charCode !== 32
+  ) {
+    event.preventDefault();
+  }
+}
+
   /**
    * Patch form with student data
    */
