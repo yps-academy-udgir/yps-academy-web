@@ -24,6 +24,7 @@ import { calculateFees, calculatePendingFees, calculateTotalPaid } from '../../.
 import { CredentialsDialogComponent } from '../../../../shared/components/credentials-dialog/credentials-dialog.component';
 import { Subject , takeUntil } from 'rxjs';
 import { NumericFormatDirective } from '../../../../shared/directives/numeric-format.directive';
+import { AlphabetOnlyDirective } from '../../../../shared/directives/alphabet-format.directive';
 
 @Component({
   selector: 'app-student-form',
@@ -35,6 +36,7 @@ import { NumericFormatDirective } from '../../../../shared/directives/numeric-fo
     RouterLink,
     LoadingComponent,
     NumericFormatDirective,
+    AlphabetOnlyDirective
   ],
   templateUrl: './student-form.component.html',
   styleUrls: ['./student-form.component.scss'],
@@ -290,19 +292,6 @@ export class StudentFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  allowOnlyAlphabets(event: KeyboardEvent): void {
-  // A-Z = 65-90
-  // a-z = 97-122
-  // space = 32
-  const charCode = event.which ? event.which : event.keyCode;
-  if (
-    !(charCode >= 65 && charCode <= 90) &&
-    !(charCode >= 97 && charCode <= 122) &&
-    charCode !== 32
-  ) {
-    event.preventDefault();
-  }
-}
 
   /**
    * Patch form with student data
@@ -598,7 +587,12 @@ export class StudentFormComponent implements OnInit, OnDestroy {
     if (control.hasError('email')) return 'Please enter a valid email';
     if (control.hasError('minlength')) return `Minimum length is ${control.errors?.['minlength'].requiredLength}`;
     if (control.hasError('maxlength')) return `Maximum length is ${control.errors?.['maxlength'].requiredLength}`;
-    if (control.hasError('pattern')) return 'Invalid format';
+
+    if (control.errors?.['alphabetOnly']) {
+      return 'Only alphabets are allowed'
+    // return control.errors['alphabetOnly'].message;
+  }
+    if (control.hasError('pattern')) return 'Invalid format';   
 
     return '';
   }
