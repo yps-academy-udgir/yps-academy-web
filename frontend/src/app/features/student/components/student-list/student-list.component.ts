@@ -187,6 +187,14 @@ export class StudentListComponent implements OnInit {
     }
   }
 
+  // Generate ID Card
+  generateIdCard(student: Student): void {
+    if(student._id){
+      this.router.navigate(['/students', 'idCards',student._id, 'idCard']);
+    }
+  
+}
+
   /**
    * Delete student with confirmation
    */

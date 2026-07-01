@@ -60,6 +60,18 @@ export const STUDENT_ROUTES: Routes = [
     ],
   },
 
+  //ID card - management
+{
+    path: 'idCards',
+    children: [
+      {
+        path: ':id/idCard',
+        loadComponent: () =>
+          import('./components/id-card/id-card.component').then((m) => m.IdCardComponent),
+        data: { title: 'IdCard' },
+      },
+    ],
+  },
   // Fee management
   {
     path: 'fees',
