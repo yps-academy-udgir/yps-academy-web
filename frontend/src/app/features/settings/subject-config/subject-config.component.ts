@@ -4,6 +4,8 @@ import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } fr
 import { SharedMaterialModule } from '../../../shared/shared-material.module';
 import { SubjectConfigService } from '../../../shared/services/subject-config.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 // Class values matching backend enum
 const ALL_CLASSES = ['5th', '6th', '7th', '8th', '9th', '10th'];
@@ -16,6 +18,7 @@ const ALL_CLASSES = ['5th', '6th', '7th', '8th', '9th', '10th'];
   styleUrls: ['./subject-config.component.scss'],
 })
 export class SubjectConfigComponent implements OnInit {
+  private dialog = inject(MatDialog);
   private fb = inject(FormBuilder);
   subjectConfigService = inject(SubjectConfigService);
   private notificationService = inject(NotificationService);
@@ -78,7 +81,22 @@ export class SubjectConfigComponent implements OnInit {
   }
 
   removeSubject(classIndex: number, subjectIndex: number): void {
-    this.subjectsArrayForClass(classIndex).removeAt(subjectIndex);
+    const subjectName = this.subjectsArrayForClass(classIndex)
+      .at(subjectIndex)
+      .get('name')?.value;
+
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          title: 'Delete Subject',
+          message: `Are You Sure You Want To Delete ${subjectName} Subject?`,
+          confirmText: 'Delete',
+          cancelText: 'Cancel',
+          confirmColor: 'warn',
+        },
+      });
+      ref.afterClosed().subscribe((res : boolean) =>{
+        if(res){this.subjectsArrayForClass(classIndex).removeAt(subjectIndex)};
+      })
   }
 
   save(): void {

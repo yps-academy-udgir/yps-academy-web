@@ -1,0 +1,307 @@
+@use '../../../../../styles/variables' as v;
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.idCard-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.idCard-shell {
+  padding: 20px;
+}
+
+.page-header h2 {
+  margin: 0;
+}
+
+.page-header p {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .fee-receipt-page {
+    gap: 16px;
+  }
+
+  .page-header {
+    align-items: stretch;
+    gap: 12px;
+
+    > div {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .page-header p {
+    font-size: var(--font-size-sm);
+  }
+}
+.student-details {
+  padding: 0 30px 30px;
+}
+
+.id-card-wrapper {
+  width: 520px;
+  background: #fff;
+  border-radius: 0;
+ overflow: visible;
+  position: relative;
+  margin: 0 auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  font-family: Arial, sans-serif;
+  min-height: auto;
+}
+/* Header */
+.card-header {
+  background: linear-gradient(
+    135deg,
+    #0fa3e6 0%,
+    #0c6db8 45%,
+    #094d89 100%
+  );
+  color: #fff;
+  padding: 20px 24px 70px;
+  position: relative;
+  overflow: visible;
+}
+
+.card-header::before {
+  content: '';
+  position: absolute;
+  right: -80px;
+  top: 0;
+  width: 220px;
+  height: 220px;
+  background: rgba(255,255,255,0.2);
+  transform: rotate(45deg);
+}
+
+.card-header::after {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: 20px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255,255,255,0.35);
+  transform: rotate(45deg);
+}
+.top-content,
+.student-name,
+.student-details,
+.principal-section {
+  position: relative;
+  z-index: 5;
+}
+
+.school-name {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.school-subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* Logo */
+.school-logo {
+  position: absolute;
+  top: 90px;
+  left: 30px;
+  margin-top: 15px;
+  width: 65px;
+  height: 65px;
+
+  border-radius: 50%;
+  background: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  box-shadow: 0 3px 10px rgba(0,0,0,.15);
+  z-index: 10;
+}
+
+.school-logo img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+ .brand-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: Arial, sans-serif;
+}
+
+/* Photo + Badge */
+.top-content {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 25px 24px 10px;
+}
+
+.class-badge {
+  width: 110px;
+  height: 110px;
+  background: #0b5da5;
+  color: white;
+
+  border-radius: 50%;
+  border: 12px solid #0b5da5;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  position: relative;
+}
+
+.class-badge::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 8px dotted #0b5da5;
+}
+.class-badge span {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.class-badge strong {
+  font-size: 30px;
+  font-weight: 800;
+}
+.student-photo {
+  width: 180px;
+  height: 210px;
+  background: #f3c7d0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: none;
+  box-shadow: none;
+}
+
+.student-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Student Name */
+.student-name {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0b5da5;
+  margin: 10px 0;
+  text-transform: uppercase;
+}
+
+/* Details */
+.student-details {
+  padding: 0 35px 25px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 150px 20px 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: #b23b6b;
+  font-weight: 600;
+}
+
+.row span:last-child {
+  color: #8f3d62;
+}
+
+/* Principal */
+.principal-section {
+  padding: 10px 15px;
+}
+
+.signature-line {
+  width: 130px;
+  border-top: 2px solid #222;
+  margin-bottom: 8px;
+}
+
+.principal-section span {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Bottom curve */
+.bottom-curve {
+  height: 23px;
+  background: #0b5da5;
+  border-top-left-radius: 220px;
+  position: relative;
+}
+
+.bottom-curve::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 0;
+  width: 100%;
+  height: 12px;
+  background: #f4c400;
+  border-top-left-radius: 220px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .id-card-wrapper {
+    width: 100%;
+  }
+
+  .school-name {
+    font-size: 30px;
+  }
+
+  .top-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .student-photo {
+    width: 180px;
+    height: 220px;
+  }
+
+  .row {
+    grid-template-columns: 120px 15px 1fr;
+    font-size: 14px;
+  }
+}

@@ -125,6 +125,7 @@ export class StudentListComponent implements OnInit {
   displayedColumns: string[] = [
     'rollNumber',
     'name',
+    'class',
     'status',
     'email',
     'contact',
@@ -185,6 +186,14 @@ export class StudentListComponent implements OnInit {
       this.router.navigate(['/students', 'management', student._id, 'edit']);
     }
   }
+
+  // Generate ID Card
+  generateIdCard(student: Student): void {
+    if(student._id){
+      this.router.navigate(['/students', 'idCards',student._id, 'idCard']);
+    }
+  
+}
 
   /**
    * Delete student with confirmation

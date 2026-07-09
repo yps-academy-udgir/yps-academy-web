@@ -12,12 +12,13 @@ import { CredentialsDialogComponent } from '../../../../shared/components/creden
 import { Department, Speciality } from '../../models/faculty.model';
 import { Classroom } from '../../../classroom/models/classroom.model';
 import { environment } from '../../../../../environments/environment';
+import { NumericFormatDirective } from '../../../../shared/directives/numeric-format.directive';
 
 @Component({
   selector: 'app-faculty-form',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, SharedMaterialModule],
+  imports: [CommonModule, ReactiveFormsModule, SharedMaterialModule,NumericFormatDirective],
   templateUrl: './faculty-form.component.html',
   styleUrls: ['./faculty-form.component.scss'],
 })
@@ -53,7 +54,7 @@ export class FacultyFormComponent implements OnInit {
     firstName: ['', [Validators.required, Validators.minLength(2)]],
     lastName: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    contact: ['', [Validators.required, Validators.pattern(/^\+?[\d\s\-().]{7,20}$/)]],
+    contact: ['', [Validators.required,Validators.pattern(/^[0-9]{10}$/)]],
     department: ['', Validators.required],
     speciality: ['', Validators.required],
     degree: ['', Validators.required],
@@ -287,7 +288,7 @@ export class FacultyFormComponent implements OnInit {
     if (control.errors['required']) return 'This field is required.';
     if (control.errors['minlength']) return `Minimum ${control.errors['minlength'].requiredLength} characters required.`;
     if (control.errors['email']) return 'Enter a valid email address.';
-    if (control.errors['pattern']) return 'Enter a valid contact number.';
+    if (control.errors['pattern']) return 'Enter only 10 digit number.';
     if (control.errors['min']) return 'Value must be 0 or greater.';
     return 'Invalid value.';
   }
