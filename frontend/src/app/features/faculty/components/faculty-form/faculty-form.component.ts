@@ -57,7 +57,7 @@ export class FacultyFormComponent implements OnInit {
     department: ['', Validators.required],
     speciality: ['', Validators.required],
     degree: ['', Validators.required],
-    yearsOfExperience: [null as number | null, [Validators.required, Validators.min(0)]],
+    yearsOfExperience: [null as number | null, [Validators.required, Validators.min(0),Validators.maxLength(15)]],
     classroomId: [''],
     pastExperience: this.fb.array([]),
     annualSalary: [null as number | null, [Validators.required, Validators.min(1)]],
@@ -289,6 +289,8 @@ export class FacultyFormComponent implements OnInit {
     if (control.errors['email']) return 'Enter a valid email address.';
     if (control.errors['pattern']) return 'Enter a valid contact number.';
     if (control.errors['min']) return 'Value must be 0 or greater.';
+    if(control.errors['max']) return 'Experience cannot exceed 15 years'
+
     return 'Invalid value.';
   }
 
