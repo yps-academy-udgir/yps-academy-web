@@ -11,6 +11,8 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { RoleService } from '../../../../shared/services/role.service';
 import { getOccupancyPercentage, getOccupancyColor } from '../../models/classroom.model';
 import { ClassroomChatComponent } from '../classroom-chat/classroom-chat.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-classroom-detail',
@@ -26,6 +28,7 @@ export class ClassroomDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private notification = inject(NotificationService);
   private roleService = inject(RoleService);
+  private dialog = inject(MatDialog);
 
   classroom = this.classroomService.selectedClassroom;
   loading = this.classroomService.loading;
@@ -116,15 +119,26 @@ export class ClassroomDetailComponent implements OnInit {
     this.router.navigate(['/classrooms', this.classroom()?._id, 'schedule']);
   }
 
-  removeFaculty(fa: any): void {
-    const name = this.getFacultyName(fa.facultyId);
-    if (confirm('Remove ' + name + ' from ' + fa.subject + '?')) {
-      const facultyId = typeof fa.facultyId === 'object' ? fa.facultyId._id : fa.facultyId;
-      this.classroomService.removeFaculty(this.classroom()!._id!, facultyId, fa.subject).subscribe({
+  removeFaculty(fa:any): void {
+    const facultyName = this.getFacultyName(fa.facultyId);
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data:{
+        title:'Remove Faculty',
+        message:`Are you sure you want to remove ${facultyName}?`,
+        confirmText: 'Remove',
+        confirmColor:'warn'
+      },
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+           const facultyId = typeof fa.facultyId === 'object' ? fa.facultyId._id : fa.facultyId;
+        this.classroomService.removeFaculty(this.classroom()!._id!, facultyId, fa.subject).subscribe({
         next: () => this.notification.success('Faculty removed'),
         error: () => this.notification.error('Failed to remove faculty'),
       });
     }
+  });
   }
 
   removeStudent(student: any): void {
