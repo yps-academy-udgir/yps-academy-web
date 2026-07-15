@@ -178,7 +178,7 @@
               </mat-form-field>
               <mat-form-field appearance="outline" class="form-field">
                 <mat-label>Total Years of Experience</mat-label>
-                <input matInput type="number" formControlName="yearsOfExperience" placeholder="0" min="0"  max="15"/>
+                <input matInput type="text" formControlName="yearsOfExperience" placeholder="0" min="0"    appNumericFormat [length]=[2]      />
                 <mat-icon matPrefix>timeline</mat-icon>
                 @if (facultyForm.get('yearsOfExperience')?.invalid && facultyForm.get('yearsOfExperience')?.touched) {
                   <mat-error>{{ getErrorMessage('yearsOfExperience') }}</mat-error>
